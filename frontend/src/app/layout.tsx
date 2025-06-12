@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import HeaderLayout from "@/component/layout/header/HeaderLayout";
+import FooterLayout from "@/component/layout/footer/FooterLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +20,11 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <AntdRegistry>{children}</AntdRegistry>
+                <AntdRegistry>
+                    <HeaderLayout />
+                    {children}
+                    <FooterLayout />
+                </AntdRegistry>
             </body>
         </html>
     );
