@@ -2,8 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  registerUserDataDto,
-  verifyCodeUserDataDto,
+  RegisterUserDataDto,
+  ResendVerifyCodeUserDataDto,
+  VerifyCodeUserDataDto,
 } from 'src/module/auth/dto/create-auth.dto';
 import { User } from 'src/module/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -28,7 +29,7 @@ export class UserService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  async emailService(user: User, activationCode: string) {
+  async sendMailService(user: User, activationCode: string) {
     await this.mailerService.sendMail({
       to: user.email,
       subject: 'Mã xác nhận của bạn',
@@ -40,7 +41,7 @@ export class UserService {
     });
   }
 
-  async handleRegisterUser(registerUserData: registerUserDataDto) {
+  async handleRegisterUser(registerUserData: RegisterUserDataDto) {
     try {
       // kiểm tra email có hoặc không tồn tại hay chưa?
       const email = registerUserData.email;
@@ -55,6 +56,7 @@ export class UserService {
 
       // tạo code 6 chữ số
       const activationCode = this.generateActivationCode();
+
       // create và save vào database
       const user = this.userRepository.create({
         displayName: registerUserData.displayName,
@@ -67,7 +69,7 @@ export class UserService {
       const resultUser = await this.userRepository.save(user);
 
       // gửi email
-      await this.emailService(resultUser, activationCode);
+      await this.sendMailService(resultUser, activationCode);
 
       return {
         id: resultUser.id,
@@ -79,7 +81,7 @@ export class UserService {
     }
   }
 
-  async handleVerifyCodeUser(verifyCodeUserData: verifyCodeUserDataDto) {
+  async handleVerifyCodeUser(verifyCodeUserData: VerifyCodeUserDataDto) {
     try {
       // tìm user bởi email
       const email = verifyCodeUserData.email;
@@ -116,6 +118,48 @@ export class UserService {
       return {
         id: resultUser.id,
         message: 'Kích hoạt tài khoản thành công',
+      };
+    } catch (error) {
+      // console.log(error);
+      throw error;
+    }
+  }
+
+  async handleResendVerifyCodeUser(
+    resendVerifyCodeUserData: ResendVerifyCodeUserDataDto,
+  ) {
+    try {
+      // tìm user bởi email
+      const email = resendVerifyCodeUserData.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // check đã kích hoạt?
+      if (user.isActive) {
+        throw new BadRequestException('Tài khoản người dùng đã được kích hoạt');
+      }
+
+      // tạo code 6 chữ số
+      const activationCode = this.generateActivationCode();
+
+      // update and save
+      user.activationCode = activationCode;
+      user.codeExpired = dayjs().add(5, 'minutes').toDate();
+      const resultUser = await this.userRepository.save(user);
+
+      // gửi email
+      await this.sendMailService(resultUser, activationCode);
+
+      return {
+        id: resultUser.id,
+        message: 'Đã gửi lại mã xác nhận thành công',
       };
     } catch (error) {
       // console.log(error);
