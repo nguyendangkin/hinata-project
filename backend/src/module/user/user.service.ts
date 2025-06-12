@@ -1,7 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { registerUserDataDto } from 'src/module/auth/dto/create-auth.dto';
+import {
+  registerUserDataDto,
+  verifyCodeUserDataDto,
+} from 'src/module/auth/dto/create-auth.dto';
 import { User } from 'src/module/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -68,6 +71,51 @@ export class UserService {
 
       return {
         id: resultUser.id,
+        message: 'Đăng ký tài khoản thành công',
+      };
+    } catch (error) {
+      // console.log(error);
+      throw error;
+    }
+  }
+
+  async handleVerifyCodeUser(verifyCodeUserData: verifyCodeUserDataDto) {
+    try {
+      // tìm user bởi email
+      const email = verifyCodeUserData.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException('Email người dùng không tồn tại');
+      }
+
+      // check đã kích hoạt chưa?
+      if (user.isActive) {
+        throw new BadRequestException('Tài khoản người dùng đã được kích hoạt');
+      }
+
+      // check hết hạn code
+      const isCodeExpired = dayjs().isAfter(user.codeExpired);
+      if (isCodeExpired) {
+        throw new BadRequestException('Mã kích hoạt đã hết hạn');
+      }
+
+      // check mã code
+      if (user.activationCode !== verifyCodeUserData.activationCode) {
+        throw new BadRequestException('Mã kích hoạt không chính xác');
+      }
+
+      // update và save
+      user.isActive = true;
+      user.activationCode = null;
+      user.codeExpired = null;
+      const resultUser = await this.userRepository.save(user);
+
+      return {
+        id: resultUser.id,
+        message: 'Kích hoạt tài khoản thành công',
       };
     } catch (error) {
       // console.log(error);

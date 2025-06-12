@@ -17,3 +17,12 @@ export class registerUserDataDto {
   })
   password: string;
 }
+
+export class verifyCodeUserDataDto {
+  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Mã kích hoạt không được để trống' })
+  activationCode: string;
+}

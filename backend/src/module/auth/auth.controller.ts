@@ -8,7 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { registerUserDataDto } from 'src/module/auth/dto/create-auth.dto';
+import {
+  registerUserDataDto,
+  verifyCodeUserDataDto,
+} from 'src/module/auth/dto/create-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,5 +19,10 @@ export class AuthController {
   @Post('register')
   async registerUser(@Body() registerUserData: registerUserDataDto) {
     return await this.authService.handleRegisterUser(registerUserData);
+  }
+
+  @Post('verify-code')
+  async verifyCodeUser(@Body() verifyCodeUserData: verifyCodeUserDataDto) {
+    return await this.authService.handleVerifyCodeUser(verifyCodeUserData);
   }
 }
