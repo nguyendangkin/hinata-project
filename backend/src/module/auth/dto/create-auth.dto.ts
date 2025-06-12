@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
-export class registerUserDataDto {
+export class RegisterUserDataDto {
   @IsNotEmpty({ message: 'Tên hiển thị không được để trống' })
   @MaxLength(34, {
     message: 'Tên hiển thị không được vượt quá 34 ký tự',
@@ -18,11 +18,17 @@ export class registerUserDataDto {
   password: string;
 }
 
-export class verifyCodeUserDataDto {
+export class VerifyCodeUserDataDto {
   @IsNotEmpty({ message: 'Email không được để trống' })
   @IsEmail({}, { message: 'Email không đúng định dạng' })
   email: string;
 
   @IsNotEmpty({ message: 'Mã kích hoạt không được để trống' })
   activationCode: string;
+}
+
+export class ResendVerifyCodeUserDataDto {
+  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  email: string;
 }
