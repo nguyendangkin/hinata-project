@@ -1,5 +1,6 @@
 {
-    "name": "antd",
+    "name": "frontend",
+    "node-version": "22.16.0",
     "version": "0.1.0",
     "private": true,
     "scripts": {
