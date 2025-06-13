@@ -1,9 +1,12 @@
-import "./polyfill";
+import "@ant-design/v5-patch-for-react-19";
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import AntdProvider from "@/providers/AntdProvider";
+import HeaderLayout from "@/components/layout/header/HeaderLayout";
+import FooterLayout from "@/components/layout/footer/FooterLayout";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -28,7 +31,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                <AntdRegistry>{children}</AntdRegistry>
+                <AntdRegistry>
+                    <AntdProvider>
+                        <HeaderLayout />
+                        {children}
+                        <FooterLayout />
+                    </AntdProvider>
+                </AntdRegistry>
             </body>
         </html>
     );
