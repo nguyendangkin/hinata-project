@@ -1,31 +1,40 @@
 "use client";
 
-import { Layout, Row, Col, Typography } from "antd";
+import { Layout, Row, Col, Typography, Grid } from "antd";
 
 const { Footer } = Layout;
 const { Title, Text, Link } = Typography;
+const { useBreakpoint } = Grid;
 
 export default function FooterUi() {
+    const screens = useBreakpoint();
+
     return (
         <Footer
             style={{
                 backgroundColor: "#f9f9f9",
                 color: "#333",
-                padding: "50px 80px",
+                padding: screens.xs ? "24px 16px" : "50px 80px",
             }}
         >
             <Row gutter={[32, 32]}>
-                <Col xs={24} md={8}>
+                <Col xs={24} sm={12} md={8}>
                     <Title level={5} style={{ color: "#000" }}>
                         Momolo Truyện
                     </Title>
-                    <Text style={{ color: "#666" }}>
+                    <Text
+                        style={{
+                            color: "#666",
+                            display: "block",
+                            marginTop: 8,
+                        }}
+                    >
                         Nền tảng đọc truyện tranh và tiểu thuyết với giao diện
                         tinh tế, dễ đọc, tối ưu trải nghiệm người dùng.
                     </Text>
                 </Col>
 
-                <Col xs={24} md={8}>
+                <Col xs={24} sm={12} md={8}>
                     <Title level={5} style={{ color: "#000" }}>
                         Liên kết nhanh
                     </Title>
@@ -34,6 +43,7 @@ export default function FooterUi() {
                             display: "flex",
                             flexDirection: "column",
                             gap: 6,
+                            marginTop: 8,
                         }}
                     >
                         <Link href="/">Trang chủ</Link>
@@ -43,7 +53,7 @@ export default function FooterUi() {
                     </div>
                 </Col>
 
-                <Col xs={24} md={8}>
+                <Col xs={24} sm={12} md={8}>
                     <Title level={5} style={{ color: "#000" }}>
                         Hỗ trợ
                     </Title>
@@ -52,6 +62,7 @@ export default function FooterUi() {
                             display: "flex",
                             flexDirection: "column",
                             gap: 6,
+                            marginTop: 8,
                         }}
                     >
                         <Link href="/lien-he">Liên hệ</Link>
@@ -74,7 +85,7 @@ export default function FooterUi() {
                     © {new Date().getFullYear()} Momolo.io.vn. All rights
                     reserved.
                 </Text>
-                <br />
+                {!screens.xs && <br />}
                 <Text type="secondary" style={{ fontSize: 12 }}>
                     Made with ❤️ for cộng đồng yêu truyện Việt.
                 </Text>
