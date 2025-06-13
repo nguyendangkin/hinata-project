@@ -10,17 +10,18 @@ import {
     DropboxOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
+import Link from "next/link";
 
 const { Header } = Layout;
 
 const items: MenuProps["items"] = [
     {
-        label: "Trang chủ",
+        label: <Link href="/">Trang chủ</Link>,
         key: "home",
         icon: <HomeOutlined />,
     },
     {
-        label: "Giới thiệu",
+        label: <Link href="/about">Giới thiệu</Link>,
         key: "about",
     },
     {
@@ -28,29 +29,29 @@ const items: MenuProps["items"] = [
         key: "products",
         children: [
             {
-                label: "Sản phẩm 1",
+                label: <Link href="/products/1">Sản phẩm 1</Link>,
                 key: "product1",
             },
             {
-                label: "Sản phẩm 2",
+                label: <Link href="/products/2">Sản phẩm 2</Link>,
                 key: "product2",
             },
         ],
     },
     {
-        label: "Liên hệ",
+        label: <Link href="/contact">Liên hệ</Link>,
         key: "contact",
     },
 ];
 
 const userMenuItems: MenuProps["items"] = [
     {
-        label: "Hồ sơ cá nhân",
+        label: <Link href="/profile">Hồ sơ cá nhân</Link>,
         key: "profile",
         icon: <UserOutlined />,
     },
     {
-        label: "Cài đặt",
+        label: <Link href="/settings">Cài đặt</Link>,
         key: "settings",
         icon: <SettingOutlined />,
     },
@@ -59,7 +60,7 @@ const userMenuItems: MenuProps["items"] = [
     },
     {
         label: "Đăng xuất",
-        key: "logout",
+        key: "logout", // xử lý riêng bằng onClick
     },
 ];
 
@@ -108,18 +109,22 @@ export default function AppHeader() {
 
                     {/* Các action */}
                     <Space size="middle">
-                        <Button type="text">Đăng nhập</Button>
-                        <Button type="primary">Đăng ký</Button>
+                        <Link href="/login">
+                            <Button type="text">Đăng nhập</Button>
+                        </Link>
+                        <Link href="/register">
+                            <Button type="primary">Đăng ký</Button>
+                        </Link>
 
                         {/* Dropdown user (hiển thị khi đã đăng nhập) */}
-                        <Dropdown
+                        {/* <Dropdown
                             menu={{ items: userMenuItems }}
                             trigger={["click"]}
                         >
-                            {/* <Space>
+                            <Space>
                                 <Avatar icon={<UserOutlined />} />
-                            </Space> */}
-                        </Dropdown>
+                            </Space>
+                        </Dropdown> */}
 
                         {/* Nút menu mobile (chỉ hiển thị trên mobile) */}
                         <Button
