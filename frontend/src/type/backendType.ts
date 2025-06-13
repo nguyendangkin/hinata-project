@@ -3,3 +3,8 @@ interface IRequestApiRegisterUser {
     email: string;
     password: string;
 }
+
+interface IResponsiveApiRegisterUser {
+    id: number;
+    message: string;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout, Menu, Typography, Dropdown, Button, Grid, Drawer } from "antd";
+import { Layout, Menu, Typography, Button, Grid, Drawer } from "antd";
 import {
     BookOutlined,
     HomeOutlined,
@@ -74,6 +74,7 @@ export default function HeaderUi() {
                 </Link>
             ),
         },
+        ...(screens.md ? userMenuItems : []), // Thêm menu user vào main menu khi ở màn hình lớn
     ];
 
     return (
@@ -97,31 +98,17 @@ export default function HeaderUi() {
 
             {/* Cho màn hình lớn */}
             {screens.md ? (
-                <div
+                <Menu
+                    mode="horizontal"
+                    defaultSelectedKeys={["home"]}
                     style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "16px",
+                        background: "transparent",
+                        borderBottom: "none",
+                        flex: 1,
+                        justifyContent: "flex-end",
                     }}
-                >
-                    <Menu
-                        mode="horizontal"
-                        defaultSelectedKeys={["home"]}
-                        style={{
-                            background: "transparent",
-                            borderBottom: "none",
-                        }}
-                        items={mainMenuItems}
-                    />
-
-                    <Dropdown
-                        menu={{ items: userMenuItems }}
-                        placement="bottomRight"
-                        arrow
-                    >
-                        <Button icon={<UserOutlined />}>Tài khoản</Button>
-                    </Dropdown>
-                </div>
+                    items={mainMenuItems}
+                />
             ) : (
                 /* Cho màn hình nhỏ */
                 <>
