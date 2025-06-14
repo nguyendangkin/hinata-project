@@ -1,23 +1,43 @@
 "use client";
 
+import RegisterModalUi from "@/components/page/register/RegisterModalUi";
+import { requestApiRegisterUser } from "@/util/actions";
 import { Button, Form, Input, message } from "antd";
 import { Rule } from "antd/es/form";
 import { useForm } from "antd/es/form/Form";
+import { useState } from "react";
 
 export default function RegisterUi() {
     const [form] = useForm();
+    const [isLoading, setIsLoading] = useState(false);
 
-    const onFinish = (values: any) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0);
+
+    const [userEmail, setUserEmail] = useState("");
+
+    const onFinish = async (values: any) => {
+        setIsLoading(true);
         // Loại bỏ trường confirmPassword trước khi gửi dữ liệu
         const { confirmPassword, ...submitData } = values;
-        console.log("Success:", submitData);
-        message.success("Đăng ký thành công!");
-        // Gọi API đăng ký ở đây với submitData
-    };
+        setUserEmail(submitData.email);
+        console.log(submitData);
 
-    const onFinishFailed = (errorInfo: any) => {
-        console.log("Failed:", errorInfo);
-        message.error("Vui lòng kiểm tra lại thông tin đăng ký");
+        try {
+            const result = await requestApiRegisterUser(submitData);
+            if (result.statusCode === 201) {
+                message.success(result.data?.message);
+                setIsModalOpen(true);
+            } else if (result.statusCode === 400) {
+                message.warning(result.message);
+            } else {
+                message.error(result.message);
+            }
+        } catch (error) {
+            message.error("Có lỗi xảy ra");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Rules validation
@@ -77,7 +97,6 @@ export default function RegisterUi() {
                 name="register"
                 layout="vertical"
                 onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
                 autoComplete="off"
             >
                 <Form.Item
@@ -115,11 +134,20 @@ export default function RegisterUi() {
                         htmlType="submit"
                         className="w-full"
                         size="large"
+                        loading={isLoading}
+                        disabled={isLoading}
                     >
                         Đăng ký
                     </Button>
                 </Form.Item>
             </Form>
+            <RegisterModalUi
+                userEmail={userEmail}
+                isModalOpen={isModalOpen}
+                currentStep={currentStep}
+                setIsModalOpen={setIsModalOpen}
+                setCurrentStep={setCurrentStep}
+            />
         </div>
     );
 }

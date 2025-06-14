@@ -49,7 +49,7 @@ export class UserService {
         where: { email },
       });
       if (emailExists) {
-        throw new BadRequestException('Email đã được đăng ký');
+        throw new BadRequestException('Email tài khoản đã được đăng ký');
       }
       // mã hóa mật khẩu
       const hashPassword = await this.hashPassword(registerUserData.password);
@@ -90,7 +90,9 @@ export class UserService {
       });
 
       if (!user) {
-        throw new BadRequestException('Email người dùng không tồn tại');
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
       }
 
       // check đã kích hoạt chưa?
