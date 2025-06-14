@@ -36,11 +36,40 @@ export const requestApiResendVerifyCodeUser = async (
     data: IRequestApiResendVerifyCodeUser
 ) => {
     try {
-        const result = await request.post<IResponsiveResendVerifyCodeUser>(
+        const result = await request.post<IResponseResendVerifyCodeUser>(
             `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/resend-verify-code`,
             data
         );
 
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};
+
+export const requestApiSendVerifyCodeUser = async (
+    data: IReqSendVerifyCodeUser
+) => {
+    try {
+        const result = await request.post<IResSendVerifyCodeUser>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/send-verify-code`,
+            data
+        );
+
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};
+
+export const requestApiLoginUser = async (data: IReqLogin) => {
+    try {
+        const result = await request.post<IResLogin>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
+            data
+        );
         return result;
     } catch (error) {
         // console.log(error);
