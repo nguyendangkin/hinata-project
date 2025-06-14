@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   RegisterUserDataDto,
   ResendVerifyCodeUserDataDto,
+  SendVerifyCodeUserDataDto,
   VerifyCodeUserDataDto,
 } from 'src/module/auth/dto/create-auth.dto';
 import { User } from 'src/module/user/entities/user.entity';
@@ -11,6 +12,10 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
+import {
+  generateActivationCode,
+  hashPasswordUtil,
+} from '../../utils/mainUtils';
 
 @Injectable()
 export class UserService {
@@ -19,15 +24,6 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly mailerService: MailerService,
   ) {}
-
-  async hashPassword(password: string) {
-    const saltOrRounds = 10;
-    return await bcrypt.hash(password, saltOrRounds);
-  }
-
-  generateActivationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  }
 
   async sendMailService(user: User, activationCode: string) {
     await this.mailerService.sendMail({
@@ -52,10 +48,10 @@ export class UserService {
         throw new BadRequestException('Email tài khoản đã được đăng ký');
       }
       // mã hóa mật khẩu
-      const hashPassword = await this.hashPassword(registerUserData.password);
+      const hashPassword = await hashPasswordUtil(registerUserData.password);
 
       // tạo code 6 chữ số
-      const activationCode = this.generateActivationCode();
+      const activationCode = generateActivationCode();
 
       // create và save vào database
       const user = this.userRepository.create({
@@ -149,7 +145,58 @@ export class UserService {
       }
 
       // tạo code 6 chữ số
-      const activationCode = this.generateActivationCode();
+      const activationCode = generateActivationCode();
+
+      // update and save
+      user.activationCode = activationCode;
+      user.codeExpired = dayjs().add(5, 'minutes').toDate();
+      const resultUser = await this.userRepository.save(user);
+
+      // gửi email
+      await this.sendMailService(resultUser, activationCode);
+
+      return {
+        id: resultUser.id,
+        message: 'Đã gửi lại mã xác nhận thành công',
+      };
+    } catch (error) {
+      // console.log(error);
+      throw error;
+    }
+  }
+
+  // tìm user cho local passport xử lý
+  async findOne(email: string) {
+    try {
+      return await this.userRepository.findOne({ where: { email } });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async handleSendVerifyCodeUser(
+    sendVerifyCodeUserData: SendVerifyCodeUserDataDto,
+  ) {
+    try {
+      // tìm lấy người dùng qua email
+      const email = sendVerifyCodeUserData.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // check đã kích hoạt?
+      if (user.isActive) {
+        throw new BadRequestException('Tài khoản người dùng đã được kích hoạt');
+      }
+
+      // tạo code 6 chữ số
+      const activationCode = generateActivationCode();
 
       // update and save
       user.activationCode = activationCode;

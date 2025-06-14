@@ -32,3 +32,9 @@ export class ResendVerifyCodeUserDataDto {
   @IsEmail({}, { message: 'Email không đúng định dạng' })
   email: string;
 }
+
+export class SendVerifyCodeUserDataDto {
+  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  email: string;
+}
