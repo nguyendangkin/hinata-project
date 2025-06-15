@@ -8,7 +8,6 @@ import AntdProvider from "@/providers/AntdProvider";
 import HeaderLayout from "@/components/layout/header/HeaderLayout";
 import FooterLayout from "@/components/layout/footer/FooterLayout";
 import ContentLayout from "@/components/layout/content/ContentLayout";
-import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -33,15 +32,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                <SessionProvider>
-                    <AntdRegistry>
-                        <AntdProvider>
-                            <HeaderLayout />
-                            <ContentLayout>{children}</ContentLayout>
-                            <FooterLayout />
-                        </AntdProvider>
-                    </AntdRegistry>
-                </SessionProvider>
+                <AntdRegistry>
+                    <AntdProvider>
+                        <HeaderLayout />
+                        <ContentLayout>{children}</ContentLayout>
+                        <FooterLayout />
+                    </AntdProvider>
+                </AntdRegistry>
             </body>
         </html>
     );
