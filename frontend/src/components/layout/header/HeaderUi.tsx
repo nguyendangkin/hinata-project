@@ -89,6 +89,7 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
                 await requestApiLogoutUser();
                 message.success("Đăng xuất thành công");
                 router.push("/");
+                router.refresh();
             } catch (error) {
                 message.error("Có lỗi đã xảy ra");
             }

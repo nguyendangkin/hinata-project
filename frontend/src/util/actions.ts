@@ -85,7 +85,6 @@ export async function authenticate(email: string, password: string) {
             password: password,
             redirect: false,
         });
-
         return result;
     } catch (error) {
         // console.log(error);

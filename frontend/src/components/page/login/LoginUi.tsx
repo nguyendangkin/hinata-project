@@ -30,6 +30,7 @@ export default function LoginUi() {
             } else {
                 message.success("Đăng nhập thành công");
                 router.push("/");
+                router.refresh();
             }
         } catch (error) {
             message.error("Có lỗi xảy ra");
