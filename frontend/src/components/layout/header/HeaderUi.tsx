@@ -139,7 +139,7 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
 
                     {/* Các action */}
                     <Space size="middle">
-                        {!session ? (
+                        {!session?.user ? (
                             <>
                                 <Link href="/login">
                                     <Button type="text">Đăng nhập</Button>
