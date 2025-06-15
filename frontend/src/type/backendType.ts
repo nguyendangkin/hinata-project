@@ -36,6 +36,7 @@ interface IResLogin {
         email: string;
         displayName: string;
         username: string | null;
+        role: string;
     };
     access_token: string;
     message: string;

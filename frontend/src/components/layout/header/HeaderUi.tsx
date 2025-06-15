@@ -9,6 +9,7 @@ import {
     Dropdown,
     Avatar,
     message,
+    Typography,
 } from "antd";
 import {
     HomeOutlined,
@@ -21,18 +22,22 @@ import {
 import type { MenuProps } from "antd";
 import Link from "next/link";
 import { requestApiLogoutUser } from "@/util/actions";
+import { usePathname, useRouter } from "next/navigation";
+
+import { Session } from "next-auth";
 
 const { Header } = Layout;
+const { Text } = Typography;
 
 const items: MenuProps["items"] = [
     {
         label: <Link href="/">Trang chủ</Link>,
-        key: "home",
+        key: "/",
         icon: <HomeOutlined />,
     },
     {
         label: <Link href="/about">Giới thiệu</Link>,
-        key: "about",
+        key: "/about",
     },
     {
         label: "Sản phẩm",
@@ -50,7 +55,7 @@ const items: MenuProps["items"] = [
     },
     {
         label: <Link href="/contact">Liên hệ</Link>,
-        key: "contact",
+        key: "/contact",
     },
 ];
 
@@ -74,13 +79,16 @@ const userMenuItems: MenuProps["items"] = [
     },
 ];
 
-const HeaderUi = () => {
+const HeaderUi = ({ session }: { session: Session | null }) => {
+    const router = useRouter();
+    const pathname = usePathname();
+
     const handleUserMenuClick: MenuProps["onClick"] = async (e) => {
         if (e.key === "logout") {
-            console.log("hello");
             try {
                 await requestApiLogoutUser();
                 message.success("Đăng xuất thành công");
+                router.push("/");
             } catch (error) {
                 message.error("Có lỗi đã xảy ra");
             }
@@ -125,30 +133,58 @@ const HeaderUi = () => {
                     <Menu
                         mode="horizontal"
                         items={items}
+                        selectedKeys={[pathname]}
                         style={{ flex: 1, minWidth: 0, borderBottom: "none" }}
                     />
 
                     {/* Các action */}
                     <Space size="middle">
-                        <Link href="/login">
-                            <Button type="text">Đăng nhập</Button>
-                        </Link>
-                        <Link href="/register">
-                            <Button type="primary">Đăng ký</Button>
-                        </Link>
-
-                        {/* Dropdown user (hiển thị khi đã đăng nhập) */}
-                        <Dropdown
-                            menu={{
-                                items: userMenuItems,
-                                onClick: handleUserMenuClick,
-                            }}
-                            trigger={["click"]}
-                        >
-                            <Space>
-                                <Avatar icon={<UserOutlined />} />
-                            </Space>
-                        </Dropdown>
+                        {!session ? (
+                            <>
+                                <Link href="/login">
+                                    <Button type="text">Đăng nhập</Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button type="primary">Đăng ký</Button>
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                {/* Dropdown user (hiển thị khi đã đăng nhập) */}
+                                <Dropdown
+                                    menu={{
+                                        items: userMenuItems,
+                                        onClick: handleUserMenuClick,
+                                    }}
+                                    trigger={["click"]}
+                                >
+                                    <Button
+                                        type="text"
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            padding: "4px 8px",
+                                            borderRadius: 8,
+                                            transition: "background 0.3s",
+                                        }}
+                                        className="user-dropdown-btn"
+                                    >
+                                        <Space>
+                                            <Avatar
+                                                size="small"
+                                                icon={<UserOutlined />}
+                                            />
+                                            <span>
+                                                {session.user?.displayName}
+                                            </span>
+                                            <DownOutlined
+                                                style={{ fontSize: 12 }}
+                                            />
+                                        </Space>
+                                    </Button>
+                                </Dropdown>
+                            </>
+                        )}
 
                         {/* Nút menu mobile (chỉ hiển thị trên mobile) */}
                         <Button

@@ -29,6 +29,7 @@ export default function LoginUi() {
                     message.warning(result?.error);
                 }
             } else {
+                message.success("Đăng nhập thành công");
                 router.push("/");
             }
         } catch (error) {

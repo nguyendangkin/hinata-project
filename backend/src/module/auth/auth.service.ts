@@ -59,6 +59,7 @@ export class AuthService {
         email: user.email,
         displayName: user.displayName,
         username: user.username,
+        role: user.role,
       },
       access_token: this.jwtService.sign(payload),
       message: 'Đăng nhập thành công',
