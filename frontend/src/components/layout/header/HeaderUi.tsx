@@ -1,6 +1,15 @@
 "use client";
 
-import { Layout, Menu, Button, Space, Divider, Dropdown, Avatar } from "antd";
+import {
+    Layout,
+    Menu,
+    Button,
+    Space,
+    Divider,
+    Dropdown,
+    Avatar,
+    message,
+} from "antd";
 import {
     HomeOutlined,
     UserOutlined,
@@ -11,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import Link from "next/link";
+import { requestApiLogoutUser } from "@/util/actions";
 
 const { Header } = Layout;
 
@@ -64,7 +74,18 @@ const userMenuItems: MenuProps["items"] = [
     },
 ];
 
-export default function AppHeader() {
+const HeaderUi = () => {
+    const handleUserMenuClick: MenuProps["onClick"] = async (e) => {
+        if (e.key === "logout") {
+            console.log("hello");
+            try {
+                await requestApiLogoutUser();
+                message.success("Đăng xuất thành công");
+            } catch (error) {
+                message.error("Có lỗi đã xảy ra");
+            }
+        }
+    };
     return (
         <div
             style={{
@@ -117,14 +138,17 @@ export default function AppHeader() {
                         </Link>
 
                         {/* Dropdown user (hiển thị khi đã đăng nhập) */}
-                        {/* <Dropdown
-                            menu={{ items: userMenuItems }}
+                        <Dropdown
+                            menu={{
+                                items: userMenuItems,
+                                onClick: handleUserMenuClick,
+                            }}
                             trigger={["click"]}
                         >
                             <Space>
                                 <Avatar icon={<UserOutlined />} />
                             </Space>
-                        </Dropdown> */}
+                        </Dropdown>
 
                         {/* Nút menu mobile (chỉ hiển thị trên mobile) */}
                         <Button
@@ -138,4 +162,6 @@ export default function AppHeader() {
             </div>
         </div>
     );
-}
+};
+
+export default HeaderUi;

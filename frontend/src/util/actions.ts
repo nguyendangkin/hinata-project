@@ -1,5 +1,6 @@
 "use server";
 
+import { signIn, signOut } from "@/auth";
 import request from "@/util/request";
 
 export const requestApiRegisterUser = async (data: IRequestApiRegisterUser) => {
@@ -71,6 +72,45 @@ export const requestApiLoginUser = async (data: IReqLogin) => {
             data
         );
         return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};
+
+export async function authenticate(email: string, password: string) {
+    try {
+        const result = await signIn("credentials", {
+            email: email,
+            password: password,
+            redirect: false,
+        });
+
+        return result;
+    } catch (error) {
+        // console.log(error);
+        if ((error as any).name === "InvalidEmailPasswordError") {
+            return {
+                error: (error as any).type,
+                code: 1,
+            };
+        } else if ((error as any).name === "InactiveAccountError") {
+            return {
+                error: (error as any).type,
+                code: 2,
+            };
+        } else {
+            return {
+                error: "Có lỗi đã xảy ra",
+                code: 0,
+            };
+        }
+    }
+}
+
+export const requestApiLogoutUser = async () => {
+    try {
+        await signOut({ redirect: false });
     } catch (error) {
         // console.log(error);
         throw error;

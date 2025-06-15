@@ -30,4 +30,13 @@ interface IReqLogin {
     email: string;
     password: string;
 }
-interface IResLogin extends IResponseMessage {}
+interface IResLogin {
+    user: {
+        id: number;
+        email: string;
+        displayName: string;
+        username: string | null;
+    };
+    access_token: string;
+    message: string;
+}

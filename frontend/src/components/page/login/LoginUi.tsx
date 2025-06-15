@@ -1,29 +1,35 @@
 "use client";
 
-import { requestApiLoginUser } from "@/util/actions";
-import { Button, Form, Input, message } from "antd";
+import { authenticate, requestApiLoginUser } from "@/util/actions";
+import { Button, Form, Input, message, notification } from "antd";
 import { useForm } from "antd/es/form/Form";
+import { useRouter } from "next/navigation";
 import { Rule } from "rc-field-form/lib/interface";
 import { useState } from "react";
 
 export default function LoginUi() {
     const [form] = useForm();
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const onFinish = async (values: any) => {
         setIsLoading(true);
-
+        const { email, password } = values;
         try {
-            const result = await requestApiLoginUser(values);
-            if (result.statusCode === 201) {
-                message.success(result.data?.message);
-                // setIsModalOpen(true);
-            } else if (result.statusCode === 400) {
-                message.warning(result.message);
-            } else if (result.statusCode === 401) {
-                message.warning(result.message);
+            const result = await authenticate(email, password);
+            if (result?.error) {
+                //error
+                if (result?.code === 1) {
+                    // setIsModalOpen(true);
+                    // setUserEmail(username);
+                    message.warning(result?.error);
+                } else if (result?.code === 2) {
+                    message.warning(result?.error);
+                } else {
+                    message.warning(result?.error);
+                }
             } else {
-                message.error(result.message);
+                router.push("/");
             }
         } catch (error) {
             message.error("Có lỗi xảy ra");
