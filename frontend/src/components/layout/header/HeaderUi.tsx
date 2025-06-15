@@ -175,7 +175,7 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
                                                 icon={<UserOutlined />}
                                             />
                                             <span>
-                                                {session.user?.displayName}
+                                                {session?.user?.displayName}
                                             </span>
                                             <DownOutlined
                                                 style={{ fontSize: 12 }}
