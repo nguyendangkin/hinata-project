@@ -21,7 +21,6 @@ export default function RegisterUi() {
         // Loại bỏ trường confirmPassword trước khi gửi dữ liệu
         const { confirmPassword, ...submitData } = values;
         setUserEmail(submitData.email);
-        console.log(submitData);
 
         try {
             const result = await requestApiRegisterUser(submitData);

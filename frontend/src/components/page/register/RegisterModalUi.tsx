@@ -89,7 +89,7 @@ export default function RegisterModalUi({
         setIsLoading(true);
         try {
             const result = await requestApiVerifyCodeUser(value);
-            console.log(result);
+
             if (result.statusCode === 201) {
                 message.success(result.data?.message);
                 setCurrentStep(currentStep + 1);

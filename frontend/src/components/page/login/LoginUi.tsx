@@ -18,7 +18,6 @@ export default function LoginUi() {
         try {
             const result = await authenticate(email, password);
             if (result?.error) {
-                //error
                 if (result?.code === 1) {
                     // setIsModalOpen(true);
                     // setUserEmail(username);
