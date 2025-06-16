@@ -7,6 +7,8 @@ import {
   SendVerifyCodeUserDataDto,
   VerifyCodeUserDataDto,
 } from 'src/module/auth/dto/create-auth.dto';
+import { HttpService } from '@nestjs/axios';
+
 import { User } from 'src/module/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -16,6 +18,9 @@ import {
   generateActivationCode,
   hashPasswordUtil,
 } from '../../utils/mainUtils';
+import { firstValueFrom } from 'rxjs';
+import * as qs from 'qs';
+import { error } from 'console';
 
 @Injectable()
 export class UserService {
@@ -23,6 +28,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly mailerService: MailerService,
+    private readonly httpService: HttpService,
   ) {}
 
   async sendMailService(user: User, activationCode: string) {
@@ -212,6 +218,37 @@ export class UserService {
       };
     } catch (error) {
       // console.log(error);
+      throw error;
+    }
+  }
+
+  async getUidFacebookLink(
+    link: string,
+  ): Promise<{ uid: string; message: string }> {
+    const encodedUrl = encodeURIComponent(link);
+
+    const res = await firstValueFrom(
+      this.httpService.get(
+        `https://ffb.vn/api/tool/get-id-fb?idfb=${encodedUrl}`,
+        {
+          headers: {
+            'User-Agent': 'Mozilla/5.0',
+            Accept: 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest',
+            Referer: 'https://ffb.vn/get-uid',
+          },
+          responseType: 'text',
+        },
+      ),
+    );
+
+    try {
+      const data = JSON.parse(res.data);
+      return {
+        uid: data.id,
+        message: data.msg || 'Thành công',
+      };
+    } catch (error) {
       throw error;
     }
   }
