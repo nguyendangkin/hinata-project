@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { Button, Modal, Steps, Form, Input, message } from "antd";
 import {
@@ -8,29 +9,30 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import {
+    authenticate,
     requestApiResendVerifyCodeUser,
+    requestApiSendVerifyCodeUser,
     requestApiVerifyCodeUser,
 } from "@/util/actions";
 import { useRouter } from "next/navigation";
 
 interface RegisterModalUiProps {
     userEmail: string;
+    userPassword: string;
     isModalOpen: boolean;
-    currentStep: number;
     setIsModalOpen: (value: boolean) => void;
-    setCurrentStep: (value: number) => void;
 }
 
-export default function RegisterModalUi({
+export default function LoginModalUi({
     userEmail,
+    userPassword,
     isModalOpen,
-    currentStep,
     setIsModalOpen,
-    setCurrentStep,
 }: RegisterModalUiProps) {
     const [countdown, setCountdown] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingResendEmail, setIsLoadingResendEmail] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0); // cái này có thể chuyển qua bên modal cũng được
 
     const router = useRouter();
 
@@ -46,6 +48,29 @@ export default function RegisterModalUi({
 
         return () => clearInterval(timer);
     }, [countdown]);
+
+    // gửi email lần đầu khi modal mở
+    useEffect(() => {
+        if (isModalOpen) {
+            const handleSendCode = async () => {
+                try {
+                    const result = await requestApiSendVerifyCodeUser({
+                        email: userEmail,
+                    });
+                    if (result.statusCode === 201) {
+                        message.success(result.data?.message);
+                    } else if (result.statusCode === 400) {
+                        message.warning(result.message);
+                    } else {
+                        message.error(result.message);
+                    }
+                } catch (error) {
+                    message.error("Có lỗi xảy ra");
+                }
+            };
+            handleSendCode();
+        }
+    }, [isModalOpen, userEmail]);
 
     const handleResendCode = async () => {
         setIsLoadingResendEmail(true);
@@ -68,9 +93,31 @@ export default function RegisterModalUi({
         }
     };
 
-    const handleDone = () => {
+    const handleDone = async () => {
         setIsModalOpen(false);
-        router.push("/login");
+        try {
+            const result = await authenticate(userEmail, userPassword);
+            if (result?.error) {
+                if (result?.code === 1) {
+                    // sai email hoặc mật khẩu
+                    message.warning(result?.error);
+                } else if (result?.code === 2) {
+                    // tài khoản chưa được kích hoạt
+                    message.warning(result?.error);
+                    setIsModalOpen(true);
+                } else {
+                    message.warning(result?.error);
+                }
+            } else {
+                message.success("Đăng nhập thành công");
+                router.push("/");
+                router.refresh();
+            }
+        } catch (error) {
+            message.error("Có lỗi xảy ra");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleOk = () => {
@@ -100,11 +147,10 @@ export default function RegisterModalUi({
             setIsLoading(false);
         }
     };
-
     return (
         <>
             <Modal
-                title="Xác thực tài khoản"
+                title="Xác thực lại tài khoản"
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}

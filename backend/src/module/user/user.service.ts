@@ -157,7 +157,7 @@ export class UserService {
 
       return {
         id: resultUser.id,
-        message: 'Đã gửi lại mã xác nhận thành công',
+        message: 'Gửi lại mã thành công, vui lòng kiểm tra Email',
       };
     } catch (error) {
       // console.log(error);
@@ -208,7 +208,7 @@ export class UserService {
 
       return {
         id: resultUser.id,
-        message: 'Đã gửi lại mã xác nhận thành công',
+        message: 'Vui lòng kiểm tra email để nhận mã',
       };
     } catch (error) {
       // console.log(error);

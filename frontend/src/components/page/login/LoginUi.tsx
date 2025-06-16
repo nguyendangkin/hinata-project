@@ -1,5 +1,6 @@
 "use client";
 
+import LoginModalUi from "@/components/page/login/LoginModalUi";
 import { authenticate, requestApiLoginUser } from "@/util/actions";
 import { Button, Form, Input, message, notification } from "antd";
 import { useForm } from "antd/es/form/Form";
@@ -10,20 +11,26 @@ import { useState } from "react";
 export default function LoginUi() {
     const [form] = useForm();
     const [isLoading, setIsLoading] = useState(false);
+    const [userEmail, setUserEmail] = useState("");
+    const [userPassword, setUserPassword] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const router = useRouter();
 
     const onFinish = async (values: any) => {
         setIsLoading(true);
         const { email, password } = values;
+        setUserEmail(email);
+        setUserPassword(password);
+
         try {
             const result = await authenticate(email, password);
             if (result?.error) {
                 if (result?.code === 1) {
-                    // setIsModalOpen(true);
-                    // setUserEmail(username);
+                    // sai email hoặc mật khẩu
                     message.warning(result?.error);
                 } else if (result?.code === 2) {
-                    message.warning(result?.error);
+                    // tài khoản chưa được kích hoạt
+                    setIsModalOpen(true);
                 } else {
                     message.warning(result?.error);
                 }
@@ -45,59 +52,67 @@ export default function LoginUi() {
     ];
 
     return (
-        <div
-            style={{
-                maxWidth: 800,
-                margin: "24px auto",
-                padding: 24,
-                background: "#fff",
-                borderRadius: 8,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            }}
-        >
-            <h1
+        <>
+            <div
                 style={{
-                    fontSize: 24,
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    marginBottom: 24,
+                    maxWidth: 800,
+                    margin: "24px auto",
+                    padding: 24,
+                    background: "#fff",
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 }}
             >
-                Đăng nhập tài khoản
-            </h1>
-
-            <Form
-                form={form}
-                name="login"
-                layout="vertical"
-                onFinish={onFinish}
-                autoComplete="off"
-            >
-                <Form.Item label="Email" name="email" rules={requiredRule}>
-                    <Input placeholder="Nhập email của bạn" />
-                </Form.Item>
-
-                <Form.Item
-                    label="Mật khẩu"
-                    name="password"
-                    rules={requiredRule}
+                <h1
+                    style={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        marginBottom: 24,
+                    }}
                 >
-                    <Input.Password placeholder="Nhập mật khẩu" />
-                </Form.Item>
+                    Đăng nhập tài khoản
+                </h1>
 
-                <Form.Item>
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        className="w-full"
-                        size="large"
-                        loading={isLoading}
-                        disabled={isLoading}
+                <Form
+                    form={form}
+                    name="login"
+                    layout="vertical"
+                    onFinish={onFinish}
+                    autoComplete="off"
+                >
+                    <Form.Item label="Email" name="email" rules={requiredRule}>
+                        <Input placeholder="Nhập email của bạn" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Mật khẩu"
+                        name="password"
+                        rules={requiredRule}
                     >
-                        Đăng nhập
-                    </Button>
-                </Form.Item>
-            </Form>
-        </div>
+                        <Input.Password placeholder="Nhập mật khẩu" />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            className="w-full"
+                            size="large"
+                            loading={isLoading}
+                            disabled={isLoading}
+                        >
+                            Đăng nhập
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </div>
+            <LoginModalUi
+                userEmail={userEmail}
+                userPassword={userPassword}
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+            />
+        </>
     );
 }

@@ -12,13 +12,13 @@ export default function RegisterUi() {
     const [isLoading, setIsLoading] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(0); // cái này có thể chuyển qua bên modal cũng được
 
     const [userEmail, setUserEmail] = useState("");
 
     const onFinish = async (values: any) => {
         setIsLoading(true);
-        // Loại bỏ trường confirmPassword trước khi gửi dữ liệu
+        // loại bỏ trường confirmPassword trước khi gửi dữ liệu
         const { confirmPassword, ...submitData } = values;
         setUserEmail(submitData.email);
 
