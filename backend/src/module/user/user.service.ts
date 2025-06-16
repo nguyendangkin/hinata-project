@@ -225,24 +225,24 @@ export class UserService {
   async getUidFacebookLink(
     link: string,
   ): Promise<{ uid: string; message: string }> {
-    const encodedUrl = encodeURIComponent(link);
-
-    const res = await firstValueFrom(
-      this.httpService.get(
-        `https://ffb.vn/api/tool/get-id-fb?idfb=${encodedUrl}`,
-        {
-          headers: {
-            'User-Agent': 'Mozilla/5.0',
-            Accept: 'application/json, text/javascript, */*; q=0.01',
-            'X-Requested-With': 'XMLHttpRequest',
-            Referer: 'https://ffb.vn/get-uid',
-          },
-          responseType: 'text',
-        },
-      ),
-    );
-
     try {
+      const encodedUrl = encodeURIComponent(link);
+
+      const res = await firstValueFrom(
+        this.httpService.get(
+          `https://ffb.vn/api/tool/get-id-fb?idfb=${encodedUrl}`,
+          {
+            headers: {
+              'User-Agent': 'Mozilla/5.0',
+              Accept: 'application/json, text/javascript, */*; q=0.01',
+              'X-Requested-With': 'XMLHttpRequest',
+              Referer: 'https://ffb.vn/get-uid',
+            },
+            responseType: 'text',
+          },
+        ),
+      );
+
       const data = JSON.parse(res.data);
       return {
         uid: data.id,
