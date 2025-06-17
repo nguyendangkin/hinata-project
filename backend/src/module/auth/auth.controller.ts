@@ -11,9 +11,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
+  ChangePasswordUserDto,
   RegisterUserDataDto,
   ResendVerifyCodeUserDataDto,
+  SendVerifyCodeChangePasswordUserDataDto,
   SendVerifyCodeUserDataDto,
+  VerifyCodeChangePasswordUserDataDto,
   VerifyCodeUserDataDto,
 } from 'src/module/auth/dto/create-auth.dto';
 import { LocalAuthGuard } from 'src/module/auth/passport/local-auth.guard';
@@ -30,9 +33,11 @@ export class AuthController {
   }
 
   @Public()
-  @Post('verify-code')
-  async verifyCodeUser(@Body() verifyCodeUserData: VerifyCodeUserDataDto) {
-    return await this.authService.handleVerifyCodeUser(verifyCodeUserData);
+  @Post('send-verify-code')
+  async SendVerifyCodeUserData(
+    @Body() sendVerifyCodeUserData: SendVerifyCodeUserDataDto,
+  ) {
+    return this.authService.handleSendVerifyCodeUser(sendVerifyCodeUserData);
   }
 
   @Public()
@@ -43,6 +48,12 @@ export class AuthController {
     return await this.authService.handleResendVerifyCodeUser(
       resendVerifyCodeUserData,
     );
+  }
+
+  @Public()
+  @Post('verify-code')
+  async verifyCodeUser(@Body() verifyCodeUserData: VerifyCodeUserDataDto) {
+    return await this.authService.handleVerifyCodeUser(verifyCodeUserData);
   }
 
   @Public()
@@ -58,10 +69,33 @@ export class AuthController {
   }
 
   @Public()
-  @Post('send-verify-code')
-  async SendVerifyCodeUserData(
-    @Body() sendVerifyCodeUserData: SendVerifyCodeUserDataDto,
+  @Post('send-verify-code-change-password')
+  async handleSendVerifyCodeChangePasswordUser(
+    @Body()
+    sendVerifyCodeChangePasswordUser: SendVerifyCodeChangePasswordUserDataDto,
   ) {
-    return this.authService.handleSendVerifyCodeUser(sendVerifyCodeUserData);
+    return this.authService.handleSendVerifyCodeChangePasswordUser(
+      sendVerifyCodeChangePasswordUser,
+    );
+  }
+
+  @Public()
+  @Post('verify-code-change-password')
+  async verifyCodeChangePasswordUser(
+    @Body()
+    verifyCodeChangePasswordUserData: VerifyCodeChangePasswordUserDataDto,
+  ) {
+    return await this.authService.handleVerifyCodeChangePasswordUser(
+      verifyCodeChangePasswordUserData,
+    );
+  }
+
+  @Public()
+  @Post('change-password')
+  async changePasswordUser(
+    @Body()
+    data: ChangePasswordUserDto,
+  ) {
+    return await this.authService.handleChangePasswordUser(data);
   }
 }

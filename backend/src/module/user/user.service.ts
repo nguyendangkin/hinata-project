@@ -2,13 +2,16 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  ChangePasswordUserDto,
   RegisterUserDataDto,
   ResendVerifyCodeUserDataDto,
+  SendVerifyCodeChangePasswordUserDataDto,
   SendVerifyCodeUserDataDto,
+  VerifyCodeChangePasswordUserDataDto,
   VerifyCodeUserDataDto,
 } from 'src/module/auth/dto/create-auth.dto';
 import { HttpService } from '@nestjs/axios';
-
+import { v4 as uuidv4 } from 'uuid';
 import { User } from 'src/module/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -129,6 +132,48 @@ export class UserService {
     }
   }
 
+  async handleSendVerifyCodeUser(
+    sendVerifyCodeUserData: SendVerifyCodeUserDataDto,
+  ) {
+    try {
+      // tìm lấy người dùng qua email
+      const email = sendVerifyCodeUserData.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // check đã kích hoạt?
+      if (user.isActive) {
+        throw new BadRequestException('Tài khoản người dùng đã được kích hoạt');
+      }
+
+      // tạo code 6 chữ số
+      const activationCode = generateActivationCode();
+
+      // update and save
+      user.activationCode = activationCode;
+      user.codeExpired = dayjs().add(5, 'minutes').toDate();
+      const resultUser = await this.userRepository.save(user);
+
+      // gửi email
+      await this.sendMailService(resultUser, activationCode);
+
+      return {
+        id: resultUser.id,
+        message: 'Vui lòng kiểm tra email để nhận mã',
+      };
+    } catch (error) {
+      // console.log(error);
+      throw error;
+    }
+  }
+
   async handleResendVerifyCodeUser(
     resendVerifyCodeUserData: ResendVerifyCodeUserDataDto,
   ) {
@@ -180,48 +225,6 @@ export class UserService {
     }
   }
 
-  async handleSendVerifyCodeUser(
-    sendVerifyCodeUserData: SendVerifyCodeUserDataDto,
-  ) {
-    try {
-      // tìm lấy người dùng qua email
-      const email = sendVerifyCodeUserData.email;
-      const user = await this.userRepository.findOne({
-        where: { email },
-      });
-
-      if (!user) {
-        throw new BadRequestException(
-          'Email tài khoản người dùng không tồn tại',
-        );
-      }
-
-      // check đã kích hoạt?
-      if (user.isActive) {
-        throw new BadRequestException('Tài khoản người dùng đã được kích hoạt');
-      }
-
-      // tạo code 6 chữ số
-      const activationCode = generateActivationCode();
-
-      // update and save
-      user.activationCode = activationCode;
-      user.codeExpired = dayjs().add(5, 'minutes').toDate();
-      const resultUser = await this.userRepository.save(user);
-
-      // gửi email
-      await this.sendMailService(resultUser, activationCode);
-
-      return {
-        id: resultUser.id,
-        message: 'Vui lòng kiểm tra email để nhận mã',
-      };
-    } catch (error) {
-      // console.log(error);
-      throw error;
-    }
-  }
-
   async getUidFacebookLink(
     link: string,
   ): Promise<{ uid: string; message: string }> {
@@ -247,6 +250,149 @@ export class UserService {
       return {
         uid: data.id,
         message: data.msg || 'Thành công',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async handleSendVerifyCodeChangePasswordUser(
+    sendVerifyCodeChangePasswordUserData: SendVerifyCodeChangePasswordUserDataDto,
+  ) {
+    try {
+      // tìm lấy người dùng qua email
+      const email = sendVerifyCodeChangePasswordUserData.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // check đã kích hoạt?
+      if (user.isActive === false) {
+        throw new BadRequestException(
+          'Tài khoản người dùng chưa được kích hoạt',
+        );
+      }
+
+      // tạo code 6 chữ số
+      const activationCode = generateActivationCode();
+
+      // update and save
+      user.activationCode = activationCode;
+      user.codeExpired = dayjs().add(5, 'minutes').toDate();
+      const resultUser = await this.userRepository.save(user);
+
+      // gửi email
+      await this.sendMailService(resultUser, activationCode);
+
+      return {
+        id: resultUser.id,
+        message: 'Vui lòng kiểm tra email để nhận mã',
+      };
+    } catch (error) {
+      // console.log(error);
+      throw error;
+    }
+  }
+
+  async handleVerifyCodeChangePasswordUser(
+    verifyCodeChangePasswordUserData: VerifyCodeChangePasswordUserDataDto,
+  ) {
+    try {
+      // tìm user bởi email
+      const email = verifyCodeChangePasswordUserData.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // check đã kích hoạt chưa?
+      if (user.isActive === false) {
+        throw new BadRequestException(
+          'Tài khoản người dùng chưa được kích hoạt',
+        );
+      }
+
+      // check hết hạn code
+      const isCodeExpired = dayjs().isAfter(user.codeExpired);
+      if (isCodeExpired) {
+        throw new BadRequestException('Mã kích hoạt đã hết hạn');
+      }
+
+      // check mã code
+      if (
+        user.activationCode !== verifyCodeChangePasswordUserData.activationCode
+      ) {
+        throw new BadRequestException('Mã kích hoạt không chính xác');
+      }
+
+      // update và save
+      user.activationCode = null;
+      user.resetPasswordToken = uuidv4();
+      const resultUser = await this.userRepository.save(user);
+
+      return {
+        id: resultUser.id,
+        resetPasswordToken: resultUser.resetPasswordToken,
+        message: 'Xác thực thành công',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async handleChangePasswordUser(data: ChangePasswordUserDto) {
+    try {
+      // tìm user bởi email
+      const email = data.email;
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // check đã kích hoạt chưa? Chưa thì sao đổi được mật khẩu
+      if (user.isActive === false) {
+        throw new BadRequestException(
+          'Tài khoản người dùng chưa được kích hoạt',
+        );
+      }
+
+      // check hết hạn code // cho phép thời gian đổi mật khẩu tổng hết là 5 phút, kể từ bước gửi mã
+      const isCodeExpired = dayjs().isAfter(user.codeExpired);
+      if (isCodeExpired) {
+        throw new BadRequestException('Mã kích hoạt đã hết hạn');
+      }
+
+      // check mã token
+      if (user.resetPasswordToken !== data.resetPasswordToken) {
+        throw new BadRequestException('Mã kích hoạt không chính xác');
+      }
+
+      // update và save
+      const hashPassword = await hashPasswordUtil(data.password);
+
+      user.resetPasswordToken = null;
+      user.password = hashPassword;
+      const resultUser = await this.userRepository.save(user);
+
+      return {
+        id: resultUser.id,
+        message: 'Đổi mật khẩu thành công',
       };
     } catch (error) {
       throw error;

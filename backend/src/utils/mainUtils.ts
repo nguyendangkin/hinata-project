@@ -4,12 +4,13 @@ export const generateActivationCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-export const hashPasswordUtil = async (password: string) => {
+export const hashPasswordUtil = async (password: string): Promise<string> => {
   const saltOrRounds = 10;
   try {
     return await bcrypt.hash(password, saltOrRounds);
   } catch (error) {
-    console.log(error);
+    throw error;
+    // console.log(error);
   }
 };
 
@@ -20,6 +21,7 @@ export const comparePasswordUtil = async (
   try {
     return await bcrypt.compare(password, hashPassword);
   } catch (error) {
-    console.log(error);
+    throw error;
+    // console.log(error);
   }
 };

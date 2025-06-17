@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ChangePasswordUserDto,
   RegisterUserDataDto,
   ResendVerifyCodeUserDataDto,
+  SendVerifyCodeChangePasswordUserDataDto,
   SendVerifyCodeUserDataDto,
+  VerifyCodeChangePasswordUserDataDto,
   VerifyCodeUserDataDto,
 } from 'src/module/auth/dto/create-auth.dto';
 import { UserService } from 'src/module/user/user.service';
@@ -70,5 +73,25 @@ export class AuthService {
     sendVerifyCodeUserData: SendVerifyCodeUserDataDto,
   ) {
     return this.userService.handleSendVerifyCodeUser(sendVerifyCodeUserData);
+  }
+
+  async handleSendVerifyCodeChangePasswordUser(
+    sendVerifyCodeChangePasswordUserData: SendVerifyCodeChangePasswordUserDataDto,
+  ) {
+    return await this.userService.handleSendVerifyCodeChangePasswordUser(
+      sendVerifyCodeChangePasswordUserData,
+    );
+  }
+
+  async handleVerifyCodeChangePasswordUser(
+    verifyCodeChangePasswordUserData: VerifyCodeChangePasswordUserDataDto,
+  ) {
+    return await this.userService.handleVerifyCodeChangePasswordUser(
+      verifyCodeChangePasswordUserData,
+    );
+  }
+
+  async handleChangePasswordUser(data: ChangePasswordUserDto) {
+    return await this.userService.handleChangePasswordUser(data);
   }
 }

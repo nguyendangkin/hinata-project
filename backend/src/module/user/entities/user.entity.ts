@@ -24,6 +24,9 @@ export class User {
   isActive: boolean;
 
   @Column({ type: 'varchar', nullable: true })
+  resetPasswordToken: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
   activationCode: string | null;
 
   @Column({ type: 'timestamp', nullable: true })

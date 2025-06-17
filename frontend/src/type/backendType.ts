@@ -41,3 +41,10 @@ interface IResLogin {
     access_token: string;
     message: string;
 }
+
+interface IResChangePassword {
+    id: number;
+    resetPasswordToken: string;
+    message: string;
+}
+interface IReqChangePassword extends IResponseMessage {}
