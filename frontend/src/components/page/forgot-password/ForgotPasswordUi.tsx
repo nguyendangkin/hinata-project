@@ -1,7 +1,12 @@
 "use client";
 
+import ForgotPasswordModalUi from "@/components/page/forgot-password/ForgotPasswordModalUi";
 import LoginModalUi from "@/components/page/login/LoginModalUi";
-import { authenticate, requestApiLoginUser } from "@/util/actions";
+import {
+    authenticate,
+    reqGetVerifyCodeChangePassword,
+    requestApiLoginUser,
+} from "@/util/actions";
 import { Button, Form, Input, message, notification } from "antd";
 import { useForm } from "antd/es/form/Form";
 import Link from "next/link";
@@ -9,47 +14,39 @@ import { useRouter } from "next/navigation";
 import { Rule } from "rc-field-form/lib/interface";
 import { useState } from "react";
 
-export default function LoginUi() {
+export default function ForgotPasswordUi() {
     const [form] = useForm();
     const [isLoading, setIsLoading] = useState(false);
     const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const router = useRouter();
 
     const onFinish = async (values: any) => {
         setIsLoading(true);
-        const { email, password } = values;
+        const { email } = values;
         setUserEmail(email);
-        setUserPassword(password);
 
         try {
-            const result = await authenticate(email, password);
-            if (result?.error) {
-                if (result?.code === 1) {
-                    // sai email hoặc mật khẩu
-                    message.warning(result?.error);
-                } else if (result?.code === 2) {
-                    // tài khoản chưa được kích hoạt
-                    setIsModalOpen(true);
-                } else {
-                    message.warning(result?.error);
-                }
+            const result = await reqGetVerifyCodeChangePassword(values);
+            if (result.statusCode === 201) {
+                message.success(result.data?.message);
+                setIsModalOpen(true);
+            } else if (result.statusCode === 400) {
+                message.warning(result.message);
             } else {
-                message.success("Đăng nhập thành công");
-                router.push("/");
-                router.refresh();
+                message.error(result.message);
             }
         } catch (error) {
-            message.error("Có lỗi xảy ra");
+            message.error("Có lỗi xảy ra khi gửi yêu cầu");
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Rules validation đơn giản chỉ kiểm tra không để trống
-    const requiredRule: Rule[] = [
-        { required: true, message: "Trường này không được để trống" },
+    // Rules validation cho email
+    const emailRules: Rule[] = [
+        { required: true, message: "Vui lòng nhập email" },
+        { type: "email", message: "Email không đúng định dạng" },
     ];
 
     return (
@@ -72,26 +69,18 @@ export default function LoginUi() {
                         marginBottom: 24,
                     }}
                 >
-                    Đăng nhập tài khoản
+                    Lấy lại mật khẩu
                 </h1>
 
                 <Form
                     form={form}
-                    name="login"
+                    name="forgotPassword"
                     layout="vertical"
                     onFinish={onFinish}
                     autoComplete="off"
                 >
-                    <Form.Item label="Email" name="email" rules={requiredRule}>
+                    <Form.Item label="Email" name="email" rules={emailRules}>
                         <Input placeholder="Nhập email của bạn" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Mật khẩu"
-                        name="password"
-                        rules={requiredRule}
-                    >
-                        <Input.Password placeholder="Nhập mật khẩu" />
                     </Form.Item>
 
                     <Form.Item>
@@ -103,7 +92,7 @@ export default function LoginUi() {
                             loading={isLoading}
                             disabled={isLoading}
                         >
-                            Đăng nhập
+                            Gửi yêu cầu
                         </Button>
                     </Form.Item>
                     <div style={{ textAlign: "center", marginTop: 16 }}>
@@ -111,19 +100,15 @@ export default function LoginUi() {
                             Chưa có tài khoản? <strong>Đăng ký ngay!</strong>
                         </Link>
                         <br />
-                        <Link
-                            href="/forgot-password"
-                            style={{ marginRight: 16 }}
-                        >
-                            Quên mật khẩu?{" "}
-                            <strong>Lấy lại mật khẩu ngay!</strong>
+                        <Link href="/login" style={{ marginRight: 16 }}>
+                            Có tài khoản rồi?{" "}
+                            <strong>Đi đăng nhập ngay!</strong>
                         </Link>
                     </div>
                 </Form>
             </div>
-            <LoginModalUi
+            <ForgotPasswordModalUi
                 userEmail={userEmail}
-                userPassword={userPassword}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
             />

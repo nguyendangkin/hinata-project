@@ -387,6 +387,7 @@ export class UserService {
       const hashPassword = await hashPasswordUtil(data.password);
 
       user.resetPasswordToken = null;
+      user.codeExpired = null;
       user.password = hashPassword;
       const resultUser = await this.userRepository.save(user);
 

@@ -39,6 +39,12 @@ export class SendVerifyCodeUserDataDto {
   email: string;
 }
 
+export class SendVerifyCodeChangePasswordUserDataDto {
+  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  email: string;
+}
+
 export class VerifyCodeChangePasswordUserDataDto {
   @IsNotEmpty({ message: 'Email không được để trống' })
   @IsEmail({}, { message: 'Email không đúng định dạng' })
@@ -46,12 +52,6 @@ export class VerifyCodeChangePasswordUserDataDto {
 
   @IsNotEmpty({ message: 'Mã kích hoạt không được để trống' })
   activationCode: string;
-}
-
-export class SendVerifyCodeChangePasswordUserDataDto {
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  @IsEmail({}, { message: 'Email không đúng định dạng' })
-  email: string;
 }
 
 export class ChangePasswordUserDto {

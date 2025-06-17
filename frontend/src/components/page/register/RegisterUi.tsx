@@ -5,6 +5,7 @@ import { requestApiRegisterUser } from "@/util/actions";
 import { Button, Form, Input, message } from "antd";
 import { Rule } from "antd/es/form";
 import { useForm } from "antd/es/form/Form";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function RegisterUi() {
@@ -139,6 +140,15 @@ export default function RegisterUi() {
                         Đăng ký
                     </Button>
                 </Form.Item>
+                <div style={{ textAlign: "center", marginTop: 16 }}>
+                    <Link href="/register">
+                        Có tài khoản rồi? <strong>Đăng nhập ngay!</strong>
+                    </Link>
+                    <br />
+                    <Link href="/forgot-password" style={{ marginRight: 16 }}>
+                        Quên mật khẩu? <strong>Lấy lại mật khẩu ngay!</strong>
+                    </Link>
+                </div>
             </Form>
             <RegisterModalUi
                 userEmail={userEmail}

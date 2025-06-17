@@ -115,3 +115,46 @@ export const requestApiLogoutUser = async () => {
         throw error;
     }
 };
+
+export const reqGetVerifyCodeChangePassword = async (
+    data: IReqGetVerifyCodeChangePassword
+) => {
+    try {
+        const result = await request.post<IResGetVerifyCodeChangePassword>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/send-verify-code-change-password`,
+            data
+        );
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};
+
+export const reqVerifyCodeChangePassword = async (
+    data: IReqVerifyCodeChangePassword
+) => {
+    try {
+        const result = await request.post<IResVerifyCodeChangePassword>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/verify-code-change-password`,
+            data
+        );
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};
+
+export const reqChangePassword = async (data: IReqChangePassword) => {
+    try {
+        const result = await request.post<IResChangePassword>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/change-password`,
+            data
+        );
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};

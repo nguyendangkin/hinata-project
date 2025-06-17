@@ -42,9 +42,24 @@ interface IResLogin {
     message: string;
 }
 
-interface IResChangePassword {
+interface IReqGetVerifyCodeChangePassword {
+    email: string;
+}
+interface IResGetVerifyCodeChangePassword extends IResponseMessage {}
+
+interface IReqVerifyCodeChangePassword {
+    email: string;
+    activationCode: string;
+}
+interface IResVerifyCodeChangePassword {
     id: number;
     resetPasswordToken: string;
     message: string;
 }
-interface IReqChangePassword extends IResponseMessage {}
+
+interface IReqChangePassword {
+    id: number;
+    resetPasswordToken: string;
+    message: string;
+}
+interface IResChangePassword extends IResponseMessage {}
