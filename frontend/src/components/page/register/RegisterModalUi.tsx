@@ -115,7 +115,7 @@ export default function RegisterModalUi({
                     current={currentStep}
                     items={[
                         {
-                            title: "Verification",
+                            title: "Xác thực",
                             status:
                                 currentStep > 0
                                     ? "finish"
@@ -125,7 +125,7 @@ export default function RegisterModalUi({
                             icon: <SolutionOutlined />,
                         },
                         {
-                            title: "Done",
+                            title: "Xong",
                             status: currentStep === 1 ? "finish" : "wait",
                             icon: <SmileOutlined />,
                         },

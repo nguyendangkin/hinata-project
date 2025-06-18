@@ -161,7 +161,7 @@ export default function LoginModalUi({
                     current={currentStep}
                     items={[
                         {
-                            title: "Verification",
+                            title: "Xác thực",
                             status:
                                 currentStep > 0
                                     ? "finish"
@@ -171,7 +171,7 @@ export default function LoginModalUi({
                             icon: <SolutionOutlined />,
                         },
                         {
-                            title: "Done",
+                            title: "Xong",
                             status: currentStep === 1 ? "finish" : "wait",
                             icon: <SmileOutlined />,
                         },

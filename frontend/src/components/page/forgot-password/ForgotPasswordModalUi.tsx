@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Modal, Steps, Form, Input, message } from "antd";
 import {
     LoadingOutlined,
+    LockOutlined,
     SmileOutlined,
     SolutionOutlined,
     UserOutlined,
@@ -170,7 +171,7 @@ export default function ForgotPasswordModalUi({
                     current={currentStep}
                     items={[
                         {
-                            title: "Verification",
+                            title: "Xác thực",
                             status:
                                 currentStep > 0
                                     ? "finish"
@@ -180,8 +181,18 @@ export default function ForgotPasswordModalUi({
                             icon: <SolutionOutlined />,
                         },
                         {
-                            title: "Done",
-                            status: currentStep === 1 ? "finish" : "wait",
+                            title: "Đổi mật khẩu",
+                            status:
+                                currentStep > 1
+                                    ? "finish"
+                                    : currentStep === 1
+                                    ? "process"
+                                    : "wait",
+                            icon: <LockOutlined />,
+                        },
+                        {
+                            title: "Xong",
+                            status: currentStep === 2 ? "finish" : "wait",
                             icon: <SmileOutlined />,
                         },
                     ]}
