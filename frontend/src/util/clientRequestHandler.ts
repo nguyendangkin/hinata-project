@@ -14,7 +14,11 @@ export async function handleApiCall<T>(
     if (!result.success && result.statusCode === 403) {
         message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
         await requestApiLogoutUser();
-        window.location.href = "/login";
+
+        // Chờ 3 giây rồi mới redirect
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 3000);
     }
 
     return result;
