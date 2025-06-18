@@ -63,11 +63,6 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
   @Public()
   @Post('send-verify-code-change-password')
   async handleSendVerifyCodeChangePasswordUser(
