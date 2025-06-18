@@ -16,7 +16,15 @@ export class UserController {
 
   @Public()
   @Post('link')
-  async getId(@Body('link') link: string) {
+  async getUidFacebookLink(@Body('link') link: string) {
     return await this.userService.getUidFacebookLink(link);
+  }
+
+  @Get('profile')
+  async getProfileUser() {
+    return {
+      id: 1,
+      message: 'Xin chào',
+    };
   }
 }

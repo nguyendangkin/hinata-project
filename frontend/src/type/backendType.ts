@@ -63,3 +63,6 @@ interface IReqChangePassword {
     message: string;
 }
 interface IResChangePassword extends IResponseMessage {}
+
+interface IReqGetProfileUser {}
+interface IResGetProfileUser extends IResponseMessage {}

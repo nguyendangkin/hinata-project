@@ -1,5 +1,6 @@
 import {
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -28,8 +29,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user) {
       throw (
         err ||
-        new UnauthorizedException(
-          'Access Token không hợp lệ hoặc không có ở header',
+        new ForbiddenException(
+          'Access Token không còn hợp lệ hoặc không có ở header',
         )
       );
     }

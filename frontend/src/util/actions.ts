@@ -158,3 +158,15 @@ export const reqChangePassword = async (data: IReqChangePassword) => {
         throw error;
     }
 };
+
+export const reqGetProfileUser = async (data: IReqGetProfileUser) => {
+    try {
+        const result = await request.get<IResGetProfileUser>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/profile`
+        );
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};

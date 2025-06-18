@@ -1,4 +1,5 @@
 // utils/request.ts
+import { auth } from "@/auth";
 import queryString from "query-string";
 
 export interface IRequest {
@@ -10,13 +11,13 @@ export interface IRequest {
     headers?: Record<string, string>;
     nextOption?: RequestInit;
     cache?: RequestCache;
-    // Next.js 15 - unstable_cache compatibility
     next?: {
         revalidate?: number | false;
         tags?: string[];
     };
     isFile?: boolean;
-    timeout?: number; // timeout in milliseconds
+    timeout?: number;
+    skipAuth?: boolean; // Option to skip auto-token for public endpoints
 }
 
 export interface ApiResponse<T = any> {
@@ -27,6 +28,17 @@ export interface ApiResponse<T = any> {
     success?: boolean;
 }
 
+// Function to get token from session
+const getAuthToken = async (): Promise<string | null> => {
+    try {
+        const session = await auth();
+        return session?.user.access_token || null;
+    } catch (error) {
+        console.warn("Không lấy được token:", error);
+        return null;
+    }
+};
+
 const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
     let {
         url,
@@ -36,27 +48,35 @@ const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
         useCredentials = false,
         headers = {},
         nextOption = {},
-        cache = "no-store", // Default cache behavior
+        cache = "no-store",
         next,
         isFile = false,
-        timeout = 30000, // 30 seconds default
+        timeout = 30000,
+        skipAuth = false, // Don't auto-add token for public endpoints
     } = props;
 
     try {
-        // Validate URL
         if (!url) {
             throw new Error("URL is required");
         }
 
-        // Tạo headers
+        // Auto-add Authorization token if not skipped
+        if (!skipAuth) {
+            const token = await getAuthToken();
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+        }
+
+        // Create headers
         const computedHeaders = isFile
-            ? headers // Browser sẽ tự set content-type cho FormData
+            ? headers
             : {
                   "Content-Type": "application/json",
                   ...headers,
               };
 
-        // Thêm query string nếu có
+        // Add query string if exists
         if (Object.keys(queryParams).length > 0) {
             const separator = url.includes("?") ? "&" : "?";
             url += `${separator}${queryString.stringify(queryParams)}`;
@@ -68,11 +88,11 @@ const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
             requestBody = isFile ? (body as FormData) : JSON.stringify(body);
         }
 
-        // Tạo AbortController cho timeout
+        // Create AbortController for timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-        // Gộp options - Next.js 15 compatible
+        // Merge options - Next.js 15 compatible
         const options: RequestInit = {
             method,
             headers: new Headers(computedHeaders),
@@ -82,7 +102,7 @@ const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
             ...nextOption,
         };
 
-        // Thêm next options nếu có (Next.js 15 vẫn hỗ trợ)
+        // Add next options if available (Next.js 15 still supports)
         if (next) {
             (options as any).next = next;
         }
@@ -91,20 +111,19 @@ const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
             options.credentials = "include";
         }
 
-        // Gửi request
+        // Send request
         const res = await fetch(url, options);
 
         // Clear timeout
         clearTimeout(timeoutId);
 
-        // Xử lý response
+        // Handle response
         let json: any;
         const contentType = res.headers.get("content-type");
 
         if (contentType && contentType.includes("application/json")) {
             json = await res.json();
         } else {
-            // Nếu không phải JSON, trả về text
             const text = await res.text();
             json = { data: text };
         }
@@ -124,7 +143,6 @@ const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
             };
         }
     } catch (error: any) {
-        // Xử lý các loại error khác nhau
         if (error.name === "AbortError") {
             return {
                 statusCode: 408,
@@ -152,12 +170,10 @@ const sendRequest = async <T>(props: IRequest): Promise<ApiResponse<T>> => {
     }
 };
 
-// Request object với các methods
+// Request object with methods
 export const request = {
-    // Core method - có thể dùng trực tiếp nếu cần
     send: sendRequest,
 
-    // GET method
     get: <T>(
         url: string,
         options?: Omit<IRequest, "url" | "method">
@@ -165,7 +181,6 @@ export const request = {
         return sendRequest<T>({ url, method: "GET", ...options });
     },
 
-    // POST method
     post: <T>(
         url: string,
         body?: any,
@@ -174,7 +189,6 @@ export const request = {
         return sendRequest<T>({ url, method: "POST", body, ...options });
     },
 
-    // PUT method
     put: <T>(
         url: string,
         body?: any,
@@ -183,7 +197,6 @@ export const request = {
         return sendRequest<T>({ url, method: "PUT", body, ...options });
     },
 
-    // PATCH method
     patch: <T>(
         url: string,
         body?: any,
@@ -192,7 +205,6 @@ export const request = {
         return sendRequest<T>({ url, method: "PATCH", body, ...options });
     },
 
-    // DELETE method
     delete: <T>(
         url: string,
         options?: Omit<IRequest, "url" | "method">
@@ -200,7 +212,6 @@ export const request = {
         return sendRequest<T>({ url, method: "DELETE", ...options });
     },
 
-    // Alias cho delete (vì delete là reserved keyword)
     del: <T>(
         url: string,
         options?: Omit<IRequest, "url" | "method">
@@ -209,71 +220,34 @@ export const request = {
     },
 };
 
-// Export default để có thể dùng như: import request from './request'
 export default request;
 
-// Example usage cho Next.js 15:
+// Example usage:
 /*
-import request from "@/utils/request";
-import { unstable_cache } from 'next/cache';
-
-// Client-side usage (không thay đổi)
+// Auto-add token for all requests
 const users = await request.get<User[]>("/api/users");
 
-// Server-side với caching (App Router) - Next.js 15 vẫn hỗ trợ
-const data = await request.get<Data>("/api/data", {
-    cache: "force-cache",
-    next: { revalidate: 3600 } // Revalidate every hour
+// Skip token for public endpoints  
+const publicData = await request.get<PublicData>("/api/public", {
+    skipAuth: true
 });
 
-// Sử dụng unstable_cache cho caching nâng cao (Next.js 15)
-const getCachedData = unstable_cache(
-  async () => {
-    const response = await request.get<Data>("/api/data");
-    return response.data;
-  },
-  ['data-cache'], // cache key
-  {
-    revalidate: 3600, // 1 hour
-    tags: ['data']
-  }
-);
-
-// Server-side với tags (cho revalidation)
-const posts = await request.get<Post[]>("/api/posts", {
-    next: { tags: ["posts"] }
-});
-
-// File upload (không thay đổi)
-const formData = new FormData();
-formData.append("file", file);
-const uploadResult = await request.post<UploadResponse>("/api/upload", formData, {
-    isFile: true
-});
-
-// Với query params (không thay đổi)
-const searchResults = await request.get<SearchResult[]>("/api/search", {
-    queryParams: { 
-        q: "nextjs", 
-        page: 1, 
-        limit: 10 
-    }
-});
-
-// Sử dụng với React Server Components và Suspense (Next.js 15)
-async function DataComponent() {
-  const data = await request.get<Data>("/api/data", {
-    cache: 'force-cache',
-    next: { revalidate: 60 }
-  });
-  
-  return <div>{data.data?.title}</div>;
+// Server-side usage - token automatically from session
+async function ServerComponent() {
+    const data = await request.get<Data>("/api/protected-data");
+    return <div>{data.data?.title}</div>;
 }
 
-// Parallel fetching với Promise.all (Next.js 15 tối ưu)
-const [users, posts, settings] = await Promise.all([
-  request.get<User[]>("/api/users"),
-  request.get<Post[]>("/api/posts"), 
-  request.get<Settings>("/api/settings")
-]);
+// API route usage
+export async function GET() {
+    const result = await request.get<ExternalData>("https://external-api.com/data");
+    return Response.json(result.data);
+}
+
+// Manual token override (if needed)
+const specialRequest = await request.get<Data>("/api/special", {
+    headers: {
+        'Authorization': 'Bearer different-token'
+    }
+});
 */
