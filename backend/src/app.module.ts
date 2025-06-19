@@ -10,11 +10,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from 'src/module/auth/passport/jwt-auth.guard';
+import { PostModule } from 'src/module/post/post.module';
+import { Post } from 'src/module/post/entities/post.entity';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
+    PostModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -25,7 +28,7 @@ import { JwtAuthGuard } from 'src/module/auth/passport/jwt-auth.guard';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User],
+        entities: [User, Post],
         synchronize: true, // chỉ nên ở dev
       }),
       inject: [ConfigService],
