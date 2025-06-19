@@ -1,23 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-    Form,
-    Input,
-    Button,
-    Upload,
-    Card,
-    Space,
-    message,
-    Modal,
-    Image,
-} from "antd";
-import {
-    PlusOutlined,
-    DeleteOutlined,
-    EditOutlined,
-    EyeOutlined,
-} from "@ant-design/icons";
+import { Form, Input, Button, Upload, Card, Space, message, Image } from "antd";
+import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
 
 const { TextArea } = Input;
@@ -61,7 +46,6 @@ const PostUi: React.FC = () => {
         setPreviewVisible(true);
     };
 
-    // Thêm hàm này
     const getBase64 = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -72,27 +56,40 @@ const PostUi: React.FC = () => {
     };
 
     const handleAddItem = () => {
-        // Disable all current items
-        const updatedItems = items.map((item) => ({
+        const newItem = {
+            bankAccountName: "",
+            bankAccountNumber: "",
+            bankName: "",
+            phoneNumber: "",
+            facebookProfileLink: "",
+            complaintLink: "",
+            personalComment: "",
+            proofFiles: [],
+            isEditing: true,
+        };
+
+        // Get current form values
+        const currentValues = form.getFieldsValue()?.items || [];
+
+        // Update items state with current form values
+        const updatedItems = items.map((item, index) => ({
             ...item,
+            ...(currentValues[index] || {}),
             isEditing: false,
         }));
 
-        // Add new editable item
-        setItems([
-            ...updatedItems,
-            {
-                bankAccountName: "",
-                bankAccountNumber: "",
-                bankName: "",
-                phoneNumber: "",
-                facebookProfileLink: "",
-                complaintLink: "",
-                personalComment: "",
-                proofFiles: [],
-                isEditing: true,
-            },
-        ]);
+        setItems([...updatedItems, newItem]);
+
+        // Reset form fields for the new item
+        form.setFieldsValue({
+            items: [
+                ...updatedItems.map((item) => ({
+                    ...item,
+                    isEditing: undefined,
+                })),
+                newItem,
+            ],
+        });
     };
 
     const handleRemoveItem = (index: number) => {
@@ -100,9 +97,15 @@ const PostUi: React.FC = () => {
             message.warning("Phải có ít nhất một mục");
             return;
         }
+
         const newItems = [...items];
         newItems.splice(index, 1);
         setItems(newItems);
+
+        // Update form values after removal
+        const currentValues = form.getFieldsValue()?.items || [];
+        currentValues.splice(index, 1);
+        form.setFieldsValue({ items: currentValues });
     };
 
     const handleEditItem = (index: number) => {
@@ -121,9 +124,15 @@ const PostUi: React.FC = () => {
         (info) => {
             let newFileList = [...info.fileList];
             newFileList = newFileList.slice(-5);
+
             const newItems = [...items];
             newItems[index].proofFiles = newFileList;
             setItems(newItems);
+
+            // Update form values
+            const currentValues = form.getFieldsValue()?.items || [];
+            currentValues[index].proofFiles = newFileList;
+            form.setFieldsValue({ items: currentValues });
         };
 
     const uploadProps = (index: number): UploadProps => ({
@@ -139,7 +148,6 @@ const PostUi: React.FC = () => {
         accept: "image/*",
         listType: "picture-card",
         disabled: !items[index].isEditing,
-        // Thêm preview mặc định của Ant Design
         previewFile(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -164,7 +172,7 @@ const PostUi: React.FC = () => {
                                     icon={<EditOutlined />}
                                     onClick={() => handleEditItem(index)}
                                 >
-                                    {item.isEditing ? "Lưu" : "Chỉnh sửa"}
+                                    {item.isEditing ? "Khóa lại" : "Chỉnh sửa"}
                                 </Button>
                                 <Button
                                     type="text"
@@ -190,7 +198,6 @@ const PostUi: React.FC = () => {
                                         "Tên tài khoản ngân hàng phải là chuỗi",
                                 },
                             ]}
-                            initialValue={item.bankAccountName}
                         >
                             <Input
                                 placeholder="Nhập họ và tên"
@@ -212,7 +219,6 @@ const PostUi: React.FC = () => {
                                     message: "Số tài khoản phải là chuỗi",
                                 },
                             ]}
-                            initialValue={item.bankAccountNumber}
                         >
                             <Input
                                 placeholder="Nhập số tài khoản"
@@ -233,7 +239,6 @@ const PostUi: React.FC = () => {
                                     message: "Tên ngân hàng phải là chuỗi",
                                 },
                             ]}
-                            initialValue={item.bankName}
                         >
                             <Input
                                 placeholder="Nhập tên ngân hàng"
@@ -250,7 +255,6 @@ const PostUi: React.FC = () => {
                                     message: "Số điện thoại phải là chuỗi",
                                 },
                             ]}
-                            initialValue={item.phoneNumber}
                         >
                             <Input
                                 placeholder="Nhập số điện thoại"
@@ -267,7 +271,6 @@ const PostUi: React.FC = () => {
                                     message: "Link Facebook không hợp lệ",
                                 },
                             ]}
-                            initialValue={item.facebookProfileLink}
                         >
                             <Input
                                 placeholder="Nhập link Facebook"
@@ -284,7 +287,6 @@ const PostUi: React.FC = () => {
                                     message: "Link tố cáo không hợp lệ",
                                 },
                             ]}
-                            initialValue={item.complaintLink}
                         >
                             <Input
                                 placeholder="Nhập link bài viết tố cáo"
@@ -294,10 +296,9 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "proofFiles"]}
-                            label="File – Hình ảnh minh chứng"
+                            label="File - Hình ảnh minh chứng"
                             valuePropName="fileList"
                             getValueFromEvent={(e) => e.fileList}
-                            initialValue={item.proofFiles}
                         >
                             <Upload {...uploadProps(index)}>
                                 {item.proofFiles &&
@@ -327,7 +328,6 @@ const PostUi: React.FC = () => {
                                     message: "Bình luận cá nhân phải là chuỗi",
                                 },
                             ]}
-                            initialValue={item.personalComment}
                         >
                             <TextArea
                                 rows={4}
