@@ -123,7 +123,7 @@ const PostUi: React.FC = () => {
         (index: number): UploadProps["onChange"] =>
         (info) => {
             let newFileList = [...info.fileList];
-            newFileList = newFileList.slice(-5);
+            newFileList = newFileList.slice(-10);
 
             const newItems = [...items];
             newItems[index].proofFiles = newFileList;
@@ -302,7 +302,7 @@ const PostUi: React.FC = () => {
                         >
                             <Upload {...uploadProps(index)}>
                                 {item.proofFiles &&
-                                item.proofFiles.length >= 5 ? null : (
+                                item.proofFiles.length >= 10 ? null : (
                                     <button
                                         style={{
                                             border: 0,
