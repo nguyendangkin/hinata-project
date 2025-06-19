@@ -12,6 +12,11 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
+      // chuyển để chấp nhận array dữ liệu post
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
