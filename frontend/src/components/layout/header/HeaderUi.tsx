@@ -36,8 +36,8 @@ const items: MenuProps["items"] = [
         icon: <HomeOutlined />,
     },
     {
-        label: <Link href="/about">Giới thiệu</Link>,
-        key: "/about",
+        label: <Link href="/post">Tố cáo</Link>,
+        key: "/post",
     },
     {
         label: "Sản phẩm",
@@ -75,7 +75,7 @@ const userMenuItems: MenuProps["items"] = [
     },
     {
         label: "Đăng xuất",
-        key: "logout", // xử lý riêng bằng onClick
+        key: "logout",
     },
 ];
 
