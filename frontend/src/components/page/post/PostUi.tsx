@@ -158,7 +158,7 @@ const PostUi: React.FC = () => {
     });
 
     return (
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+        <div style={{ maxWidth: 800, margin: "25px auto" }}>
             <Form form={form} onFinish={handleSubmit} layout="vertical">
                 {items.map((item, index) => (
                     <Card
