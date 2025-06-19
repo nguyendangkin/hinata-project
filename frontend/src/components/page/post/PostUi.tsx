@@ -15,7 +15,7 @@ interface FormItem {
     facebookProfileLink?: string;
     complaintLink?: string;
     personalComment?: string;
-    proofFiles?: UploadFile[];
+    proofFiles: UploadFile[];
     isEditing?: boolean;
 }
 
@@ -296,9 +296,24 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "proofFiles"]}
-                            label="File - Hình ảnh minh chứng"
+                            label="File - Hình ảnh minh chứng (dùng để xét duyệt)"
                             valuePropName="fileList"
                             getValueFromEvent={(e) => e.fileList}
+                            rules={[
+                                {
+                                    validator: (_, value) => {
+                                        if (!value || value.length === 0) {
+                                            return Promise.reject(
+                                                new Error(
+                                                    "Vui lòng tải lên ít nhất 1 ảnh minh chứng. Tôi đa là 10 ảnh"
+                                                )
+                                            );
+                                        }
+                                        return Promise.resolve();
+                                    },
+                                },
+                            ]}
+                            required
                         >
                             <Upload {...uploadProps(index)}>
                                 {item.proofFiles &&
