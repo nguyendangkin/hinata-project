@@ -1,6 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-@Entity()
+@Entity('post')
 export class Post {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,9 +29,15 @@ export class Post {
   @Column({ nullable: true })
   complaintLink: string;
 
-  @Column('text', { array: true })
-  imagePath: string[];
+  @Column('text', { array: true, default: [] })
+  imagePaths: string[];
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   personalComment: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

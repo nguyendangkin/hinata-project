@@ -1,6 +1,28 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
-export class CreatePostDto {
+export class ProofFileDto {
+  @IsString()
+  uid: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  status: string;
+
+  @IsString()
+  url: string;
+}
+
+export class CreatePostItemDto {
   @IsString({ message: 'Tên tài khoản ngân hàng phải là chuỗi.' })
   @IsNotEmpty({ message: 'Vui lòng nhập tên tài khoản ngân hàng.' })
   bankAccountName: string;
@@ -28,4 +50,17 @@ export class CreatePostDto {
   @IsOptional()
   @IsString({ message: 'Bình luận cá nhân phải là chuỗi.' })
   personalComment?: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProofFileDto)
+  proofFiles: ProofFileDto[];
+}
+
+// 3. DTO cho mảng items
+export class CreatePostDto {
+  @IsArray({ message: 'Items phải là một mảng.' })
+  @ValidateNested({ each: true })
+  @Type(() => CreatePostItemDto)
+  items: CreatePostItemDto[];
 }
