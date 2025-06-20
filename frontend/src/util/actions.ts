@@ -170,3 +170,16 @@ export const reqGetProfileUser = async (data: IReqGetProfileUser) => {
         throw error;
     }
 };
+
+export const reqCreatePost = async (data: any) => {
+    try {
+        const result = await request.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/create`,
+            data
+        );
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+};

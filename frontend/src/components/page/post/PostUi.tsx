@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Form, Input, Button, Upload, Card, Space, message, Image } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
+import { handleApiCall } from "@/util/clientRequestHandler";
+import { reqCreatePost } from "@/util/actions";
 
 const { TextArea } = Input;
 
@@ -114,22 +116,33 @@ const PostUi: React.FC = () => {
         setItems(newItems);
     };
 
-    const handleSubmit = (values: any) => {
-        console.log("Submitted values:", values);
-        message.success("Đã gửi thông tin thành công");
+    const handleSubmit = async (values: any) => {
+        // console.log("Submitted values:", values);
+        try {
+            const result = await handleApiCall(reqCreatePost(values));
+            message.success("Đã gửi thông tin thành công");
+            console.log("API response:", result);
+        } catch (error) {}
     };
-
     const handleFileChange =
         (index: number): UploadProps["onChange"] =>
-        (info) => {
-            let newFileList = [...info.fileList];
-            newFileList = newFileList.slice(-10);
+        async (info) => {
+            let newFileList = await Promise.all(
+                info.fileList.slice(-10).map(async (file) => {
+                    if (!file.thumbUrl && file.originFileObj) {
+                        const thumbUrl = await getBase64(
+                            file.originFileObj as File
+                        );
+                        return { ...file, thumbUrl };
+                    }
+                    return file;
+                })
+            );
 
             const newItems = [...items];
             newItems[index].proofFiles = newFileList;
             setItems(newItems);
 
-            // Update form values
             const currentValues = form.getFieldsValue()?.items || [];
             currentValues[index].proofFiles = newFileList;
             form.setFieldsValue({ items: currentValues });
