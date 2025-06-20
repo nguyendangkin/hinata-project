@@ -32,6 +32,7 @@ export class PostService {
         (f) => f.fieldname === `items[${i}][proofFiles][]`,
       );
 
+      // khai báo mảng để lưu đường dẫn ảnh
       const imagePaths: string[] = [];
       for (const file of imageFiles) {
         // Lấy phần mở rộng file
