@@ -175,7 +175,10 @@ export const reqCreatePost = async (data: any) => {
     try {
         const result = await request.post(
             `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/create`,
-            data
+            data,
+            {
+                isFile: true,
+            }
         );
         return result;
     } catch (error) {

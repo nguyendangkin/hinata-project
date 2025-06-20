@@ -117,13 +117,67 @@ const PostUi: React.FC = () => {
     };
 
     const handleSubmit = async (values: any) => {
-        // console.log("Submitted values:", values);
         try {
-            const result = await handleApiCall(reqCreatePost(values));
+            const formData = new FormData();
+
+            // values.items là mảng các object
+            values.items.forEach((item: any, index: number) => {
+                formData.append(
+                    `items[${index}][bankAccountName]`,
+                    item.bankAccountName
+                );
+                formData.append(
+                    `items[${index}][bankAccountNumber]`,
+                    item.bankAccountNumber
+                );
+                formData.append(`items[${index}][bankName]`, item.bankName);
+
+                if (item.phoneNumber) {
+                    formData.append(
+                        `items[${index}][phoneNumber]`,
+                        item.phoneNumber
+                    );
+                }
+                if (item.facebookProfileLink) {
+                    formData.append(
+                        `items[${index}][facebookProfileLink]`,
+                        item.facebookProfileLink
+                    );
+                }
+                if (item.complaintLink) {
+                    formData.append(
+                        `items[${index}][complaintLink]`,
+                        item.complaintLink
+                    );
+                }
+                if (item.personalComment) {
+                    formData.append(
+                        `items[${index}][personalComment]`,
+                        item.personalComment
+                    );
+                }
+
+                item.proofFiles?.forEach(
+                    (file: UploadFile, fileIndex: number) => {
+                        if (file.originFileObj) {
+                            formData.append(
+                                `items[${index}][proofFiles][]`,
+                                file.originFileObj
+                            );
+                        }
+                    }
+                );
+            });
+
+            const result = await handleApiCall(reqCreatePost(formData));
             message.success("Đã gửi thông tin thành công");
             console.log("API response:", result);
-        } catch (error) {}
+        } catch (error) {
+            message.error("Có lỗi xảy ra khi gửi dữ liệu");
+            console.error(error);
+        }
     };
+
     const handleFileChange =
         (index: number): UploadProps["onChange"] =>
         async (info) => {
