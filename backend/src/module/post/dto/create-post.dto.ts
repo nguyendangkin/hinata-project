@@ -8,35 +8,21 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class ProofFileDto {
-  @IsString()
-  uid: string;
-
-  @IsString()
-  name: string;
-
-  @IsString()
-  status: string;
-
-  @IsString()
-  url: string;
-}
-
 export class CreatePostItemDto {
-  @IsString({ message: 'Tên tài khoản ngân hàng phải là chuỗi.' })
-  @IsNotEmpty({ message: 'Vui lòng nhập tên tài khoản ngân hàng.' })
+  @IsString()
+  @IsNotEmpty()
   bankAccountName: string;
 
-  @IsString({ message: 'Số tài khoản phải là chuỗi.' })
-  @IsNotEmpty({ message: 'Vui lòng nhập số tài khoản ngân hàng.' })
+  @IsString()
+  @IsNotEmpty()
   bankAccountNumber: string;
 
-  @IsString({ message: 'Tên ngân hàng phải là chuỗi.' })
-  @IsNotEmpty({ message: 'Vui lòng nhập tên ngân hàng.' })
+  @IsString()
+  @IsNotEmpty()
   bankName: string;
 
   @IsOptional()
-  @IsString({ message: 'Số điện thoại phải là chuỗi.' })
+  @IsString()
   phoneNumber?: string;
 
   @IsOptional()
@@ -48,18 +34,12 @@ export class CreatePostItemDto {
   complaintLink?: string;
 
   @IsOptional()
-  @IsString({ message: 'Bình luận cá nhân phải là chuỗi.' })
+  @IsString()
   personalComment?: string;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ProofFileDto)
-  proofFiles: ProofFileDto[];
 }
 
-// 3. DTO cho mảng items
 export class CreatePostDto {
-  @IsArray({ message: 'Items phải là một mảng.' })
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreatePostItemDto)
   items: CreatePostItemDto[];

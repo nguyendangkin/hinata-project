@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Post as PostEntity } from 'src/module/post/entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreatePostDto } from 'src/module/post/dto/create-post.dto';
+import { Post as PostEntity } from './entities/post.entity';
+import { CreatePostDto } from './dto/create-post.dto';
+import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class PostService {
@@ -11,9 +14,47 @@ export class PostService {
     private readonly postRepository: Repository<PostEntity>,
   ) {}
 
-  handleCreatePost(data: CreatePostDto) {
+  async handleCreatePost(data: CreatePostDto, files: Express.Multer.File[]) {
+    const savedPosts: PostEntity[] = [];
+
+    for (let i = 0; i < data.items.length; i++) {
+      const item = data.items[i];
+
+      const imageFiles = files.filter(
+        (f) => f.fieldname === `items[${i}][proofFiles][]`,
+      );
+
+      const imagePaths: string[] = [];
+      for (const file of imageFiles) {
+        const ext = path.extname(file.originalname);
+        const fileName = `${uuidv4()}${ext}`;
+        const uploadDir = path.join(process.cwd(), 'uploads');
+        fs.mkdirSync(uploadDir, { recursive: true });
+
+        const uploadPath = path.join(uploadDir, fileName);
+        fs.writeFileSync(uploadPath, file.buffer);
+
+        imagePaths.push(`/uploads/${fileName}`);
+      }
+
+      const post = this.postRepository.create({
+        bankAccountName: item.bankAccountName,
+        bankAccountNumber: item.bankAccountNumber,
+        bankName: item.bankName,
+        phoneNumber: item.phoneNumber,
+        facebookProfileLink: item.facebookProfileLink,
+        complaintLink: item.complaintLink,
+        personalComment: item.personalComment,
+        imagePaths,
+      });
+
+      const saved = await this.postRepository.save(post);
+      savedPosts.push(saved);
+    }
+
     return {
-      message: 'Đã nhận được danh sách post.',
+      message: `${savedPosts.length} bài post đã được lưu thành công!`,
+      data: savedPosts,
     };
   }
 }
