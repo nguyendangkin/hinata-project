@@ -163,12 +163,26 @@ const AdminUi = () => {
                         width={80}
                         height={80}
                         alt={`Proof ${index + 1}`}
-                        className="border border-gray-200 object-cover"
-                        style={{ display: "block" }}
+                        style={{
+                            display: "block",
+                            border: "1px solid #d1d5db",
+                            objectFit: "cover",
+                        }}
                     />
                 ))}
                 {images.length > 2 && (
-                    <div className="relative inline-flex items-center justify-center w-[80px] h-[80px] border border-gray-200 bg-gray-100">
+                    <div
+                        style={{
+                            position: "relative",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "80px",
+                            height: "80px",
+                            border: "1px solid #d1d5db",
+                            backgroundColor: "#f3f4f6",
+                        }}
+                    >
                         <Typography.Text strong>
                             +{images.length - 2}
                         </Typography.Text>
@@ -185,7 +199,9 @@ const AdminUi = () => {
             key: "id",
             width: 100,
             fixed: "left",
-            render: (id) => <span className="font-mono">{id}</span>,
+            render: (id) => (
+                <span style={{ fontFamily: "monospace" }}>{id}</span>
+            ),
             sorter: (a, b) => parseInt(a.id.slice(1)) - parseInt(b.id.slice(1)),
         },
         {
@@ -215,7 +231,7 @@ const AdminUi = () => {
             dataIndex: "proofImages",
             key: "proofImages",
             render: renderProofImages,
-            width: 200,
+            width: 230,
         },
         {
             title: "Bình luận",
@@ -245,7 +261,7 @@ const AdminUi = () => {
                 if (status === "approved") color = "green";
                 if (status === "rejected") color = "red";
                 return (
-                    <Tag color={color} className="capitalize">
+                    <Tag color={color} style={{ textTransform: "capitalize" }}>
                         {status}
                     </Tag>
                 );
@@ -288,7 +304,7 @@ const AdminUi = () => {
     ];
 
     return (
-        <div className="p-4">
+        <div style={{ padding: "16px" }}>
             <Table
                 columns={columns}
                 dataSource={data}
@@ -307,7 +323,15 @@ const AdminUi = () => {
                     },
                 }}
             />
-            <div className="mt-4 flex justify-center">
+            <div
+                style={{
+                    marginTop: "16px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                }}
+            >
                 <Pagination
                     current={page}
                     pageSize={pageSize}
@@ -319,7 +343,11 @@ const AdminUi = () => {
                     pageSizeOptions={[10, 20, 50, 100]}
                     itemRender={(current, type, originalElement) => {
                         if (type === "page") {
-                            return <span className="px-2">{current}</span>;
+                            return (
+                                <span style={{ padding: "0 8px" }}>
+                                    {current}
+                                </span>
+                            );
                         }
                         return originalElement;
                     }}
