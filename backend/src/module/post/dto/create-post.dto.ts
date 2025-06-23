@@ -26,11 +26,11 @@ export class CreatePostItemDto {
   phoneNumber?: string;
 
   @IsOptional()
-  @IsUrl({}, { message: 'Link Facebook không hợp lệ.' })
+  @IsString()
   facebookProfileLink?: string;
 
   @IsOptional()
-  @IsUrl({}, { message: 'Link tố cáo không hợp lệ.' })
+  @IsString()
   complaintLink?: string;
 
   @IsOptional()

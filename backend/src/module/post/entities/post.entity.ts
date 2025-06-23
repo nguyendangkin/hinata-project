@@ -37,6 +37,13 @@ export class Post {
   @Column({ nullable: true, type: 'text' })
   personalComment: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  })
+  status: 'pending' | 'approved' | 'rejected';
+
   @CreateDateColumn()
   createdAt: Date;
 

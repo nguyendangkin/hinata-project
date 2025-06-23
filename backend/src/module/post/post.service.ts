@@ -20,9 +20,6 @@ export class PostService {
     files: Express.Multer.File[],
     user: User,
   ) {
-    // Khai báo mảng để lưu các bài post đã được lưu vào database
-    const savedPosts: PostEntity[] = [];
-
     // Lặp qua từng item trong data để xử lý từng bài post
     for (let i = 0; i < data.items.length; i++) {
       const item = data.items[i];
@@ -60,19 +57,18 @@ export class PostService {
         phoneNumber: item.phoneNumber,
         facebookProfileLink: item.facebookProfileLink,
         complaintLink: item.complaintLink,
-        personalComment: item.personalComment,
         imagePaths,
+        personalComment: item.personalComment,
+        status: 'pending',
         user,
       });
 
       // Lưu post vào database
       const saved = await this.postRepository.save(post);
-      savedPosts.push(saved);
     }
 
     return {
-      message: `${savedPosts.length} bài post đã được lưu thành công!`,
-      data: savedPosts,
+      message: `Các bài đã được gửi đi thành công`,
     };
   }
 }

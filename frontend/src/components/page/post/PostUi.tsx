@@ -120,8 +120,23 @@ const PostUi: React.FC = () => {
         try {
             const formData = new FormData();
 
+            // Trim whitespace from all string fields before submitting
+            const trimmedItems = values.items.map((item: any) => {
+                const trimmedItem: any = {};
+                for (const key in item) {
+                    if (key === "proofFiles") {
+                        trimmedItem[key] = item[key]; // Skip trimming for files
+                    } else if (typeof item[key] === "string") {
+                        trimmedItem[key] = item[key].trim();
+                    } else {
+                        trimmedItem[key] = item[key];
+                    }
+                }
+                return trimmedItem;
+            });
+
             // values.items là mảng các object
-            values.items.forEach((item: any, index: number) => {
+            trimmedItems.forEach((item: any, index: number) => {
                 formData.append(
                     `items[${index}][bankAccountName]`,
                     item.bankAccountName
