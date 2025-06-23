@@ -24,6 +24,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import * as qs from 'qs';
 import { error } from 'console';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -32,7 +33,47 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly mailerService: MailerService,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
+
+  async createAdminIfNotExists() {
+    try {
+      const email = this.configService.get<string>('ADMIN_EMAIL');
+      const password = this.configService.get<string>('ADMIN_PASSWORD');
+      const displayName =
+        this.configService.get<string>('ADMIN_DISPLAY_NAME') || 'Admin';
+
+      if (!email || !password) {
+        console.warn('Thiếu ADMIN_EMAIL hoặc ADMIN_PASSWORD trong .env');
+        return;
+      }
+
+      const existingAdmin = await this.userRepository.findOne({
+        where: { email, isActive: true },
+      });
+
+      if (existingAdmin) {
+        console.log('Admin đã tồn tại, bỏ qua tạo mới');
+        return;
+      }
+
+      const hashedPassword = await hashPasswordUtil(password);
+
+      const admin = this.userRepository.create({
+        email,
+        displayName,
+        password: hashedPassword,
+        isActive: true,
+        role: 'admin',
+      });
+
+      await this.userRepository.save(admin);
+      console.log('Tài khoản admin đầu tiên đã được tạo');
+    } catch (error) {
+      console.error('Lỗi khi tạo tài khoản admin:', error);
+      throw new error();
+    }
+  }
 
   async sendMailService(user: User, activationCode: string) {
     await this.mailerService.sendMail({
@@ -78,7 +119,7 @@ export class UserService {
 
       return {
         id: resultUser.id,
-        message: 'Đăng ký tài khoản thành công',
+        message: 'Đăng ký bước đầu thành công, chờ kích hoạt',
       };
     } catch (error) {
       // console.log(error);
