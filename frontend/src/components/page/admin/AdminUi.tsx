@@ -231,7 +231,7 @@ const AdminUi = () => {
             dataIndex: "proofImages",
             key: "proofImages",
             render: renderProofImages,
-            width: 230,
+            width: 300,
         },
         {
             title: "Bình luận",
@@ -252,6 +252,59 @@ const AdminUi = () => {
                 </div>
             ),
         },
+        {
+            title: "Email",
+            dataIndex: "email",
+            key: "email",
+            width: 180,
+            sorter: (a, b) => a.email.localeCompare(b.email),
+            render: (email) => (
+                <Typography.Link href={`mailto:${email}`}>
+                    {email}
+                </Typography.Link>
+            ),
+        },
+        {
+            title: "Tên hiển thị",
+            dataIndex: "displayName",
+            key: "displayName",
+            width: 120,
+            sorter: (a, b) => a.displayName.localeCompare(b.displayName),
+        },
+        {
+            title: "Số điện thoại",
+            dataIndex: "phoneNumber",
+            key: "phoneNumber",
+            width: 130,
+            sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
+            render: (phone) => (
+                <Typography.Link href={`tel:${phone}`}>{phone}</Typography.Link>
+            ),
+        },
+
+        {
+            title: "Link Facebook",
+            dataIndex: "facebookLink",
+            key: "facebookLink",
+            width: 150,
+            render: (link) => (
+                <Typography.Link href={link} target="_blank">
+                    Xem profile
+                </Typography.Link>
+            ),
+        },
+        {
+            title: "Link báo cáo",
+            dataIndex: "reportLink",
+            key: "reportLink",
+            width: 150,
+            render: (link) => (
+                <Typography.Link href={link} target="_blank">
+                    Xem bài viết
+                </Typography.Link>
+            ),
+        },
+
         {
             title: "Trạng thái",
             dataIndex: "status",
@@ -309,7 +362,7 @@ const AdminUi = () => {
                 columns={columns}
                 dataSource={data}
                 loading={loading}
-                scroll={{ x: 1500 }}
+                scroll={{ x: 2000 }}
                 pagination={false}
                 bordered
                 size="middle"
