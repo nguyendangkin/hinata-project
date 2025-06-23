@@ -402,7 +402,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "proofFiles"]}
-                            label="File - Hình ảnh minh chứng (dùng để xét duyệt)"
+                            label="File - Hình ảnh minh chứng (QUAN TRỌNG - Dùng để xét duyệt)"
                             valuePropName="fileList"
                             getValueFromEvent={(e) => e.fileList}
                             rules={[
@@ -442,7 +442,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "personalComment"]}
-                            label="Lời bình luận cá nhân"
+                            label="Lời bình luận cá nhân (Vui lòng không dùng từ ngữ thô tục v.v.)"
                             rules={[
                                 {
                                     type: "string",
