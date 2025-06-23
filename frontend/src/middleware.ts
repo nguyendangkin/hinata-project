@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export default auth((req) => {
     const { nextUrl } = req;
     const isLoggedIn = !!req.auth;
+    const role = req.auth?.user?.role;
 
     // nếu đã login mà vào login/register thì redirect
     if (
@@ -21,6 +22,15 @@ export default auth((req) => {
         !nextUrl.pathname.startsWith("/forgot-password")
     ) {
         return NextResponse.redirect(new URL("/login", nextUrl));
+    }
+
+    // Nếu đã login nhưng cố vào /admin mà không có role admin
+    if (
+        isLoggedIn &&
+        nextUrl.pathname.startsWith("/admin") &&
+        role !== "admin"
+    ) {
+        return NextResponse.redirect(new URL("/", nextUrl));
     }
 
     // nếu không match điều kiện nào thì tiếp tục bình thường
