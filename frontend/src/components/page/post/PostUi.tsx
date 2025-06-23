@@ -123,12 +123,12 @@ const PostUi: React.FC = () => {
         try {
             const formData = new FormData();
 
-            // Trim whitespace from all string fields before submitting
+            // Trim 2 đầu khoảng trắng của các trường string trước khi gửi đi
             const trimmedItems = values.items.map((item: any) => {
                 const trimmedItem: any = {};
                 for (const key in item) {
                     if (key === "proofFiles") {
-                        trimmedItem[key] = item[key]; // Skip trimming for files
+                        trimmedItem[key] = item[key]; // bỏ qua cho các file
                     } else if (typeof item[key] === "string") {
                         trimmedItem[key] = item[key].trim();
                     } else {
@@ -190,6 +190,21 @@ const PostUi: React.FC = () => {
             const result = await handleApiCall(reqCreatePost(formData));
             if (result.statusCode === 201) {
                 message.success(result.data?.message);
+                // Reset form về trạng thái ban đầu
+                setItems([
+                    {
+                        bankAccountName: "",
+                        bankAccountNumber: "",
+                        bankName: "",
+                        phoneNumber: "",
+                        facebookProfileLink: "",
+                        complaintLink: "",
+                        personalComment: "",
+                        proofFiles: [],
+                        isEditing: true,
+                    },
+                ]);
+                form.resetFields();
             } else if (result.statusCode === 400) {
                 message.warning(result.message);
             } else {
