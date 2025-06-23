@@ -66,3 +66,7 @@ interface IResChangePassword extends IResponseMessage {}
 
 interface IReqGetProfileUser {}
 interface IResGetProfileUser extends IResponseMessage {}
+
+interface IResCreatePost {
+    message: string;
+}

@@ -10,15 +10,15 @@ import { Type } from 'class-transformer';
 
 export class CreatePostItemDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Vui lòng nhập Họ và Tên tài khoản ngân hàng' })
   bankAccountName: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Vui lòng nhập số tài khoản ngân hàng' })
   bankAccountNumber: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Vui lòng nhập tên ngân hàng' })
   bankName: string;
 
   @IsOptional()

@@ -37,6 +37,8 @@ const PostUi: React.FC = () => {
         },
     ]);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [previewImage, setPreviewImage] = useState<string>("");
     const [previewVisible, setPreviewVisible] = useState<boolean>(false);
 
@@ -117,6 +119,7 @@ const PostUi: React.FC = () => {
     };
 
     const handleSubmit = async (values: any) => {
+        setIsLoading(true);
         try {
             const formData = new FormData();
 
@@ -185,11 +188,17 @@ const PostUi: React.FC = () => {
             });
 
             const result = await handleApiCall(reqCreatePost(formData));
-            message.success("Đã gửi thông tin thành công");
-            console.log("API response:", result);
+            if (result.statusCode === 201) {
+                message.success(result.data?.message);
+            } else if (result.statusCode === 400) {
+                message.warning(result.message);
+            } else {
+                message.error(result.message);
+            }
         } catch (error) {
             message.error("Có lỗi xảy ra khi gửi dữ liệu");
-            console.error(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -349,8 +358,8 @@ const PostUi: React.FC = () => {
                             label="Link trang facebook cá nhân"
                             rules={[
                                 {
-                                    type: "url",
-                                    message: "Link Facebook không hợp lệ",
+                                    type: "string",
+                                    message: "Link Facebook phải là chuỗi",
                                 },
                             ]}
                         >
@@ -365,8 +374,8 @@ const PostUi: React.FC = () => {
                             label="Link bài viết tố cáo"
                             rules={[
                                 {
-                                    type: "url",
-                                    message: "Link tố cáo không hợp lệ",
+                                    type: "string",
+                                    message: "Link tố cáo phải là chuỗi",
                                 },
                             ]}
                         >
@@ -446,7 +455,13 @@ const PostUi: React.FC = () => {
                     </Button>
                 </div>
 
-                <Button type="primary" htmlType="submit" block>
+                <Button
+                    disabled={isLoading}
+                    loading={isLoading}
+                    type="primary"
+                    htmlType="submit"
+                    block
+                >
                     Gửi
                 </Button>
             </Form>
