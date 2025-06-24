@@ -2,14 +2,21 @@ import { auth } from "@/auth";
 import AdminUi from "@/components/page/admin/AdminUi";
 // import { sendRequest } from "@/utils/api";
 
+// Interface cho props đầu vào
 interface IProps {
     params: Promise<{ id: string }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-// Fake data generator
+/**
+ * Hàm tạo dữ liệu giả để test giao diện
+ * @param count - Số lượng bản ghi cần tạo
+ * @returns Mảng các bản ghi giả
+ */
 const generateFakeData = (count: number): any[] => {
     const data: any[] = [];
+
+    // Danh sách họ, tên đệm và tên phổ biến ở Việt Nam
     const lastNames = [
         "Nguyễn",
         "Trần",
@@ -45,17 +52,21 @@ const generateFakeData = (count: number): any[] => {
         "Nghĩa",
     ];
 
+    // Tạo dữ liệu giả
     for (let i = 0; i < count; i++) {
+        // Tạo tên ngẫu nhiên
         const lastName = lastNames[i % lastNames.length];
         const middleName = middleNames[i % middleNames.length];
         const firstName = firstNames[i % firstNames.length];
         const fullName = `${lastName} ${middleName} ${firstName}`;
 
+        // Tạo danh sách ảnh minh chứng ngẫu nhiên (3-10 ảnh)
         const proofImages = Array.from(
-            { length: Math.floor(Math.random() * 8) + 3 }, // 3-10 images
+            { length: Math.floor(Math.random() * 8) + 3 },
             (_, idx) => `https://picsum.photos/600/800?random=${i}${idx}`
         );
 
+        // Thêm bản ghi vào mảng dữ liệu
         data.push({
             key: i.toString(),
             id: `#${10000 + i}`,
@@ -87,25 +98,31 @@ const generateFakeData = (count: number): any[] => {
     return data;
 };
 
+/**
+ * Trang quản trị Admin
+ */
 const AdminPage = async (props: IProps) => {
-    // Await searchParams để tránh lỗi sync dynamic APIs
+    // Lấy tham số từ URL (phân trang)
     const searchParams = await props.searchParams;
 
+    // Thiết lập tham số phân trang
     const current = parseInt(searchParams?.current as string) || 1;
     const pageSize = parseInt(searchParams?.pageSize as string) || 10;
+
+    // Lấy thông tin session (đã comment để test)
     // const session = await auth();
 
-    // Simulate API delay
+    // Giả lập delay call API
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Generate fake data with pagination
-    const totalData = 200; // Total fake records
+    // Tạo dữ liệu giả với phân trang
+    const totalData = 200; // Tổng số bản ghi giả
     const allFakeData = generateFakeData(totalData);
     const startIndex = (current - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedData = allFakeData.slice(startIndex, endIndex);
 
-    // Fake response structure
+    // Cấu trúc response giả
     const fakeResponse = {
         data: {
             results: paginatedData,
@@ -119,7 +136,7 @@ const AdminPage = async (props: IProps) => {
     };
 
     /* 
-    // Khi có API thật, uncomment đoạn này và comment phần fake data phía trên
+    // Khi có API thật, bỏ comment đoạn này và comment phần fake data phía trên
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/reports`,
         method: "GET",
@@ -138,6 +155,7 @@ const AdminPage = async (props: IProps) => {
 
     return (
         <div>
+            {/* Render component AdminUi với dữ liệu giả */}
             <AdminUi
                 data={fakeResponse?.data?.results ?? []}
                 meta={fakeResponse?.data?.meta}

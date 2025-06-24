@@ -1,83 +1,97 @@
-"use client";
+"use client"; // Chỉ định đây là Client Component trong Next.js
 
 import { Table, Button, Space, Tag, Image, Pagination, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+// Interface mô tả cấu trúc dữ liệu cho mỗi bản ghi
 interface DataType {
-    key: string;
-    id: string;
-    email: string;
-    displayName: string;
-    bankAccountName: string;
-    phoneNumber: string;
-    bankAccount: string;
-    bankName: string;
-    facebookLink: string;
-    reportLink: string;
-    proofImages: string[];
-    comment: string;
-    status: "pending" | "approved" | "rejected";
+    key: string; // Khóa duy nhất
+    id: string; // ID bài viết
+    email: string; // Email người dùng
+    displayName: string; // Tên hiển thị
+    bankAccountName: string; // Tên chủ tài khoản
+    phoneNumber: string; // Số điện thoại
+    bankAccount: string; // Số tài khoản
+    bankName: string; // Tên ngân hàng
+    facebookLink: string; // Link Facebook
+    reportLink: string; // Link bài viết báo cáo
+    proofImages: string[]; // Danh sách ảnh minh chứng
+    comment: string; // Bình luận
+    status: "pending" | "approved" | "rejected"; // Trạng thái
 }
 
+// Interface cho props đầu vào
 interface IProps {
-    data: DataType[];
+    data: DataType[]; // Dữ liệu hiển thị
     meta: {
-        current: number;
-        pageSize: number;
-        pages: number;
-        total: number;
+        current: number; // Trang hiện tại
+        pageSize: number; // Số bản ghi mỗi trang
+        pages: number; // Tổng số trang
+        total: number; // Tổng số bản ghi
     };
 }
 
 const AdminUi = (props: IProps) => {
     const { data: initialData, meta } = props;
-    const [data, setData] = useState<DataType[]>(initialData);
-    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState<DataType[]>(initialData); // State quản lý dữ liệu
+    const [loading, setLoading] = useState(false); // State loading
 
+    // Các hook của Next.js để quản lý routing
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
 
+    /**
+     * Hàm xử lý khi nhấn nút duyệt
+     * @param id - ID của bản ghi cần duyệt
+     */
     const handleApprove = async (id: string) => {
         setLoading(true);
         try {
-            // Gọi API để approve
-            // await sendRequest({...})
+            // Gọi API để duyệt ở đây
+            // await callApiApprove(id);
 
-            // Cập nhật local state
+            // Cập nhật UI ngay lập tức (optimistic update)
             setData(
                 data.map((item) =>
                     item.id === id ? { ...item, status: "approved" } : item
                 )
             );
         } catch (error) {
-            console.error("Error approving:", error);
+            console.error("Lỗi khi duyệt:", error);
         } finally {
             setLoading(false);
         }
     };
 
+    /**
+     * Hàm xử lý khi nhấn nút từ chối
+     * @param id - ID của bản ghi cần từ chối
+     */
     const handleReject = async (id: string) => {
         setLoading(true);
         try {
-            // Gọi API để reject
-            // await sendRequest({...})
+            // Gọi API để từ chối ở đây
+            // await callApiReject(id);
 
-            // Cập nhật local state
+            // Cập nhật UI ngay lập tức (optimistic update)
             setData(
                 data.map((item) =>
                     item.id === id ? { ...item, status: "rejected" } : item
                 )
             );
         } catch (error) {
-            console.error("Error rejecting:", error);
+            console.error("Lỗi khi từ chối:", error);
         } finally {
             setLoading(false);
         }
     };
 
+    /**
+     * Hàm xử lý khi thay đổi phân trang, sắp xếp,...
+     */
     const onChange = (
         pagination: any,
         filters: any,
@@ -92,6 +106,11 @@ const AdminUi = (props: IProps) => {
         }
     };
 
+    /**
+     * Hàm render ảnh minh chứng
+     * @param images - Mảng các URL ảnh
+     * @returns JSX hiển thị ảnh
+     */
     const renderProofImages = (images: string[]) => (
         <Image.PreviewGroup items={images}>
             <Space size={4}>
@@ -131,6 +150,7 @@ const AdminUi = (props: IProps) => {
         </Image.PreviewGroup>
     );
 
+    // Định nghĩa các cột cho bảng
     const columns: ColumnsType<DataType> = [
         {
             title: "STT",
@@ -316,14 +336,16 @@ const AdminUi = (props: IProps) => {
                 <span>Quản lý báo cáo</span>
             </div>
 
+            {/* Bảng dữ liệu chính */}
             <Table
                 columns={columns}
                 dataSource={data}
                 loading={loading}
-                scroll={{ x: 2000 }}
+                scroll={{ x: 2000 }} // Cho phép scroll ngang nếu bảng rộng
                 bordered
                 size="middle"
                 rowKey="id"
+                // Custom row height
                 components={{
                     body: {
                         row: ({ children, ...props }) => (
@@ -333,16 +355,17 @@ const AdminUi = (props: IProps) => {
                         ),
                     },
                 }}
+                // Cấu hình phân trang
                 pagination={{
                     current: meta.current,
                     pageSize: meta.pageSize,
                     total: meta.total,
-                    showSizeChanger: false, // Ẩn page size selector
-                    showQuickJumper: false, // Ẩn quick jumper
-                    showLessItems: false, // Hiển thị full pagination numbers
+                    showSizeChanger: false, // Ẩn chọn số bản ghi/trang
+                    showQuickJumper: false, // Ẩn nhảy nhanh đến trang
+                    showLessItems: false, // Hiển thị đầy đủ các nút trang
                     showTotal: (total, range) => (
                         <div>
-                            {range[0]}-{range[1]} trên {total} items
+                            {range[0]}-{range[1]} trên {total} bản ghi
                         </div>
                     ),
                 }}
