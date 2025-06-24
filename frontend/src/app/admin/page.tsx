@@ -116,10 +116,15 @@ const AdminPage = async (props: IProps) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Tạo dữ liệu giả với phân trang
-    const totalData = 200; // Tổng số bản ghi giả
+    // Tổng số bản ghi giả
+    const totalData = 200;
+    // Gọi hàm generateFakeData để tạo ra 200 bản ghi dữ liệu giả
     const allFakeData = generateFakeData(totalData);
+    // Tính chỉ số bắt đầu của trang hiện tại (ví dụ: trang 2, pageSize 10 => bắt đầu từ 10)
     const startIndex = (current - 1) * pageSize;
+    // Tính chỉ số kết thúc của trang hiện tại (không lấy bản ghi ở vị trí endIndex)
     const endIndex = startIndex + pageSize;
+    // Lấy ra các bản ghi thuộc trang hiện tại bằng cách cắt mảng allFakeData
     const paginatedData = allFakeData.slice(startIndex, endIndex);
 
     // Cấu trúc response giả
@@ -127,10 +132,10 @@ const AdminPage = async (props: IProps) => {
         data: {
             results: paginatedData,
             meta: {
-                current: current,
-                pageSize: pageSize,
-                pages: Math.ceil(totalData / pageSize),
-                total: totalData,
+                current: current, // Trang hiện tại
+                pageSize: pageSize, // Số bản ghi trên mỗi trang
+                pages: Math.ceil(totalData / pageSize), // Tổng số trang (làm tròn lên)
+                total: totalData, // Tổng số bản ghi
             },
         },
     };
