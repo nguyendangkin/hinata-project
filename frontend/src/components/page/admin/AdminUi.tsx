@@ -2,8 +2,8 @@
 
 import { Table, Button, Space, Tag, Image, Pagination, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 interface DataType {
     key: string;
@@ -21,136 +21,75 @@ interface DataType {
     status: "pending" | "approved" | "rejected";
 }
 
-const generateFakeData = (count: number): DataType[] => {
-    const data: DataType[] = [];
-    const lastNames = [
-        "Nguyễn",
-        "Trần",
-        "Lê",
-        "Phạm",
-        "Hoàng",
-        "Huỳnh",
-        "Phan",
-        "Vũ",
-        "Võ",
-        "Đặng",
-    ];
-    const middleNames = [
-        "Văn",
-        "Thị",
-        "Hữu",
-        "Đình",
-        "Ngọc",
-        "Kim",
-        "Minh",
-        "Thanh",
-    ];
-    const firstNames = [
-        "An",
-        "Bình",
-        "Cường",
-        "Dũng",
-        "Giang",
-        "Hải",
-        "Khoa",
-        "Long",
-        "Mạnh",
-        "Nghĩa",
-    ];
+interface IProps {
+    data: DataType[];
+    meta: {
+        current: number;
+        pageSize: number;
+        pages: number;
+        total: number;
+    };
+}
 
-    for (let i = 0; i < count; i++) {
-        const lastName = lastNames[i % lastNames.length];
-        const middleName = middleNames[i % middleNames.length];
-        const firstName = firstNames[i % firstNames.length];
-        const fullName = `${lastName} ${middleName} ${firstName}`;
-
-        const proofImages = Array.from(
-            { length: 10 },
-            (_, idx) => `https://picsum.photos/600/800?random=${i}${idx}`
-        );
-
-        data.push({
-            key: i.toString(),
-            id: `#${10000 + i}`,
-            email: `user${i}@example.com`,
-            displayName: `User${i}`,
-            bankAccountName: fullName,
-            phoneNumber: `0987${Math.floor(100000 + Math.random() * 900000)}`,
-            bankAccount: `123456789${i}`,
-            bankName: [
-                "Vietcombank",
-                "Techcombank",
-                "MB Bank",
-                "VP Bank",
-                "BIDV",
-            ][i % 5],
-            facebookLink: `https://facebook.com/user${i}`,
-            reportLink: `https://facebook.com/posts/report${i}`,
-            proofImages,
-            comment: `Bình luận về vấn đề số ${
-                i + 1
-            } - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`,
-            status: ["pending", "approved", "rejected"][
-                Math.floor(Math.random() * 3)
-            ] as "pending" | "approved" | "rejected",
-        });
-    }
-    return data;
-};
-
-const AdminUi = () => {
-    const [data, setData] = useState<DataType[]>([]);
+const AdminUi = (props: IProps) => {
+    const { data: initialData, meta } = props;
+    const [data, setData] = useState<DataType[]>(initialData);
     const [loading, setLoading] = useState(false);
-    const [total, setTotal] = useState(200);
+
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const router = useRouter();
 
-    const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = parseInt(searchParams.get("pageSize") || "10");
+    const handleApprove = async (id: string) => {
+        setLoading(true);
+        try {
+            // Gọi API để approve
+            // await sendRequest({...})
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                await new Promise((resolve) => setTimeout(resolve, 300));
-                const startIndex = (page - 1) * pageSize;
-                const endIndex = startIndex + pageSize;
-                const fakeData = generateFakeData(total).slice(
-                    startIndex,
-                    endIndex
-                );
-                setData(fakeData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [page, pageSize, total]);
-
-    const handleApprove = (id: string) => {
-        setData(
-            data.map((item) =>
-                item.id === id ? { ...item, status: "approved" } : item
-            )
-        );
+            // Cập nhật local state
+            setData(
+                data.map((item) =>
+                    item.id === id ? { ...item, status: "approved" } : item
+                )
+            );
+        } catch (error) {
+            console.error("Error approving:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleReject = (id: string) => {
-        setData(
-            data.map((item) =>
-                item.id === id ? { ...item, status: "rejected" } : item
-            )
-        );
+    const handleReject = async (id: string) => {
+        setLoading(true);
+        try {
+            // Gọi API để reject
+            // await sendRequest({...})
+
+            // Cập nhật local state
+            setData(
+                data.map((item) =>
+                    item.id === id ? { ...item, status: "rejected" } : item
+                )
+            );
+        } catch (error) {
+            console.error("Error rejecting:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handlePageChange = (newPage: number, newPageSize: number) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", newPage.toString());
-        params.set("pageSize", newPageSize.toString());
-        router.push(`?${params.toString()}`);
+    const onChange = (
+        pagination: any,
+        filters: any,
+        sorter: any,
+        extra: any
+    ) => {
+        if (pagination && pagination.current) {
+            const params = new URLSearchParams(searchParams);
+            params.set("current", pagination.current.toString());
+            params.set("pageSize", pagination.pageSize.toString());
+            router.push(`${pathname}?${params.toString()}`);
+        }
     };
 
     const renderProofImages = (images: string[]) => (
@@ -193,6 +132,14 @@ const AdminUi = () => {
     );
 
     const columns: ColumnsType<DataType> = [
+        {
+            title: "STT",
+            render: (_: any, record: any, index: any) => {
+                return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
+            },
+            width: 60,
+            fixed: "left",
+        },
         {
             title: "ID bài",
             dataIndex: "id",
@@ -281,7 +228,6 @@ const AdminUi = () => {
                 <Typography.Link href={`tel:${phone}`}>{phone}</Typography.Link>
             ),
         },
-
         {
             title: "Link Facebook",
             dataIndex: "facebookLink",
@@ -304,7 +250,6 @@ const AdminUi = () => {
                 </Typography.Link>
             ),
         },
-
         {
             title: "Trạng thái",
             dataIndex: "status",
@@ -333,6 +278,7 @@ const AdminUi = () => {
                             <Button
                                 type="primary"
                                 size="small"
+                                loading={loading}
                                 onClick={() => handleApprove(record.id)}
                             >
                                 Duyệt
@@ -340,6 +286,7 @@ const AdminUi = () => {
                             <Button
                                 danger
                                 size="small"
+                                loading={loading}
                                 onClick={() => handleReject(record.id)}
                             >
                                 Từ chối
@@ -358,14 +305,25 @@ const AdminUi = () => {
 
     return (
         <div style={{ padding: "16px" }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 20,
+                }}
+            >
+                <span>Quản lý báo cáo</span>
+            </div>
+
             <Table
                 columns={columns}
                 dataSource={data}
                 loading={loading}
                 scroll={{ x: 2000 }}
-                pagination={false}
                 bordered
                 size="middle"
+                rowKey="id"
                 components={{
                     body: {
                         row: ({ children, ...props }) => (
@@ -375,40 +333,21 @@ const AdminUi = () => {
                         ),
                     },
                 }}
-            />
-            <div
-                style={{
-                    marginTop: "16px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
+                pagination={{
+                    current: meta.current,
+                    pageSize: meta.pageSize,
+                    total: meta.total,
+                    showSizeChanger: false, // Ẩn page size selector
+                    showQuickJumper: false, // Ẩn quick jumper
+                    showLessItems: false, // Hiển thị full pagination numbers
+                    showTotal: (total, range) => (
+                        <div>
+                            {range[0]}-{range[1]} trên {total} items
+                        </div>
+                    ),
                 }}
-            >
-                <Pagination
-                    current={page}
-                    pageSize={pageSize}
-                    total={total}
-                    onChange={handlePageChange}
-                    showSizeChanger={false}
-                    showQuickJumper={false}
-                    showLessItems={false}
-                    pageSizeOptions={[10, 20, 50, 100]}
-                    itemRender={(current, type, originalElement) => {
-                        if (type === "page") {
-                            return (
-                                <span style={{ padding: "0 8px" }}>
-                                    {current}
-                                </span>
-                            );
-                        }
-                        return originalElement;
-                    }}
-                    showTotal={(total, range) =>
-                        `${range[0]}-${range[1]} of ${total} items`
-                    }
-                />
-            </div>
+                onChange={onChange}
+            />
         </div>
     );
 };
