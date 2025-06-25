@@ -207,29 +207,24 @@ const AdminUi = (props: IProps) => {
             render: (id) => (
                 <span style={{ fontFamily: "monospace" }}>{id}</span>
             ),
-            sorter: (a, b) => parseInt(a.id.slice(1)) - parseInt(b.id.slice(1)),
         },
         {
             title: "Số tài khoản",
             dataIndex: "bankAccount",
             key: "bankAccount",
             width: 150,
-            sorter: (a, b) => a.bankAccount.localeCompare(b.bankAccount),
         },
         {
             title: "Tên chủ tài khoản",
             dataIndex: "bankAccountName",
             key: "bankAccountName",
             width: 180,
-            sorter: (a, b) =>
-                a.bankAccountName.localeCompare(b.bankAccountName),
         },
         {
             title: "Ngân hàng",
             dataIndex: "bankName",
             key: "bankName",
             width: 150,
-            sorter: (a, b) => a.bankName.localeCompare(b.bankName),
         },
         {
             title: "Minh chứng",
@@ -262,7 +257,6 @@ const AdminUi = (props: IProps) => {
             dataIndex: "email",
             key: "email",
             width: 180,
-            sorter: (a, b) => a.email.localeCompare(b.email),
             render: (email) => (
                 <Typography.Link href={`mailto:${email}`}>
                     {email}
@@ -274,14 +268,12 @@ const AdminUi = (props: IProps) => {
             dataIndex: "displayName",
             key: "displayName",
             width: 120,
-            sorter: (a, b) => a.displayName.localeCompare(b.displayName),
         },
         {
             title: "Số điện thoại",
             dataIndex: "phoneNumber",
             key: "phoneNumber",
             width: 130,
-            sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
             render: (phone) => (
                 <Typography.Link href={`tel:${phone}`}>{phone}</Typography.Link>
             ),
