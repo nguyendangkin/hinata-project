@@ -14,11 +14,20 @@ const AdminPage = async (props: IProps) => {
 
     try {
         const res = await reqGetAllPost(current, pageSize);
+        const expiredToken = res?.statusCode === 403;
         return (
             <div>
                 <AdminUi
                     data={res?.data?.results ?? []}
-                    meta={res.data?.meta}
+                    meta={
+                        res.data?.meta ?? {
+                            current: 1,
+                            pageSize: 10,
+                            pages: 1,
+                            total: 0,
+                        }
+                    }
+                    expiredToken={expiredToken}
                 />
             </div>
         );

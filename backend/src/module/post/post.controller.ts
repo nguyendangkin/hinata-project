@@ -36,4 +36,9 @@ export class PostController {
     const size = pageSize ? parseInt(pageSize) : 10;
     return await this.postService.getAllPosts(currentPage, size);
   }
+
+  @Post('approve-post')
+  async approvePost(@Body('id') id: string) {
+    return this.postService.handleApprovePost(id);
+  }
 }

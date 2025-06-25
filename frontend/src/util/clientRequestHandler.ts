@@ -12,7 +12,7 @@ export async function handleApiCall<T>(
     const result = await apiCall;
 
     if (!result.success && result.statusCode === 403) {
-        message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        message.warning("Phiên đăng nhập đã hết hạn. Đang chuyển hướng...");
         await requestApiLogoutUser();
 
         // Chờ 3 giây rồi mới redirect

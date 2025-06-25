@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post as PostEntity } from './entities/post.entity';
@@ -114,6 +114,41 @@ export class PostService {
       };
     } catch (error) {
       throw new error();
+    }
+  }
+
+  async handleApprovePost(id: string) {
+    try {
+      // Kiểm tra xem post có tồn tại không
+      const post = await this.postRepository.findOne({
+        where: { id: parseInt(id) },
+      });
+
+      if (!post) {
+        throw new BadRequestException(`Không tìm thấy bài post với ID: ${id}`);
+      }
+
+      // Kiểm tra trạng thái hiện tại
+      if (post.status !== 'pending') {
+        throw new Error(
+          `Bài post này đã được xử lý với trạng thái: ${post.status}`,
+        );
+      }
+
+      // Cập nhật trạng thái thành approved
+      await this.postRepository.update(
+        { id: parseInt(id) },
+        {
+          status: 'approved',
+        },
+      );
+
+      return {
+        id: id,
+        message: `Bài post với ID ${id} đã được phê duyệt thành công.`,
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }

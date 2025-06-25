@@ -1,10 +1,23 @@
 "use client"; // Chỉ định đây là Client Component trong Next.js
 
-import { Table, Button, Space, Tag, Image, Pagination, Typography } from "antd";
+import {
+    Table,
+    Button,
+    Space,
+    Tag,
+    Image,
+    Pagination,
+    Typography,
+    message,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "antd";
+import { requestApiLogoutUser } from "@/util/actions";
+import { useExpiredSession } from "@/util/serverRequestHandler";
+
+const { Title } = Typography;
 
 // Interface mô tả cấu trúc dữ liệu cho mỗi bản ghi
 interface DataType {
@@ -32,6 +45,7 @@ interface IProps {
         pages: number; // Tổng số trang
         total: number; // Tổng số bản ghi
     };
+    expiredToken?: boolean; // Biến xác định xem token có hết hạn hay không
 }
 
 // Hàm lấy URL đầy đủ cho ảnh
@@ -41,7 +55,11 @@ const getFullImageUrl = (path: string) => {
 };
 
 const AdminUi = (props: IProps) => {
-    const { data, meta } = props;
+    const { data, meta, expiredToken } = props;
+
+    // Kiểm tra xem token đã hết hạn hay không
+    // Nếu có, hiển thị thông báo và chuyển hướng về trang đăng nhập
+    useExpiredSession(!!expiredToken);
 
     const [loading, setLoading] = useState(false); // State loading
 
@@ -50,9 +68,7 @@ const AdminUi = (props: IProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
-    /**
-     * Hàm xử lý khi nhấn nút duyệt
-     */
+    // Hàm xử lý khi nhấn nút duyệt
     const handleApprove = async (id: string) => {
         setLoading(true);
         try {
@@ -66,9 +82,7 @@ const AdminUi = (props: IProps) => {
         }
     };
 
-    /**
-     * Hàm xử lý khi nhấn nút từ chối
-     */
+    // Hàm xử lý khi nhấn nút từ chối
     const handleReject = async (id: string) => {
         setLoading(true);
         try {
@@ -104,9 +118,8 @@ const AdminUi = (props: IProps) => {
             },
         });
     };
-    /**
-     * Hàm xử lý khi thay đổi phân trang, sắp xếp,...
-     */
+
+    // Hàm xử lý khi thay đổi phân trang, sắp xếp,...
     const onChange = (
         pagination: any,
         filters: any,
@@ -121,12 +134,9 @@ const AdminUi = (props: IProps) => {
         }
     };
 
-    /**
-     * Hàm render ảnh minh chứng
-     */
-
+    // Hàm render ảnh minh chứng
     const renderProofImages = (images: string[]) => {
-        const fullImages = images.map(getFullImageUrl); // Sửa chỗ này
+        const fullImages = images.map(getFullImageUrl);
 
         return (
             <Image.PreviewGroup items={fullImages}>
