@@ -41,8 +41,8 @@ const getFullImageUrl = (path: string) => {
 };
 
 const AdminUi = (props: IProps) => {
-    const { data: initialData, meta } = props;
-    const [data, setData] = useState<DataType[]>(initialData); // State quản lý dữ liệu
+    const { data, meta } = props;
+
     const [loading, setLoading] = useState(false); // State loading
 
     // Các hook của Next.js để quản lý routing
@@ -58,13 +58,7 @@ const AdminUi = (props: IProps) => {
         try {
             // Gọi API để duyệt ở đây
             // await callApiApprove(id);
-
             // Cập nhật UI ngay lập tức (optimistic update)
-            setData(
-                data.map((item) =>
-                    item.id === id ? { ...item, status: "approved" } : item
-                )
-            );
         } catch (error) {
             console.error("Lỗi khi duyệt:", error);
         } finally {
@@ -80,13 +74,7 @@ const AdminUi = (props: IProps) => {
         try {
             // Gọi API để từ chối ở đây
             // await callApiReject(id);
-
             // Cập nhật UI ngay lập tức (optimistic update)
-            setData(
-                data.map((item) =>
-                    item.id === id ? { ...item, status: "rejected" } : item
-                )
-            );
         } catch (error) {
             console.error("Lỗi khi từ chối:", error);
         } finally {
@@ -107,15 +95,7 @@ const AdminUi = (props: IProps) => {
                 try {
                     // Gọi API thật để cấm
                     // await banUserApi(id);
-
                     // Cập nhật UI ngay lập tức
-                    setData(
-                        data.map((item) =>
-                            item.id === id
-                                ? { ...item, status: "rejected" }
-                                : item
-                        )
-                    );
                 } catch (error) {
                     console.error("Lỗi khi cấm user:", error);
                 } finally {

@@ -14,7 +14,6 @@ const AdminPage = async (props: IProps) => {
 
     try {
         const res = await reqGetAllPost(current, pageSize);
-
         return (
             <div>
                 <AdminUi
