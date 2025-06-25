@@ -5,6 +5,8 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
@@ -23,5 +25,15 @@ export class PostController {
   ) {
     const user = req.user; // Lấy user từ request
     return this.postService.handleCreatePost(data, files, user);
+  }
+
+  @Get('get-all-post')
+  async getAllPost(
+    @Query('current') current?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    const currentPage = current ? parseInt(current) : 1;
+    const size = pageSize ? parseInt(pageSize) : 10;
+    return await this.postService.getAllPosts(currentPage, size);
   }
 }

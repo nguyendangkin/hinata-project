@@ -4,6 +4,7 @@ import { Table, Button, Space, Tag, Image, Pagination, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { Modal } from "antd";
 
 // Interface mô tả cấu trúc dữ liệu cho mỗi bản ghi
 interface DataType {
@@ -33,6 +34,12 @@ interface IProps {
     };
 }
 
+// Hàm lấy URL đầy đủ cho ảnh
+const getFullImageUrl = (path: string) => {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    return path.startsWith("http") ? path : `${BASE_URL}${path}`;
+};
+
 const AdminUi = (props: IProps) => {
     const { data: initialData, meta } = props;
     const [data, setData] = useState<DataType[]>(initialData); // State quản lý dữ liệu
@@ -45,7 +52,6 @@ const AdminUi = (props: IProps) => {
 
     /**
      * Hàm xử lý khi nhấn nút duyệt
-     * @param id - ID của bản ghi cần duyệt
      */
     const handleApprove = async (id: string) => {
         setLoading(true);
@@ -68,7 +74,6 @@ const AdminUi = (props: IProps) => {
 
     /**
      * Hàm xử lý khi nhấn nút từ chối
-     * @param id - ID của bản ghi cần từ chối
      */
     const handleReject = async (id: string) => {
         setLoading(true);
@@ -89,6 +94,36 @@ const AdminUi = (props: IProps) => {
         }
     };
 
+    const handleBanUser = (id: string) => {
+        Modal.confirm({
+            title: "Xác nhận cấm người dùng này?",
+            content:
+                "Hành động này không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?",
+            okText: "Cấm",
+            okType: "danger",
+            cancelText: "Hủy",
+            onOk: async () => {
+                setLoading(true);
+                try {
+                    // Gọi API thật để cấm
+                    // await banUserApi(id);
+
+                    // Cập nhật UI ngay lập tức
+                    setData(
+                        data.map((item) =>
+                            item.id === id
+                                ? { ...item, status: "rejected" }
+                                : item
+                        )
+                    );
+                } catch (error) {
+                    console.error("Lỗi khi cấm user:", error);
+                } finally {
+                    setLoading(false);
+                }
+            },
+        });
+    };
     /**
      * Hàm xử lý khi thay đổi phân trang, sắp xếp,...
      */
@@ -108,47 +143,50 @@ const AdminUi = (props: IProps) => {
 
     /**
      * Hàm render ảnh minh chứng
-     * @param images - Mảng các URL ảnh
-     * @returns JSX hiển thị ảnh
      */
-    const renderProofImages = (images: string[]) => (
-        <Image.PreviewGroup items={images}>
-            <Space size={4}>
-                {images.slice(0, 2).map((img, index) => (
-                    <Image
-                        key={index}
-                        src={img}
-                        width={80}
-                        height={80}
-                        alt={`Proof ${index + 1}`}
-                        style={{
-                            display: "block",
-                            border: "1px solid #d1d5db",
-                            objectFit: "cover",
-                        }}
-                    />
-                ))}
-                {images.length > 2 && (
-                    <div
-                        style={{
-                            position: "relative",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: "80px",
-                            height: "80px",
-                            border: "1px solid #d1d5db",
-                            backgroundColor: "#f3f4f6",
-                        }}
-                    >
-                        <Typography.Text strong>
-                            +{images.length - 2}
-                        </Typography.Text>
-                    </div>
-                )}
-            </Space>
-        </Image.PreviewGroup>
-    );
+
+    const renderProofImages = (images: string[]) => {
+        const fullImages = images.map(getFullImageUrl); // Sửa chỗ này
+
+        return (
+            <Image.PreviewGroup items={fullImages}>
+                <Space size={4}>
+                    {images.slice(0, 2).map((img, index) => (
+                        <Image
+                            key={index}
+                            src={getFullImageUrl(img)}
+                            width={80}
+                            height={80}
+                            alt={`Proof ${index + 1}`}
+                            style={{
+                                display: "block",
+                                border: "1px solid #d1d5db",
+                                objectFit: "cover",
+                            }}
+                        />
+                    ))}
+                    {images.length > 2 && (
+                        <div
+                            style={{
+                                position: "relative",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "80px",
+                                height: "80px",
+                                border: "1px solid #d1d5db",
+                                backgroundColor: "#f3f4f6",
+                            }}
+                        >
+                            <Typography.Text strong>
+                                +{images.length - 2}
+                            </Typography.Text>
+                        </div>
+                    )}
+                </Space>
+            </Image.PreviewGroup>
+        );
+    };
 
     // Định nghĩa các cột cho bảng
     const columns: ColumnsType<DataType> = [
@@ -290,7 +328,7 @@ const AdminUi = (props: IProps) => {
             title: "Hành động",
             key: "action",
             fixed: "right",
-            width: 180,
+            width: 220,
             render: (_, record) => (
                 <Space size="small">
                     {record.status === "pending" && (
@@ -304,12 +342,24 @@ const AdminUi = (props: IProps) => {
                                 Duyệt
                             </Button>
                             <Button
-                                danger
+                                style={{
+                                    backgroundColor: "#faad14",
+                                    color: "white",
+                                    borderColor: "#faad14",
+                                }}
                                 size="small"
                                 loading={loading}
                                 onClick={() => handleReject(record.id)}
                             >
                                 Từ chối
+                            </Button>
+                            <Button
+                                danger
+                                size="small"
+                                loading={loading}
+                                onClick={() => handleBanUser(record.id)}
+                            >
+                                Cấm
                             </Button>
                         </>
                     )}

@@ -1,7 +1,7 @@
 "use server";
 
 import { signIn, signOut } from "@/auth";
-import request from "@/util/request";
+import request, { ApiResponse } from "@/util/request";
 
 export const requestApiRegisterUser = async (data: IRequestApiRegisterUser) => {
     try {
@@ -183,6 +183,29 @@ export const reqCreatePost = async (data: any) => {
         return result;
     } catch (error) {
         // console.log(error);
+        throw error;
+    }
+};
+
+export const reqGetAllPost = async (
+    current: number = 1,
+    pageSize: number = 10
+): Promise<any> => {
+    try {
+        const result = await request.get<IResGetAllPost>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/get-all-post`,
+            {
+                queryParams: {
+                    current: current,
+                    pageSize: pageSize,
+                },
+                next: {
+                    tags: ["list-posts"],
+                },
+            }
+        );
+        return result;
+    } catch (error) {
         throw error;
     }
 };

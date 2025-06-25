@@ -70,3 +70,13 @@ interface IResGetProfileUser extends IResponseMessage {}
 interface IResCreatePost {
     message: string;
 }
+
+interface IResGetAllPost {
+    results: [];
+    meta: {
+        current: number;
+        pageSize: number;
+        pages: number;
+        total: number;
+    };
+}

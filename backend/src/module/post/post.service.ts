@@ -71,4 +71,49 @@ export class PostService {
       message: `Các bài đã được gửi đi thành công`,
     };
   }
+
+  async getAllPosts(current: number = 1, pageSize: number = 10) {
+    try {
+      // 	Bỏ qua n bản ghi đầu tiên (giống OFFSET)
+      const skip = (current - 1) * pageSize;
+
+      const [posts, total] = await this.postRepository
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.user', 'user')
+        .where('post.status = :status', { status: 'pending' })
+        .orderBy('post.createdAt', 'ASC')
+        .skip(skip)
+        .take(pageSize) //	Lấy tối đa m bản ghi sau khi đã skip (giống LIMIT)
+        .getManyAndCount();
+
+      // Transform data để match với client
+      const results = posts.map((post) => ({
+        key: post.id.toString(),
+        id: post.id,
+        email: post.user?.email || '',
+        displayName: post.user?.displayName || '',
+        bankAccountName: post.bankAccountName,
+        phoneNumber: post.phoneNumber,
+        bankAccount: post.bankAccountNumber,
+        bankName: post.bankName,
+        facebookLink: post.facebookProfileLink,
+        reportLink: post.complaintLink,
+        proofImages: post.imagePaths || [],
+        comment: post.personalComment,
+        status: post.status,
+      }));
+
+      return {
+        results,
+        meta: {
+          current,
+          pageSize,
+          pages: Math.ceil(total / pageSize),
+          total,
+        },
+      };
+    } catch (error) {
+      throw new error();
+    }
+  }
 }
