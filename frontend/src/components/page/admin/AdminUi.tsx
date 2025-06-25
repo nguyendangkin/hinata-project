@@ -195,14 +195,14 @@ const AdminUi = (props: IProps) => {
             render: (_: any, record: any, index: any) => {
                 return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
             },
-            width: 60,
+            width: 50,
             fixed: "left",
         },
         {
             title: "ID bài",
             dataIndex: "id",
             key: "id",
-            width: 100,
+            width: 60,
             fixed: "left",
             render: (id) => (
                 <span style={{ fontFamily: "monospace" }}>{id}</span>
