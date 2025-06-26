@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "antd";
 import {
     reqApprovePost,
+    reqBanUser,
     reqRejectPost,
     requestApiLogoutUser,
 } from "@/util/actions";
@@ -107,7 +108,7 @@ const AdminUi = (props: IProps) => {
             }
             // Cập nhật UI ngay lập tức (optimistic update)
         } catch (error) {
-            console.error("Lỗi khi từ chối:", error);
+            message.error("Lỗi khi từ chối");
         } finally {
             setLoading(false);
         }
@@ -125,11 +126,15 @@ const AdminUi = (props: IProps) => {
             onOk: async () => {
                 setLoading(true);
                 try {
-                    // Gọi API thật để cấm
-                    // await banUserApi(id);
-                    // Cập nhật UI ngay lập tức
+                    const result = await handleApiCall(reqBanUser(email));
+
+                    if (result.statusCode === 201) {
+                        message.success(result.data?.message);
+                    } else if (result.statusCode === 400) {
+                        message.error(result.message);
+                    }
                 } catch (error) {
-                    console.error("Lỗi khi cấm user:", error);
+                    message.error("Lỗi khi cấm user");
                 } finally {
                     setLoading(false);
                 }
@@ -198,14 +203,14 @@ const AdminUi = (props: IProps) => {
 
     // Định nghĩa các cột cho bảng
     const columns: ColumnsType<DataType> = [
-        {
-            title: "STT",
-            render: (_: any, record: any, index: any) => {
-                return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
-            },
-            width: 50,
-            fixed: "left",
-        },
+        // {
+        //     title: "STT",
+        //     render: (_: any, record: any, index: any) => {
+        //         return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
+        //     },
+        //     width: 50,
+        //     fixed: "left",
+        // },
         {
             title: "ID bài",
             dataIndex: "id",

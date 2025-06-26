@@ -87,3 +87,4 @@ interface IResApprovePost {
 }
 
 interface IResRejectPost extends IResponseMessage {}
+interface IResBanUser extends IResponseMessage {}

@@ -236,3 +236,16 @@ export const reqRejectPost = async (id: string) => {
         throw error;
     }
 };
+
+export const reqBanUser = async (email: string) => {
+    try {
+        const result = await request.post<IResBanUser>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/ban-user`,
+            { email }
+        );
+        revalidateTag("list-posts");
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
