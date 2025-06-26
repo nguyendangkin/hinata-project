@@ -33,6 +33,11 @@ export default auth((req) => {
         return NextResponse.redirect(new URL("/", nextUrl));
     }
 
+    // Nếu đã login và bị cấm (role === "ban") thì không được vào route /post
+    if (isLoggedIn && role === "ban" && nextUrl.pathname.startsWith("/post")) {
+        return NextResponse.redirect(new URL("/ban", nextUrl));
+    }
+
     // nếu không match điều kiện nào thì tiếp tục bình thường
     return NextResponse.next();
 });
