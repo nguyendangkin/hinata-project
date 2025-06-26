@@ -7,12 +7,14 @@ import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 import { User } from 'src/module/user/entities/user.entity';
+import { UserService } from 'src/module/user/user.service';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(PostEntity)
     private readonly postRepository: Repository<PostEntity>,
+    private readonly userService: UserService,
   ) {}
 
   async handleCreatePost(
@@ -130,7 +132,7 @@ export class PostService {
 
       // Kiểm tra trạng thái hiện tại
       if (post.status !== 'pending') {
-        throw new Error(
+        throw new BadRequestException(
           `Bài post này đã được xử lý với trạng thái: ${post.status}`,
         );
       }
@@ -150,5 +152,44 @@ export class PostService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async handleRejectPost(id: string) {
+    try {
+      // Kiểm tra xem post có tồn tại không
+      const post = await this.postRepository.findOne({
+        where: { id: parseInt(id) },
+      });
+
+      if (!post) {
+        throw new BadRequestException(`Không tìm thấy bài post với ID: ${id}`);
+      }
+
+      // Kiểm tra trạng thái hiện tại
+      if (post.status !== 'pending') {
+        throw new BadRequestException(
+          `Bài post này đã được xử lý với trạng thái: ${post.status}`,
+        );
+      }
+
+      // Cập nhật trạng thái thành rejected
+      await this.postRepository.update(
+        { id: parseInt(id) },
+        {
+          status: 'rejected',
+        },
+      );
+
+      return {
+        id: id,
+        message: `Bài post với ID ${id} đã bị từ chối.`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async handleBanUser(email: string) {
+    return await this.userService.handleBanUser(email);
   }
 }

@@ -24,7 +24,7 @@ export default auth((req) => {
         return NextResponse.redirect(new URL("/login", nextUrl));
     }
 
-    // Nếu đã login nhưng cố vào /admin mà không có role admin
+    // Nếu đã login nhưng cố vào /admin mà không có role admin thì
     if (
         isLoggedIn &&
         nextUrl.pathname.startsWith("/admin") &&

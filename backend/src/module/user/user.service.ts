@@ -440,4 +440,42 @@ export class UserService {
       throw error;
     }
   }
+
+  async handleBanUser(email: string) {
+    try {
+      // Find user by email
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new BadRequestException(
+          'Email tài khoản người dùng không tồn tại',
+        );
+      }
+
+      // kiểm tra xem người dùng đã bị ban chưa
+      if (user.role === 'ban') {
+        throw new BadRequestException(
+          'Tài khoản người dùng đã bị ban trước đó',
+        );
+      }
+
+      // kiểm tra xem người dùng có phải là admin không
+      if (user.role === 'admin') {
+        throw new BadRequestException('Không thể ban tài khoản admin');
+      }
+
+      // Update and save
+      user.role = 'ban';
+      const resultUser = await this.userRepository.save(user);
+
+      return {
+        id: resultUser.id,
+        message: 'Ban tài khoản thành công',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

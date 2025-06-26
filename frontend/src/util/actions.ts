@@ -2,6 +2,7 @@
 
 import { signIn, signOut } from "@/auth";
 import request, { ApiResponse } from "@/util/request";
+import { revalidateTag } from "next/cache";
 
 export const requestApiRegisterUser = async (data: IRequestApiRegisterUser) => {
     try {
@@ -204,6 +205,32 @@ export const reqGetAllPost = async (
                 },
             }
         );
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const reqApprovePost = async (id: string) => {
+    try {
+        const result = await request.post<IResApprovePost>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/approve-post`,
+            { id }
+        );
+        revalidateTag("list-posts");
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const reqRejectPost = async (id: string) => {
+    try {
+        const result = await request.post<IResRejectPost>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/rejected-post`,
+            { id }
+        );
+        revalidateTag("list-posts");
         return result;
     } catch (error) {
         throw error;

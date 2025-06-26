@@ -11,6 +11,7 @@ import {
 import { PostService } from './post.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CreatePostDto } from './dto/create-post.dto';
+import { Roles } from 'src/decorator/roles.decorator';
 
 @Controller('post')
 export class PostController {
@@ -27,7 +28,9 @@ export class PostController {
     return this.postService.handleCreatePost(data, files, user);
   }
 
+  // các api dành cho admin
   @Get('get-all-post')
+  @Roles('admin')
   async getAllPost(
     @Query('current') current?: string,
     @Query('pageSize') pageSize?: string,
@@ -38,7 +41,20 @@ export class PostController {
   }
 
   @Post('approve-post')
+  @Roles('admin')
   async approvePost(@Body('id') id: string) {
     return this.postService.handleApprovePost(id);
+  }
+
+  @Post('rejected-post')
+  @Roles('admin')
+  async rejectedPost(@Body('id') id: string) {
+    return this.postService.handleRejectPost(id);
+  }
+
+  @Post('ban-user')
+  @Roles('admin')
+  async banUser(@Body('email') email: string) {
+    return this.postService.handleBanUser(email);
   }
 }

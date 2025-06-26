@@ -14,8 +14,13 @@ import type { ColumnsType } from "antd/es/table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Modal } from "antd";
-import { requestApiLogoutUser } from "@/util/actions";
+import {
+    reqApprovePost,
+    reqRejectPost,
+    requestApiLogoutUser,
+} from "@/util/actions";
 import { useExpiredSession } from "@/util/serverRequestHandler";
+import { handleApiCall } from "@/util/clientRequestHandler";
 
 const { Title } = Typography;
 
@@ -72,11 +77,18 @@ const AdminUi = (props: IProps) => {
     const handleApprove = async (id: string) => {
         setLoading(true);
         try {
+            const result = await handleApiCall(reqApprovePost(id));
+
+            if (result.statusCode === 201) {
+                message.success(result.data?.message);
+            } else if (result.statusCode === 400) {
+                message.error(result.message);
+            }
             // Gọi API để duyệt ở đây
             // await callApiApprove(id);
             // Cập nhật UI ngay lập tức (optimistic update)
         } catch (error) {
-            console.error("Lỗi khi duyệt:", error);
+            message.error("Lỗi khi duyệt");
         } finally {
             setLoading(false);
         }
@@ -86,8 +98,13 @@ const AdminUi = (props: IProps) => {
     const handleReject = async (id: string) => {
         setLoading(true);
         try {
-            // Gọi API để từ chối ở đây
-            // await callApiReject(id);
+            const result = await handleApiCall(reqRejectPost(id));
+
+            if (result.statusCode === 201) {
+                message.success(result.data?.message);
+            } else if (result.statusCode === 400) {
+                message.error(result.message);
+            }
             // Cập nhật UI ngay lập tức (optimistic update)
         } catch (error) {
             console.error("Lỗi khi từ chối:", error);
@@ -96,7 +113,8 @@ const AdminUi = (props: IProps) => {
         }
     };
 
-    const handleBanUser = (id: string) => {
+    // Hàm xử lý khi nhấn nút cấm người dùng
+    const handleBanUser = (email: string) => {
         Modal.confirm({
             title: "Xác nhận cấm người dùng này?",
             content:
@@ -339,7 +357,7 @@ const AdminUi = (props: IProps) => {
                                 danger
                                 size="small"
                                 loading={loading}
-                                onClick={() => handleBanUser(record.id)}
+                                onClick={() => handleBanUser(record.email)}
                             >
                                 Cấm
                             </Button>

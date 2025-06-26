@@ -80,3 +80,10 @@ interface IResGetAllPost {
         total: number;
     };
 }
+
+interface IResApprovePost {
+    id: string;
+    message: string;
+}
+
+interface IResRejectPost extends IResponseMessage {}
