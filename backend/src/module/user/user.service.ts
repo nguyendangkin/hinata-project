@@ -25,6 +25,7 @@ import { firstValueFrom } from 'rxjs';
 import * as qs from 'qs';
 import { error } from 'console';
 import { ConfigService } from '@nestjs/config';
+import { Post } from 'src/module/post/entities/post.entity';
 
 @Injectable()
 export class UserService {
@@ -34,6 +35,8 @@ export class UserService {
     private readonly mailerService: MailerService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
   ) {}
 
   async createAdminIfNotExists() {
@@ -466,13 +469,16 @@ export class UserService {
         throw new BadRequestException('Không thể ban tài khoản admin');
       }
 
+      // xóa toàn bộ bài viết của người dùng này
+      await this.postRepository.delete({ user: { id: user.id } });
+
       // Update and save
       user.role = 'ban';
       const resultUser = await this.userRepository.save(user);
 
       return {
         id: resultUser.id,
-        message: 'Ban tài khoản thành công',
+        message: 'Ban tài khoản thành công và đã xoá toàn bộ bài viết',
       };
     } catch (error) {
       throw error;
