@@ -26,6 +26,8 @@ import * as qs from 'qs';
 import { error } from 'console';
 import { ConfigService } from '@nestjs/config';
 import { Post } from 'src/module/post/entities/post.entity';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UserService {
@@ -449,6 +451,7 @@ export class UserService {
       // Find user by email
       const user = await this.userRepository.findOne({
         where: { email },
+        relations: ['posts'],
       });
 
       if (!user) {
@@ -469,6 +472,18 @@ export class UserService {
         throw new BadRequestException('Không thể ban tài khoản admin');
       }
 
+      // Lặp qua các bài viết để xóa ảnh
+      for (const post of user.posts) {
+        if (post.imagePaths && post.imagePaths.length > 0) {
+          for (const imagePath of post.imagePaths) {
+            const fullPath = path.join(process.cwd(), imagePath);
+            if (fs.existsSync(fullPath)) {
+              fs.unlinkSync(fullPath);
+            }
+          }
+        }
+      }
+
       // xóa toàn bộ bài viết của người dùng này
       await this.postRepository.delete({ user: { id: user.id } });
 
@@ -478,7 +493,7 @@ export class UserService {
 
       return {
         id: resultUser.id,
-        message: 'Ban tài khoản thành công và đã xoá toàn bộ bài viết',
+        message: 'Ban tài khoản thành công và đã xoá bài viết kèm ảnh',
       };
     } catch (error) {
       throw error;
