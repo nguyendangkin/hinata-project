@@ -12,6 +12,7 @@ import { PostService } from './post.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Roles } from 'src/decorator/roles.decorator';
+import { Public } from 'src/decorator/mainCommon';
 
 @Controller('post')
 export class PostController {
@@ -56,5 +57,18 @@ export class PostController {
   @Roles('admin')
   async banUser(@Body('email') email: string) {
     return this.postService.handleBanUser(email);
+  }
+
+  // các api dành cho client công khai
+  @Public()
+  @Get('get-all-post-for-client')
+  async getAllPostForClient(
+    @Query('current') current?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+  ) {
+    const currentPage = current ? parseInt(current) : 1;
+    const size = pageSize ? parseInt(pageSize) : 10;
+    return this.postService.getAllPostForClient(currentPage, size, search);
   }
 }

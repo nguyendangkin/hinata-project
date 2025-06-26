@@ -249,3 +249,26 @@ export const reqBanUser = async (email: string) => {
         throw error;
     }
 };
+
+export const reqGetAllPostForClient = async (
+    current: number = 1,
+    pageSize: number = 10,
+    search: string = ""
+): Promise<any> => {
+    try {
+        const result = await request.get<IResGetAllPost>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/get-all-post-for-client`,
+            {
+                queryParams: {
+                    current: current,
+                    pageSize: pageSize,
+                    search: search,
+                },
+            }
+        );
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};

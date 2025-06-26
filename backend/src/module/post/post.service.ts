@@ -206,4 +206,66 @@ export class PostService {
   async handleBanUser(email: string) {
     return await this.userService.handleBanUser(email);
   }
+
+  async getAllPostForClient(
+    current: number = 1,
+    pageSize: number = 10,
+    search?: string,
+  ) {
+    try {
+      const skip = (current - 1) * pageSize;
+
+      const query = this.postRepository
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.user', 'user')
+        .where('post.status = :status', { status: 'approved' });
+
+      // Nếu có từ khóa tìm kiếm, áp dụng tìm theo các field
+      if (search) {
+        const searchLower = `%${search.toLowerCase()}%`;
+        query.andWhere(
+          `(LOWER(CAST(post.id AS TEXT)) LIKE :search
+          OR LOWER(post.bankAccountName) LIKE :search
+          OR LOWER(post.bankAccountNumber) LIKE :search
+          OR LOWER(post.phoneNumber) LIKE :search
+          OR LOWER(post.facebookProfileLink) LIKE :search)`,
+          { search: searchLower },
+        );
+      }
+      // Sắp xếp tăng dần theo thời gian tạo  // Áp dụng phân trang
+      query.orderBy('post.createdAt', 'ASC').skip(skip).take(pageSize);
+
+      // Thực hiện truy vấn và lấy kết quả + tổng số bản ghi
+      const [posts, total] = await query.getManyAndCount();
+
+      // Chuyển đổi kết quả sang định dạng client mong muốn
+      const results = posts.map((post) => ({
+        key: post.id.toString(),
+        id: post.id,
+        email: post.user?.email || '',
+        displayName: post.user?.displayName || '',
+        bankAccountName: post.bankAccountName,
+        phoneNumber: post.phoneNumber,
+        bankAccount: post.bankAccountNumber,
+        bankName: post.bankName,
+        facebookLink: post.facebookProfileLink,
+        reportLink: post.complaintLink,
+        proofImages: post.imagePaths || [],
+        comment: post.personalComment,
+        status: post.status,
+      }));
+
+      return {
+        results,
+        meta: {
+          current,
+          pageSize,
+          pages: Math.ceil(total / pageSize),
+          total,
+        },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
