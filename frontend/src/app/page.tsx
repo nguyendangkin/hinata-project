@@ -38,8 +38,20 @@ const HomePage = async (props: IProps) => {
 
         return (
             <main>
-                <div className="text-red-500 p-4 text-center">
-                    <h2 className="text-xl font-semibold mb-2">
+                <div
+                    style={{
+                        color: "#ef4444",
+                        padding: "16px",
+                        textAlign: "center",
+                    }}
+                >
+                    <h2
+                        style={{
+                            fontSize: "1.25rem",
+                            fontWeight: 600,
+                            marginBottom: "0.5rem",
+                        }}
+                    >
                         Không thể tải dữ liệu
                     </h2>
                     <p>Vui lòng thử lại sau hoặc liên hệ quản trị viên.</p>

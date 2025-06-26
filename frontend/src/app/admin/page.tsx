@@ -32,11 +32,26 @@ const AdminPage = async (props: IProps) => {
             </div>
         );
     } catch (error) {
-        console.error("Lỗi khi gọi API get-all-post:", error);
+        console.error("Lỗi khi gọi API get all post");
 
         return (
-            <div className="text-red-500 p-4">
-                Không thể tải dữ liệu. Vui lòng thử lại sau.
+            <div
+                style={{
+                    color: "#ef4444",
+                    padding: "16px",
+                    textAlign: "center",
+                }}
+            >
+                <h2
+                    style={{
+                        fontSize: "1.25rem",
+                        fontWeight: 600,
+                        marginBottom: "0.5rem",
+                    }}
+                >
+                    Không thể tải dữ liệu
+                </h2>
+                <p>Vui lòng thử lại sau hoặc liên hệ quản trị viên.</p>
             </div>
         );
     }
