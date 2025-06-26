@@ -9,6 +9,8 @@ import * as path from 'path';
 import { User } from 'src/module/user/entities/user.entity';
 import { UserService } from 'src/module/user/user.service';
 
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
 @Injectable()
 export class PostService {
   constructor(
@@ -31,9 +33,21 @@ export class PostService {
         (f) => f.fieldname === `items[${i}][proofFiles][]`,
       );
 
+      //  Kiểm tra số lượng ảnh
+      if (imageFiles.length > 10) {
+        throw new BadRequestException(`Item ${i + 1}: Tối đa chỉ được 10 ảnh`);
+      }
+
       // khai báo mảng để lưu đường dẫn ảnh
       const imagePaths: string[] = [];
       for (const file of imageFiles) {
+        //  Kiểm tra loại file ảnh
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          throw new BadRequestException(
+            `Item ${i + 1}: File ${file.originalname} không phải là ảnh hợp lệ`,
+          );
+        }
+
         // Lấy phần mở rộng file
         const ext = path.extname(file.originalname);
         // Tạo tên file ngẫu nhiên
