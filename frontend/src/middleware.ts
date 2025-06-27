@@ -19,7 +19,8 @@ export default auth((req) => {
         !isLoggedIn &&
         !nextUrl.pathname.startsWith("/login") &&
         !nextUrl.pathname.startsWith("/register") &&
-        !nextUrl.pathname.startsWith("/forgot-password")
+        !nextUrl.pathname.startsWith("/forgot-password") &&
+        !nextUrl.pathname.startsWith("/scammer")
     ) {
         return NextResponse.redirect(new URL("/login", nextUrl));
     }
