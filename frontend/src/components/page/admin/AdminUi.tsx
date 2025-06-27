@@ -23,7 +23,7 @@ import {
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { handleApiCall } from "@/util/clientRequestHandler";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 // Interface mô tả cấu trúc dữ liệu cho mỗi bản ghi
 interface DataType {
@@ -171,6 +171,21 @@ const AdminUi = (props: IProps) => {
                             width={80}
                             height={80}
                             alt={`Proof ${index + 1}`}
+                            loading="lazy"
+                            placeholder={
+                                <div
+                                    style={{
+                                        width: 80,
+                                        height: 80,
+                                        background: "#f0f0f0",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Text type="secondary">Loading...</Text>
+                                </div>
+                            }
                             style={{
                                 display: "block",
                                 border: "1px solid #d1d5db",
