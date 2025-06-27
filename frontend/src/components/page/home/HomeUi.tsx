@@ -12,7 +12,7 @@ import {
     Col,
     Divider,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useExpiredSession } from "@/util/serverRequestHandler";
@@ -158,21 +158,57 @@ const HomeUi = (props: IProps) => {
             styles={{ body: { padding: "16px" } }}
         >
             {/* Header với ID, email, displayName */}
-            <div style={{ marginBottom: 12 }}>
-                <Text strong style={{ fontSize: "16px" }}>
-                    {post.id} | {post.email} | {post.displayName}
-                </Text>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 12,
+                    gap: 8,
+                    flexWrap: "wrap",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "baseline",
+                        gap: 8,
+                        flexWrap: "wrap",
+                    }}
+                >
+                    <Text strong style={{ fontSize: "16px", color: "#1890ff" }}>
+                        {post.id}
+                    </Text>
+                    <Divider
+                        type="vertical"
+                        style={{ margin: 0, height: "1em" }}
+                    />
+                    <Text style={{ fontSize: "15px" }}>{post.displayName}</Text>
+                    <Divider
+                        type="vertical"
+                        style={{ margin: 0, height: "1em" }}
+                    />
+                    <Link
+                        href={`mailto:${post.email}`}
+                        style={{ fontSize: "14px" }}
+                    >
+                        {post.email}
+                    </Link>
+                </div>
+
                 <Tag
                     color={
                         post.status === "approved"
                             ? "green"
                             : post.status === "rejected"
                             ? "red"
-                            : "default"
+                            : "orange"
                     }
-                    style={{ marginLeft: 8 }}
+                    style={{
+                        marginLeft: "auto",
+                        borderRadius: "4px",
+                    }}
                 >
-                    {post.status}
+                    {post.status.toUpperCase()}
                 </Tag>
             </div>
 
@@ -193,9 +229,7 @@ const HomeUi = (props: IProps) => {
                             <Text>{post.bankAccountName}</Text>
                         </div>
                         <div>
-                            <Text strong>
-                                Số tài khoản (tài khoản ngân hàng):{" "}
-                            </Text>
+                            <Text strong>Số tài khoản (ngân hàng): </Text>
                             <Text style={{ fontFamily: "monospace" }}>
                                 {post.bankAccount}
                             </Text>
@@ -214,13 +248,15 @@ const HomeUi = (props: IProps) => {
                         style={{ width: "100%" }}
                     >
                         <div>
-                            <Text strong>Link trang facebook cá nhân: </Text>
+                            <Text strong>Trang facebook cá nhân: </Text>
                             <Link href={post.facebookLink} target="_blank">
                                 Xem profile
                             </Link>
                         </div>
                         <div>
-                            <Text strong>Số điện thoại: </Text>
+                            <Text strong>
+                                Số điện thoại (hoặc là ZaloPay, MoMo, v.v.):{" "}
+                            </Text>
                             <Link href={`tel:${post.phoneNumber}`}>
                                 {post.phoneNumber}
                             </Link>
@@ -237,7 +273,7 @@ const HomeUi = (props: IProps) => {
 
             {/* File - Hình ảnh minh chứng */}
             <div style={{ marginTop: 16 }}>
-                <Text strong>File - Hình ảnh minh chứng:</Text>
+                <Text strong>Hình ảnh minh chứng:</Text>
                 <div style={{ marginTop: 8 }}>
                     {renderProofImages(post.proofImages)}
                 </div>
@@ -267,16 +303,83 @@ const HomeUi = (props: IProps) => {
     return (
         <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
             {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: 32 }}>
-                <Title level={1} style={{ color: "#1890ff", margin: 0 }}>
-                    Home
+            <div
+                style={{
+                    textAlign: "center",
+                    marginBottom: 32,
+                    padding: "0 16px",
+                }}
+            >
+                <Title
+                    level={1}
+                    style={{
+                        color: "#1890ff",
+                        margin: 0,
+                        marginBottom: 16,
+                        fontSize: "2.5rem",
+                        fontWeight: 600,
+                    }}
+                >
+                    Check Scam
                 </Title>
+
+                <div
+                    style={{
+                        maxWidth: "800px",
+                        margin: "0 auto",
+                        padding: "20px",
+                        backgroundColor: "#f0f7ff",
+                        borderRadius: "8px",
+                        border: "1px solid #d9eaff",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                    }}
+                >
+                    <Text
+                        style={{
+                            fontSize: "15px",
+                            color: "#333",
+                            textAlign: "left",
+                        }}
+                    >
+                        <div style={{ marginBottom: 8, fontWeight: 500 }}>
+                            🔍 Có thể tìm kiếm theo:
+                        </div>
+                        <ul
+                            style={{
+                                margin: 0,
+                                paddingLeft: 20,
+                                listStyleType: "none",
+                            }}
+                        >
+                            <li style={{ marginBottom: 6 }}>
+                                • <Text code>ID</Text> (ví dụ: 12345)
+                            </li>
+                            <li style={{ marginBottom: 6 }}>
+                                • <Text code>Tên chủ tài khoản</Text> (ví dụ:
+                                NGUYEN VAN A)
+                            </li>
+                            <li style={{ marginBottom: 6 }}>
+                                • <Text code>Số tài khoản</Text> (ví dụ:
+                                123456789)
+                            </li>
+                            <li style={{ marginBottom: 6 }}>
+                                • <Text code>Số điện thoại</Text> (ví dụ:
+                                0912345678)
+                            </li>
+                            <li>
+                                • <Text code>Link Facebook</Text> (là "Liên kết
+                                đến trang cá nhân của NGUYEN A". Trong trang cá
+                                nhân của họ, ở mục 3 chấm)
+                            </li>
+                        </ul>
+                    </Text>
+                </div>
             </div>
 
             {/* Search Bar */}
             <div style={{ marginBottom: 24 }}>
                 <Input
-                    placeholder="Search debounce..."
+                    placeholder="Nhập tông tin mà bạn muốn tra"
                     allowClear
                     size="large"
                     value={searchValue}
