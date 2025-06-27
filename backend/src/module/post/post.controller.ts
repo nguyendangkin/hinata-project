@@ -10,7 +10,13 @@ import {
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { CreatePostDto } from './dto/create-post.dto';
+import {
+  ApprovePostDto,
+  BanUserDto,
+  CreatePostDto,
+  GetAPostDto,
+  PaginationDto,
+} from './dto/create-post.dto';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Public } from 'src/decorator/mainCommon';
 
@@ -32,49 +38,56 @@ export class PostController {
   // các api dành cho admin
   @Get('get-all-post')
   @Roles('admin')
-  async getAllPost(
-    @Query('current') current?: string,
-    @Query('pageSize') pageSize?: string,
-  ) {
-    const currentPage = current ? parseInt(current) : 1;
-    const size = pageSize ? parseInt(pageSize) : 10;
-    return await this.postService.getAllPosts(currentPage, size);
+  async getAllPost(@Query() query: PaginationDto) {
+    return await this.postService.getAllPosts(query.current, query.pageSize);
   }
 
   @Post('approve-post')
   @Roles('admin')
-  async approvePost(@Body('id') id: string) {
-    return this.postService.handleApprovePost(id);
+  async approvePost(@Body() body: ApprovePostDto) {
+    return this.postService.handleApprovePost(body.id.toString());
   }
 
   @Post('rejected-post')
   @Roles('admin')
-  async rejectedPost(@Body('id') id: string) {
-    return this.postService.handleRejectPost(id);
+  async rejectedPost(@Body() body: ApprovePostDto) {
+    return this.postService.handleRejectPost(body.id.toString());
   }
 
   @Post('ban-user')
   @Roles('admin')
-  async banUser(@Body('email') email: string) {
-    return this.postService.handleBanUser(email);
+  async banUser(@Body() body: BanUserDto) {
+    return this.postService.handleBanUser(body.email);
   }
 
   // các api dành cho client công khai
   @Public()
   @Get('get-all-post-for-client')
   async getAllPostForClient(
-    @Query('current') current?: string,
-    @Query('pageSize') pageSize?: string,
+    @Query() query: PaginationDto,
     @Query('search') search?: string,
   ) {
-    const currentPage = current ? parseInt(current) : 1;
-    const size = pageSize ? parseInt(pageSize) : 10;
-    return this.postService.getAllPostForClient(currentPage, size, search);
+    return this.postService.getAllPostForClient(
+      query.current,
+      query.pageSize,
+      search,
+    );
   }
 
   @Public()
   @Get('get-a-post')
-  async getAPost(@Query('id') id: string) {
-    return this.postService.handleGetAPost(id);
+  async getAPost(@Query() query: GetAPostDto) {
+    return this.postService.handleGetAPost(query.id.toString());
+  }
+
+  //
+  @Get('get-my-posts')
+  async getMyPosts(@Req() req, @Query() query: PaginationDto) {
+    const user = req.user;
+    return this.postService.handleGetAllPostForProfile(
+      user,
+      query.current,
+      query.pageSize,
+    );
   }
 }

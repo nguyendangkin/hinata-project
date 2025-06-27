@@ -5,6 +5,9 @@ import {
   IsUrl,
   IsArray,
   ValidateNested,
+  IsInt,
+  IsPositive,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -43,4 +46,39 @@ export class CreatePostDto {
   @ValidateNested({ each: true })
   @Type(() => CreatePostItemDto)
   items: CreatePostItemDto[];
+}
+
+export class GetAPostDto {
+  @IsInt()
+  @IsPositive()
+  @Type(() => Number)
+  id: number;
+}
+
+export class PaginationDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  current?: number = 1;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  pageSize?: number = 10;
+}
+
+export class ApprovePostDto {
+  @IsInt()
+  @IsPositive()
+  @Type(() => Number)
+  id: number;
+}
+
+import { IsEmail } from 'class-validator';
+
+export class BanUserDto {
+  @IsEmail()
+  email: string;
 }

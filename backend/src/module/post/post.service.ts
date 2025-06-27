@@ -297,4 +297,48 @@ export class PostService {
       throw error;
     }
   }
+
+  async handleGetAllPostForProfile(
+    user: User,
+    current: number = 1,
+    pageSize: number = 10,
+  ) {
+    try {
+      const skip = (current - 1) * pageSize;
+
+      const [posts, total] = await this.postRepository
+        .createQueryBuilder('post')
+        .where('post.userId = :userId', { userId: user.id })
+        .orderBy('post.createdAt', 'DESC')
+        .skip(skip)
+        .take(pageSize)
+        .getManyAndCount();
+
+      const results = posts.map((post) => ({
+        id: post.id,
+        bankAccountName: post.bankAccountName,
+        phoneNumber: post.phoneNumber,
+        bankAccount: post.bankAccountNumber,
+        bankName: post.bankName,
+        facebookLink: post.facebookProfileLink,
+        reportLink: post.complaintLink,
+        proofImages: post.imagePaths || [],
+        comment: post.personalComment,
+        status: post.status,
+        createdAt: post.createdAt,
+      }));
+
+      return {
+        results,
+        meta: {
+          current,
+          pageSize,
+          pages: Math.ceil(total / pageSize),
+          total,
+        },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
