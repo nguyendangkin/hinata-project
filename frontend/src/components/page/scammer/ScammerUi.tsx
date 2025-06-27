@@ -1,6 +1,8 @@
 "use client";
 
 import { Card, Image, Space, Typography, Tag, Divider } from "antd";
+import { Button, message } from "antd";
+import { CopyOutlined } from "@ant-design/icons";
 
 const { Text, Link, Title } = Typography;
 
@@ -57,19 +59,23 @@ const ScammerUi = ({ data, loading = false, error = null }: IProps) => {
     return (
         <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
             <Card>
+                {/* Hàng đầu: ID, Display Name, Trạng thái */}
                 <div
                     style={{
                         display: "flex",
+                        alignItems: "center",
                         justifyContent: "space-between",
                         flexWrap: "wrap",
+                        gap: 8,
+                        marginBottom: 8,
                     }}
                 >
                     <div
                         style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 8,
                             flexWrap: "wrap",
+                            gap: 8,
                         }}
                     >
                         <Text strong style={{ fontSize: 16, color: "#1890ff" }}>
@@ -89,6 +95,27 @@ const ScammerUi = ({ data, loading = false, error = null }: IProps) => {
                     >
                         {data.status.toUpperCase()}
                     </Tag>
+                </div>
+
+                {/* Hàng thứ hai: Nút sao chép liên kết */}
+                <div style={{ textAlign: "right", marginBottom: 16 }}>
+                    <Button
+                        icon={<CopyOutlined />}
+                        onClick={() => {
+                            const url =
+                                typeof window !== "undefined"
+                                    ? window.location.href
+                                    : "";
+                            if (url) {
+                                navigator.clipboard.writeText(url);
+                                message.success(
+                                    "Đã sao chép liên kết bài viết!"
+                                );
+                            }
+                        }}
+                    >
+                        Sao chép liên kết
+                    </Button>
                 </div>
 
                 <Divider />

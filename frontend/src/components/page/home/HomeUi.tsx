@@ -11,11 +11,14 @@ import {
     Row,
     Col,
     Divider,
+    Button,
 } from "antd";
 import { InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useExpiredSession } from "@/util/serverRequestHandler";
+import { CopyOutlined } from "@ant-design/icons";
+import { message } from "antd";
 
 const { Title, Text, Link } = Typography;
 const { Search } = Input;
@@ -204,6 +207,32 @@ const HomeUi = (props: IProps) => {
                 >
                     {post.status.toUpperCase()}
                 </Tag>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Button
+                        icon={<CopyOutlined />}
+                        size="small"
+                        onClick={() => {
+                            const link = `${window.location.origin}/scammer/${post.id}`;
+                            navigator.clipboard.writeText(link);
+                            message.success("Đã sao chép liên kết bài viết!");
+                        }}
+                    >
+                        Sao chép liên kết
+                    </Button>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                    <Button
+                        type="link"
+                        onClick={() => router.push(`/scammer/${post.id}`)}
+                    >
+                        Xem ở tab đơn &rarr;
+                    </Button>
+                </div>
             </div>
 
             <Divider style={{ margin: "12px 0" }} />
