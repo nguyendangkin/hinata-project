@@ -24,7 +24,7 @@ const { Search } = Input;
 interface PostData {
     key: string;
     id: string;
-    email: string;
+
     displayName: string;
     bankAccountName: string;
     phoneNumber: string;
@@ -157,7 +157,7 @@ const HomeUi = (props: IProps) => {
             style={{ marginBottom: 16 }}
             styles={{ body: { padding: "16px" } }}
         >
-            {/* Header với ID, email, displayName */}
+            {/* Header với ID, displayName */}
             <div
                 style={{
                     display: "flex",
@@ -187,12 +187,6 @@ const HomeUi = (props: IProps) => {
                         type="vertical"
                         style={{ margin: 0, height: "1em" }}
                     />
-                    <Link
-                        href={`mailto:${post.email}`}
-                        style={{ fontSize: "14px" }}
-                    >
-                        {post.email}
-                    </Link>
                 </div>
 
                 <Tag

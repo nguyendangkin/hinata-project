@@ -242,7 +242,6 @@ export class PostService {
       const results = posts.map((post) => ({
         key: post.id.toString(),
         id: post.id,
-        email: post.user?.email || '',
         displayName: post.user?.displayName || '',
         bankAccountName: post.bankAccountName,
         phoneNumber: post.phoneNumber,
