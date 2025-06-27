@@ -321,28 +321,16 @@ const HomeUi = (props: IProps) => {
     );
 
     return (
-        <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ marginBottom: 32 }}>
             {/* Header */}
             <div
                 style={{
                     textAlign: "center",
+                    marginTop: 32,
                     marginBottom: 32,
                     padding: "0 16px",
                 }}
             >
-                <Title
-                    level={1}
-                    style={{
-                        color: "#1890ff",
-                        margin: 0,
-                        marginBottom: 16,
-                        fontSize: "2.5rem",
-                        fontWeight: 600,
-                    }}
-                >
-                    Check Scam
-                </Title>
-
                 <div
                     style={{
                         maxWidth: "800px",
@@ -372,7 +360,7 @@ const HomeUi = (props: IProps) => {
                             }}
                         >
                             <li style={{ marginBottom: 6 }}>
-                                • <Text code>ID</Text> (ví dụ: 12345)
+                                • <Text code>ID bài post</Text> (ví dụ: 12)
                             </li>
                             <li style={{ marginBottom: 6 }}>
                                 • <Text code>Tên chủ tài khoản</Text> (ví dụ:
@@ -388,8 +376,8 @@ const HomeUi = (props: IProps) => {
                             </li>
                             <li>
                                 • <Text code>Link Facebook</Text> (là "Liên kết
-                                đến trang cá nhân của NGUYEN A". Trong trang cá
-                                nhân của họ, ở mục 3 chấm)
+                                đến trang cá nhân của NGUYEN A". Vào trong trang
+                                cá nhân của họ, ở mục có ba dấu chấm)
                             </li>
                         </ul>
                     </Text>

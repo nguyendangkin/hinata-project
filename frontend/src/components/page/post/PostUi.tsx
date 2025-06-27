@@ -313,7 +313,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "bankAccountNumber"]}
-                            label="Số tài khoản (tài khoản ngân hàng)"
+                            label="Số tài khoản (ngân hàng)"
                             rules={[
                                 {
                                     required: true,
@@ -354,7 +354,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "phoneNumber"]}
-                            label="Số điện thoại (tài khoản ví điện tử: zalopay, mono, v.v.)"
+                            label="Số điện thoại (hoặc tài khoản ví điện tử: ZaloPay, MoMo, v.v.)"
                             rules={[
                                 {
                                     type: "string",
@@ -370,7 +370,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "facebookProfileLink"]}
-                            label="Link trang facebook cá nhân"
+                            label={`Link trang facebook cá nhân (là "Liên kết đến trang cá nhân của NGUYEN A". Vào trong trang cá nhân của họ, ở mục có ba dấu chấm)`}
                             rules={[
                                 {
                                     type: "string",

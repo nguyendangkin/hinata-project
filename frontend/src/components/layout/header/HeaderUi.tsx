@@ -31,27 +31,13 @@ const { Text } = Typography;
 
 const items: MenuProps["items"] = [
     {
-        label: <Link href="/">Trang chủ</Link>,
+        label: <Link href="/">Check scam</Link>,
         key: "/",
         icon: <HomeOutlined />,
     },
     {
         label: <Link href="/post">Tố cáo</Link>,
         key: "/post",
-    },
-    {
-        label: "Sản phẩm",
-        key: "products",
-        children: [
-            {
-                label: <Link href="/products/1">Sản phẩm 1</Link>,
-                key: "product1",
-            },
-            {
-                label: <Link href="/products/2">Sản phẩm 2</Link>,
-                key: "product2",
-            },
-        ],
     },
     {
         label: <Link href="/contact">Liên hệ</Link>,
@@ -64,11 +50,6 @@ const userMenuItems: MenuProps["items"] = [
         label: <Link href="/profile">Hồ sơ cá nhân</Link>,
         key: "profile",
         icon: <UserOutlined />,
-    },
-    {
-        label: <Link href="/settings">Cài đặt</Link>,
-        key: "settings",
-        icon: <SettingOutlined />,
     },
     {
         type: "divider",
