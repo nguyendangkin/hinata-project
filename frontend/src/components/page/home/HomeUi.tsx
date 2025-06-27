@@ -249,23 +249,35 @@ const HomeUi = (props: IProps) => {
                     >
                         <div>
                             <Text strong>Trang facebook cá nhân: </Text>
-                            <Link href={post.facebookLink} target="_blank">
-                                Xem profile
-                            </Link>
+                            {post.facebookLink ? (
+                                <Link href={post.facebookLink} target="_blank">
+                                    Xem profile
+                                </Link>
+                            ) : (
+                                <Text type="secondary">Không có thông tin</Text>
+                            )}
                         </div>
                         <div>
                             <Text strong>
                                 Số điện thoại (hoặc là ZaloPay, MoMo, v.v.):{" "}
                             </Text>
-                            <Link href={`tel:${post.phoneNumber}`}>
-                                {post.phoneNumber}
-                            </Link>
+                            {post.phoneNumber ? (
+                                <Link href={`tel:${post.phoneNumber}`}>
+                                    {post.phoneNumber}
+                                </Link>
+                            ) : (
+                                <Text type="secondary">Không có thông tin</Text>
+                            )}
                         </div>
                         <div>
                             <Text strong>Link báo cáo: </Text>
-                            <Link href={post.reportLink} target="_blank">
-                                Xem bài viết
-                            </Link>
+                            {post.reportLink ? (
+                                <Link href={post.reportLink} target="_blank">
+                                    Xem bài viết
+                                </Link>
+                            ) : (
+                                <Text type="secondary">Không có thông tin</Text>
+                            )}
                         </div>
                     </Space>
                 </Col>
@@ -280,7 +292,7 @@ const HomeUi = (props: IProps) => {
             </div>
 
             {/* Bình luận */}
-            {post.comment && (
+            {post.comment ? (
                 <div style={{ marginTop: 16 }}>
                     <Text strong>Bình luận:</Text>
                     <div
@@ -294,6 +306,20 @@ const HomeUi = (props: IProps) => {
                         }}
                     >
                         <Text>{post.comment}</Text>
+                    </div>
+                </div>
+            ) : (
+                <div style={{ marginTop: 16 }}>
+                    <Text strong>Bình luận:</Text>
+                    <div
+                        style={{
+                            marginTop: 4,
+                            padding: "8px 12px",
+                            backgroundColor: "#f5f5f5",
+                            borderRadius: "4px",
+                        }}
+                    >
+                        <Text type="secondary">Không có bình luận</Text>
                     </div>
                 </div>
             )}
