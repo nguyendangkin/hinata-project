@@ -272,3 +272,17 @@ export const reqGetAllPostForClient = async (
         throw error;
     }
 };
+
+export const reqGetAPost = async (id: string): Promise<any> => {
+    try {
+        const result = await request.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/get-a-post`,
+            {
+                queryParams: { id: id },
+            }
+        );
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};

@@ -71,4 +71,10 @@ export class PostController {
     const size = pageSize ? parseInt(pageSize) : 10;
     return this.postService.getAllPostForClient(currentPage, size, search);
   }
+
+  @Public()
+  @Get('get-a-post')
+  async getAPost(@Query('id') id: string) {
+    return this.postService.handleGetAPost(id);
+  }
 }

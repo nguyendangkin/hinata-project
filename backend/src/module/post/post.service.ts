@@ -267,4 +267,34 @@ export class PostService {
       throw error;
     }
   }
+
+  async handleGetAPost(id: string) {
+    try {
+      const post = await this.postRepository.findOne({
+        where: { id: parseInt(id) },
+        relations: ['user'], // Lấy cả thông tin user liên quan
+      });
+
+      if (!post) {
+        throw new BadRequestException(`Không tìm thấy bài post với ID: ${id}`);
+      }
+
+      return {
+        id: post.id,
+        displayName: post.user?.displayName || '',
+        bankAccountName: post.bankAccountName,
+        phoneNumber: post.phoneNumber,
+        bankAccount: post.bankAccountNumber,
+        bankName: post.bankName,
+        facebookLink: post.facebookProfileLink,
+        reportLink: post.complaintLink,
+        proofImages: post.imagePaths || [],
+        comment: post.personalComment,
+        status: post.status,
+        createdAt: post.createdAt,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
