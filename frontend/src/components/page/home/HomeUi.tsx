@@ -14,7 +14,7 @@ import {
     Button,
 } from "antd";
 import { InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { CopyOutlined } from "@ant-design/icons";
@@ -27,7 +27,6 @@ const { Search } = Input;
 interface PostData {
     key: string;
     id: string;
-
     displayName: string;
     bankAccountName: string;
     phoneNumber: string;
@@ -58,65 +57,20 @@ const getFullImageUrl = (path: string) => {
     return path.startsWith("http") ? path : `${BASE_URL}${path}`;
 };
 
-const HomeUi = (props: IProps) => {
-    const { data = [], meta, searchTerm = "" } = props;
-    const [searchValue, setSearchValue] = useState(searchTerm);
-    const [debouncedSearchValue, setDebouncedSearchValue] =
-        useState(searchTerm);
-
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
+// Memoized component cho từng card post
+const PostCard = memo(({ post }: { post: PostData }) => {
     const router = useRouter();
 
-    // Debounce effect - chờ 500ms sau khi user ngừng gõ
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            setDebouncedSearchValue(searchValue);
-        }, 500);
+    // Memoize hàm render ảnh
+    const renderProofImages = useMemo(() => {
+        if (!post.proofImages || post.proofImages.length === 0) return null;
 
-        return () => clearTimeout(timeoutId);
-    }, [searchValue]);
-
-    // Effect để thực hiện search khi debouncedSearchValue thay đổi
-    useEffect(() => {
-        if (debouncedSearchValue !== searchTerm) {
-            handleSearch(debouncedSearchValue);
-        }
-    }, [debouncedSearchValue]);
-
-    // Hàm xử lý tìm kiếm
-    const handleSearch = useCallback(
-        (value: string) => {
-            const params = new URLSearchParams(searchParams);
-            if (value.trim()) {
-                params.set("search", value.trim());
-                params.set("current", "1"); // Reset về trang đầu khi tìm kiếm
-            } else {
-                params.delete("search");
-            }
-            router.push(`${pathname}?${params.toString()}`);
-        },
-        [searchParams, pathname, router]
-    );
-
-    // Hàm xử lý phân trang
-    const handlePaginationChange = (page: number, pageSize: number) => {
-        const params = new URLSearchParams(searchParams);
-        params.set("current", page.toString());
-        params.set("pageSize", pageSize.toString());
-        router.push(`${pathname}?${params.toString()}`);
-    };
-
-    // Hàm render ảnh minh chứng
-    const renderProofImages = (images: string[]) => {
-        if (!images || images.length === 0) return null;
-
-        const fullImages = images.map(getFullImageUrl);
+        const fullImages = post.proofImages.map(getFullImageUrl);
 
         return (
             <Image.PreviewGroup items={fullImages}>
                 <Space size={4}>
-                    {images.slice(0, 3).map((img, index) => (
+                    {post.proofImages.slice(0, 3).map((img, index) => (
                         <Image
                             key={index}
                             src={getFullImageUrl(img)}
@@ -130,7 +84,7 @@ const HomeUi = (props: IProps) => {
                             }}
                         />
                     ))}
-                    {images.length > 3 && (
+                    {post.proofImages.length > 3 && (
                         <div
                             style={{
                                 display: "inline-flex",
@@ -145,18 +99,27 @@ const HomeUi = (props: IProps) => {
                                 fontWeight: "bold",
                             }}
                         >
-                            +{images.length - 3}
+                            +{post.proofImages.length - 3}
                         </div>
                     )}
                 </Space>
             </Image.PreviewGroup>
         );
-    };
+    }, [post.proofImages]);
 
-    // Hàm render card cho mỗi bài viết
-    const renderPostCard = (post: PostData) => (
+    // Memoize các hàm handler
+    const handleCopyLink = useCallback(() => {
+        const link = `${window.location.origin}/scammer/${post.id}`;
+        navigator.clipboard.writeText(link);
+        message.success("Đã sao chép liên kết bài viết!");
+    }, [post.id]);
+
+    const handleViewPost = useCallback(() => {
+        router.push(`/scammer/${post.id}`);
+    }, [post.id, router]);
+
+    return (
         <Card
-            key={post.id}
             style={{ marginBottom: 16 }}
             styles={{ body: { padding: "16px" } }}
         >
@@ -216,20 +179,13 @@ const HomeUi = (props: IProps) => {
                     <Button
                         icon={<CopyOutlined />}
                         size="small"
-                        onClick={() => {
-                            const link = `${window.location.origin}/scammer/${post.id}`;
-                            navigator.clipboard.writeText(link);
-                            message.success("Đã sao chép liên kết bài viết!");
-                        }}
+                        onClick={handleCopyLink}
                     >
                         Sao chép liên kết
                     </Button>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                    <Button
-                        type="link"
-                        onClick={() => router.push(`/scammer/${post.id}`)}
-                    >
+                    <Button type="link" onClick={handleViewPost}>
                         Xem ở tab đơn &rarr;
                     </Button>
                 </div>
@@ -309,9 +265,7 @@ const HomeUi = (props: IProps) => {
             {/* File - Hình ảnh minh chứng */}
             <div style={{ marginTop: 16 }}>
                 <Text strong>Hình ảnh minh chứng:</Text>
-                <div style={{ marginTop: 8 }}>
-                    {renderProofImages(post.proofImages)}
-                </div>
+                <div style={{ marginTop: 8 }}>{renderProofImages}</div>
             </div>
 
             {/* Bình luận */}
@@ -348,101 +302,230 @@ const HomeUi = (props: IProps) => {
             )}
         </Card>
     );
+});
+
+// Đặt displayName cho component
+PostCard.displayName = "PostCard";
+
+// Memoized component cho search section
+const SearchSection = memo(
+    ({
+        searchValue,
+        onSearchChange,
+        onPressEnter,
+        isSearching,
+    }: {
+        searchValue: string;
+        onSearchChange: (value: string) => void;
+        onPressEnter: () => void;
+        isSearching: boolean;
+    }) => {
+        return (
+            <>
+                {/* Header */}
+                <div
+                    style={{
+                        textAlign: "center",
+                        marginTop: 32,
+                        marginBottom: 32,
+                        padding: "0 16px",
+                    }}
+                >
+                    <div
+                        style={{
+                            maxWidth: "800px",
+                            margin: "0 auto",
+                            padding: "20px",
+                            backgroundColor: "#f0f7ff",
+                            borderRadius: "8px",
+                            border: "1px solid #d9eaff",
+                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: "15px",
+                                color: "#333",
+                                textAlign: "left",
+                            }}
+                        >
+                            <div style={{ marginBottom: 8, fontWeight: 500 }}>
+                                🔍 Có thể tìm kiếm theo:
+                            </div>
+                            <ul
+                                style={{
+                                    margin: 0,
+                                    paddingLeft: 20,
+                                    listStyleType: "none",
+                                }}
+                            >
+                                <li style={{ marginBottom: 6 }}>
+                                    • <Text code>ID bài post</Text> (ví dụ: 12)
+                                </li>
+                                <li style={{ marginBottom: 6 }}>
+                                    • <Text code>Tên chủ tài khoản</Text> (ví
+                                    dụ: NGUYEN VAN A)
+                                </li>
+                                <li style={{ marginBottom: 6 }}>
+                                    • <Text code>Số tài khoản</Text> (ví dụ:
+                                    123456789)
+                                </li>
+                                <li style={{ marginBottom: 6 }}>
+                                    • <Text code>Số điện thoại</Text> (ví dụ:
+                                    0912345678)
+                                </li>
+                                <li>
+                                    • <Text code>Link Facebook</Text> (là "Liên
+                                    kết đến trang cá nhân của NGUYEN A". Vào
+                                    trong trang cá nhân của họ, ở mục có ba dấu
+                                    chấm)
+                                </li>
+                            </ul>
+                        </Text>
+                    </div>
+                </div>
+
+                {/* Search Bar */}
+                <div style={{ marginBottom: 24 }}>
+                    <Input
+                        placeholder="Nhập tông tin mà bạn muốn tra"
+                        allowClear
+                        size="large"
+                        value={searchValue}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        onPressEnter={onPressEnter}
+                        style={{ width: "100%" }}
+                        prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+                    />
+                    {isSearching && (
+                        <div
+                            style={{
+                                fontSize: "12px",
+                                color: "#666",
+                                marginTop: "4px",
+                                textAlign: "right",
+                            }}
+                        >
+                            Đang tìm kiếm...
+                        </div>
+                    )}
+                </div>
+            </>
+        );
+    }
+);
+
+SearchSection.displayName = "SearchSection";
+
+const HomeUi = (props: IProps) => {
+    const { data = [], meta, searchTerm = "" } = props;
+    const [searchValue, setSearchValue] = useState(searchTerm);
+    const [isSearching, setIsSearching] = useState(false);
+
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+
+    // Sử dụng useRef để lưu timeout ID
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const currentSearchRef = useRef(searchTerm);
+
+    // Cập nhật searchValue khi searchTerm thay đổi (từ URL)
+    useEffect(() => {
+        if (searchTerm !== currentSearchRef.current) {
+            setSearchValue(searchTerm);
+            currentSearchRef.current = searchTerm;
+            setIsSearching(false);
+        }
+    }, [searchTerm]);
+
+    // Hàm xử lý tìm kiếm
+    const handleSearch = useCallback(
+        (value: string) => {
+            const params = new URLSearchParams(searchParams);
+            if (value.trim()) {
+                params.set("search", value.trim());
+                params.set("current", "1");
+            } else {
+                params.delete("search");
+            }
+            currentSearchRef.current = value.trim();
+            router.push(`${pathname}?${params.toString()}`);
+        },
+        [searchParams, pathname, router]
+    );
+
+    // Hàm xử lý thay đổi search với debounce tối ưu
+    const handleSearchChange = useCallback(
+        (value: string) => {
+            setSearchValue(value);
+
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+
+            if (value.trim() === currentSearchRef.current) {
+                setIsSearching(false);
+                return;
+            }
+
+            setIsSearching(true);
+
+            debounceTimeoutRef.current = setTimeout(() => {
+                handleSearch(value);
+                setIsSearching(false);
+            }, 300);
+        },
+        [handleSearch]
+    );
+
+    // Hàm xử lý khi nhấn Enter
+    const handlePressEnter = useCallback(() => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        handleSearch(searchValue);
+        setIsSearching(false);
+    }, [handleSearch, searchValue]);
+
+    // Cleanup timeout khi component unmount
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Hàm xử lý phân trang
+    const handlePaginationChange = useCallback(
+        (page: number, pageSize: number) => {
+            const params = new URLSearchParams(searchParams);
+            params.set("current", page.toString());
+            params.set("pageSize", pageSize.toString());
+            router.push(`${pathname}?${params.toString()}`);
+        },
+        [searchParams, router, pathname]
+    );
+
+    // Memoize danh sách các PostCard
+    const postCards = useMemo(() => {
+        return data.map((post) => <PostCard key={post.id} post={post} />);
+    }, [data]);
 
     return (
         <div style={{ marginBottom: 32 }}>
-            {/* Header */}
-            <div
-                style={{
-                    textAlign: "center",
-                    marginTop: 32,
-                    marginBottom: 32,
-                    padding: "0 16px",
-                }}
-            >
-                <div
-                    style={{
-                        maxWidth: "800px",
-                        margin: "0 auto",
-                        padding: "20px",
-                        backgroundColor: "#f0f7ff",
-                        borderRadius: "8px",
-                        border: "1px solid #d9eaff",
-                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-                    }}
-                >
-                    <Text
-                        style={{
-                            fontSize: "15px",
-                            color: "#333",
-                            textAlign: "left",
-                        }}
-                    >
-                        <div style={{ marginBottom: 8, fontWeight: 500 }}>
-                            🔍 Có thể tìm kiếm theo:
-                        </div>
-                        <ul
-                            style={{
-                                margin: 0,
-                                paddingLeft: 20,
-                                listStyleType: "none",
-                            }}
-                        >
-                            <li style={{ marginBottom: 6 }}>
-                                • <Text code>ID bài post</Text> (ví dụ: 12)
-                            </li>
-                            <li style={{ marginBottom: 6 }}>
-                                • <Text code>Tên chủ tài khoản</Text> (ví dụ:
-                                NGUYEN VAN A)
-                            </li>
-                            <li style={{ marginBottom: 6 }}>
-                                • <Text code>Số tài khoản</Text> (ví dụ:
-                                123456789)
-                            </li>
-                            <li style={{ marginBottom: 6 }}>
-                                • <Text code>Số điện thoại</Text> (ví dụ:
-                                0912345678)
-                            </li>
-                            <li>
-                                • <Text code>Link Facebook</Text> (là "Liên kết
-                                đến trang cá nhân của NGUYEN A". Vào trong trang
-                                cá nhân của họ, ở mục có ba dấu chấm)
-                            </li>
-                        </ul>
-                    </Text>
-                </div>
-            </div>
-
-            {/* Search Bar */}
-            <div style={{ marginBottom: 24 }}>
-                <Input
-                    placeholder="Nhập tông tin mà bạn muốn tra"
-                    allowClear
-                    size="large"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    onPressEnter={() => handleSearch(searchValue)}
-                    style={{ width: "100%" }}
-                    prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
-                />
-                {searchValue !== debouncedSearchValue && (
-                    <div
-                        style={{
-                            fontSize: "12px",
-                            color: "#666",
-                            marginTop: "4px",
-                            textAlign: "right",
-                        }}
-                    >
-                        Đang tìm kiếm...
-                    </div>
-                )}
-            </div>
+            <SearchSection
+                searchValue={searchValue}
+                onSearchChange={handleSearchChange}
+                onPressEnter={handlePressEnter}
+                isSearching={isSearching}
+            />
 
             {/* Danh sách bài viết */}
             <div style={{ marginBottom: 24 }}>
                 {data.length > 0 ? (
-                    data.map(renderPostCard)
+                    postCards
                 ) : (
                     <Card>
                         <div style={{ textAlign: "center", padding: "40px 0" }}>
