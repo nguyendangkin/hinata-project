@@ -10,6 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsEmail } from 'class-validator';
 
 export class CreatePostItemDto {
   @IsString()
@@ -67,6 +68,10 @@ export class PaginationDto {
   @Min(1)
   @Type(() => Number)
   pageSize?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class ApprovePostDto {
@@ -75,8 +80,6 @@ export class ApprovePostDto {
   @Type(() => Number)
   id: number;
 }
-
-import { IsEmail } from 'class-validator';
 
 export class BanUserDto {
   @IsEmail()

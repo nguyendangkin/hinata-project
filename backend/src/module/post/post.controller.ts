@@ -63,14 +63,11 @@ export class PostController {
   // các api dành cho client công khai
   @Public()
   @Get('get-all-post-for-client')
-  async getAllPostForClient(
-    @Query() query: PaginationDto,
-    @Query('search') search?: string,
-  ) {
+  async getAllPostForClient(@Query() query: PaginationDto) {
     return this.postService.getAllPostForClient(
       query.current,
       query.pageSize,
-      search,
+      query.search,
     );
   }
 
