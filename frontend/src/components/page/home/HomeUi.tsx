@@ -77,6 +77,21 @@ const PostCard = memo(({ post }: { post: PostData }) => {
                             width={60}
                             height={60}
                             alt={`Minh chứng ${index + 1}`}
+                            loading="lazy"
+                            placeholder={
+                                <div
+                                    style={{
+                                        width: 60,
+                                        height: 60,
+                                        background: "#f0f0f0",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Text type="secondary">Loading...</Text>
+                                </div>
+                            }
                             style={{
                                 border: "1px solid #d1d5db",
                                 objectFit: "cover",

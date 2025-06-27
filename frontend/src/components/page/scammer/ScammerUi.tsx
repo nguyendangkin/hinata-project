@@ -180,6 +180,23 @@ const ScammerUi = ({ data, loading = false, error = null }: IProps) => {
                                         width={100}
                                         height={100}
                                         src={getFullImageUrl(img)}
+                                        loading="lazy"
+                                        placeholder={
+                                            <div
+                                                style={{
+                                                    width: 100,
+                                                    height: 100,
+                                                    background: "#f0f0f0",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                <Text type="secondary">
+                                                    Đang tải...
+                                                </Text>
+                                            </div>
+                                        }
                                         alt={`Minh chứng ${index + 1}`}
                                         style={{
                                             objectFit: "cover",
