@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-
+import { Between, MoreThanOrEqual } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   ChangePasswordUserDto,
@@ -494,6 +494,104 @@ export class UserService {
       return {
         id: resultUser.id,
         message: 'Ban tài khoản thành công và đã xoá bài viết kèm ảnh',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAdminAnalytics() {
+    try {
+      const now = dayjs();
+      const startOfThisMonth = now.startOf('month').toDate();
+      const startOfLastMonth = now
+        .subtract(1, 'month')
+        .startOf('month')
+        .toDate();
+      const endOfLastMonth = now.startOf('month').toDate();
+
+      // ----------- USER ------------
+      const totalUsers = await this.userRepository.count();
+
+      const newUsersThisMonth = await this.userRepository.count({
+        where: {
+          createdAt: MoreThanOrEqual(startOfThisMonth),
+        },
+      });
+
+      const newUsersLastMonth = await this.userRepository.count({
+        where: {
+          createdAt: Between(startOfLastMonth, endOfLastMonth),
+        },
+      });
+
+      const growthRateUsers =
+        newUsersLastMonth === 0
+          ? 100
+          : ((newUsersThisMonth - newUsersLastMonth) / newUsersLastMonth) * 100;
+
+      const bannedUsers = await this.userRepository.count({
+        where: { role: 'ban' },
+      });
+
+      // ----------- POST ------------
+      const totalPosts = await this.postRepository.count();
+      const approvedPosts = await this.postRepository.count({
+        where: { status: 'approved' },
+      });
+      const rejectedPosts = await this.postRepository.count({
+        where: { status: 'rejected' },
+      });
+
+      const postsThisMonth = await this.postRepository.count({
+        where: {
+          createdAt: MoreThanOrEqual(startOfThisMonth),
+        },
+      });
+
+      const postsLastMonth = await this.postRepository.count({
+        where: {
+          createdAt: Between(startOfLastMonth, endOfLastMonth),
+        },
+      });
+
+      const growthRatePosts =
+        postsLastMonth === 0
+          ? 100
+          : ((postsThisMonth - postsLastMonth) / postsLastMonth) * 100;
+
+      // Số bài viết theo tháng (ví dụ: 6 tháng gần nhất)
+      const recentPostStats: { month: string; count: number }[] = [];
+      for (let i = 5; i >= 0; i--) {
+        const monthStart = now.subtract(i, 'month').startOf('month').toDate();
+        const monthEnd = now.subtract(i, 'month').endOf('month').toDate();
+
+        const count = await this.postRepository.count({
+          where: {
+            createdAt: Between(monthStart, monthEnd),
+          },
+        });
+
+        recentPostStats.push({
+          month: dayjs(monthStart).format('YYYY-MM'),
+          count,
+        });
+      }
+
+      return {
+        users: {
+          total: totalUsers,
+          newThisMonth: newUsersThisMonth,
+          growthRatePercent: Math.round(growthRateUsers),
+          banned: bannedUsers,
+        },
+        posts: {
+          total: totalPosts,
+          approved: approvedPosts,
+          rejected: rejectedPosts,
+          growthRatePercent: Math.round(growthRatePosts),
+          monthlyBreakdown: recentPostStats,
+        },
       };
     } catch (error) {
       throw error;

@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Public } from 'src/decorator/mainCommon';
+import { Roles } from 'src/decorator/roles.decorator';
 
 @Controller('user')
 export class UserController {
@@ -20,11 +21,17 @@ export class UserController {
   //   return await this.userService.getUidFacebookLink(link);
   // }
 
-  @Get('profile')
-  async getProfileUser() {
-    return {
-      id: 1,
-      message: 'Xin chào',
-    };
+  // @Get('profile')
+  // async getProfileUser() {
+  //   return {
+  //     id: 1,
+  //     message: 'Xin chào',
+  //   };
+  // }
+
+  @Get('admin-analytics')
+  @Roles('admin')
+  async getAdminAnalytics() {
+    return this.userService.getAdminAnalytics();
   }
 }

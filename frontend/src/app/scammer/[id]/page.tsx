@@ -15,30 +15,22 @@ const ScammerPage = async (props: IProps) => {
         if (!res?.data) {
             return (
                 <main>
-                    <ScammerUi
-                        data={undefined}
-                        loading={false}
-                        error="Không tìm thấy bài viết này"
-                    />
+                    <ScammerUi data={undefined} />
                 </main>
             );
         }
 
         return (
             <main>
-                <ScammerUi data={res.data} loading={false} error={null} />
+                <ScammerUi data={res.data} />
             </main>
         );
     } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
+        console.error("Lỗi khi gọi API");
 
         return (
             <main>
-                <ScammerUi
-                    data={undefined}
-                    loading={false}
-                    error="Lỗi hệ thống. Vui lòng thử lại sau."
-                />
+                <ScammerUi data={undefined} />
             </main>
         );
     }

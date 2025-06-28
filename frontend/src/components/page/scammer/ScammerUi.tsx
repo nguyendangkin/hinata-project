@@ -22,8 +22,6 @@ interface PostData {
 
 interface IProps {
     data?: PostData;
-    loading?: boolean;
-    error?: string | null;
 }
 
 const getFullImageUrl = (path: string) => {
@@ -31,23 +29,7 @@ const getFullImageUrl = (path: string) => {
     return path.startsWith("http") ? path : `${BASE_URL}${path}`;
 };
 
-const ScammerUi = ({ data, loading = false, error = null }: IProps) => {
-    if (loading) {
-        return (
-            <div style={{ padding: 32, textAlign: "center" }}>
-                <Text>Đang tải dữ liệu...</Text>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div style={{ padding: 32, textAlign: "center" }}>
-                <Text type="danger">{error}</Text>
-            </div>
-        );
-    }
-
+const ScammerUi = ({ data }: IProps) => {
     if (!data) {
         return (
             <div style={{ padding: 32, textAlign: "center" }}>

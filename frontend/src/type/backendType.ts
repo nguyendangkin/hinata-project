@@ -88,3 +88,19 @@ interface IResApprovePost {
 
 interface IResRejectPost extends IResponseMessage {}
 interface IResBanUser extends IResponseMessage {}
+
+interface IResGetAdminAnalytics {
+    users: {
+        total: number;
+        newThisMonth: number;
+        growthRatePercent: number;
+        banned: number;
+    };
+    posts: {
+        total: number;
+        approved: number;
+        rejected: number;
+        growthRatePercent: number;
+        monthlyBreakdown: [];
+    };
+}

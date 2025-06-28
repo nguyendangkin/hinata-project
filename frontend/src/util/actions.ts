@@ -307,3 +307,14 @@ export const reqGetMyPost = async (
         throw error;
     }
 };
+
+export const reqGetAdminAnalytics = async (): Promise<any> => {
+    try {
+        const result = await request.get<IResGetAdminAnalytics>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/admin-analytics`
+        );
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
