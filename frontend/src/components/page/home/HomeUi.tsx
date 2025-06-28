@@ -250,7 +250,7 @@ const PostCard = memo(({ post }: { post: PostData }) => {
                             <Text strong>Trang facebook cá nhân: </Text>
                             {post.facebookLink ? (
                                 <Link href={post.facebookLink} target="_blank">
-                                    Xem profile
+                                    {post.facebookLink}
                                 </Link>
                             ) : (
                                 <Text type="secondary">Không có thông tin</Text>
@@ -272,7 +272,7 @@ const PostCard = memo(({ post }: { post: PostData }) => {
                             <Text strong>Link báo cáo: </Text>
                             {post.reportLink ? (
                                 <Link href={post.reportLink} target="_blank">
-                                    Xem bài viết
+                                    {post.reportLink}
                                 </Link>
                             ) : (
                                 <Text type="secondary">Không có thông tin</Text>

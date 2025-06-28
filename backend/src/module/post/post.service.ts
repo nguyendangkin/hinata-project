@@ -233,7 +233,7 @@ export class PostService {
         );
       }
       // Sắp xếp tăng dần theo thời gian tạo  // Áp dụng phân trang
-      query.orderBy('post.createdAt', 'ASC').skip(skip).take(pageSize);
+      query.orderBy('post.createdAt', 'DESC').skip(skip).take(pageSize);
 
       // Thực hiện truy vấn và lấy kết quả + tổng số bản ghi
       const [posts, total] = await query.getManyAndCount();
