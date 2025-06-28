@@ -34,7 +34,7 @@ const getAuthToken = async (): Promise<string | null> => {
         const session = await auth();
         return session?.user.access_token || null;
     } catch (error) {
-        console.warn("Không lấy được token:", error);
+        console.warn("Không lấy được token:");
         return null;
     }
 };
