@@ -53,6 +53,58 @@ interface IProps {
     searchTerm?: string;
 }
 
+// Component HighlightText để highlight từ khóa tìm kiếm
+const HighlightText = memo(
+    ({
+        text,
+        searchTerm,
+        style = {},
+    }: {
+        text: string | null | undefined;
+        searchTerm: string;
+        style?: React.CSSProperties;
+    }) => {
+        // Chuyển đổi text thành string và xử lý các trường hợp null/undefined
+        const textString = text?.toString() || "";
+
+        if (!searchTerm || !textString) {
+            return <span style={style}>{textString}</span>;
+        }
+
+        // Tạo regex để tìm kiếm không phân biệt hoa thường
+        const regex = new RegExp(
+            `(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+            "gi"
+        );
+        const parts = textString.split(regex);
+
+        return (
+            <span style={style}>
+                {parts.map((part, index) =>
+                    regex.test(part) ? (
+                        <span
+                            key={index}
+                            style={{
+                                backgroundColor: "#fff3cd",
+                                color: "#856404",
+                                padding: "1px 2px",
+                                borderRadius: "2px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            {part}
+                        </span>
+                    ) : (
+                        part
+                    )
+                )}
+            </span>
+        );
+    }
+);
+
+HighlightText.displayName = "HighlightText";
+
 // Hàm helper để lấy URL đầy đủ của ảnh
 const getFullImageUrl = (path: string) => {
     const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -60,269 +112,314 @@ const getFullImageUrl = (path: string) => {
 };
 
 // Component PostCard hiển thị thông tin chi tiết của một bài viết
-const PostCard = memo(({ post }: { post: PostData }) => {
-    const router = useRouter();
+const PostCard = memo(
+    ({ post, searchTerm }: { post: PostData; searchTerm: string }) => {
+        const router = useRouter();
 
-    // Sử dụng useMemo để tối ưu hiệu năng render ảnh
-    const renderProofImages = useMemo(() => {
-        if (!post.proofImages || post.proofImages.length === 0) return null;
+        // Sử dụng useMemo để tối ưu hiệu năng render ảnh
+        const renderProofImages = useMemo(() => {
+            if (!post.proofImages || post.proofImages.length === 0) return null;
 
-        // Chuyển đổi đường dẫn ảnh thành URL đầy đủ
-        const fullImages = post.proofImages.map(getFullImageUrl);
+            // Chuyển đổi đường dẫn ảnh thành URL đầy đủ
+            const fullImages = post.proofImages.map(getFullImageUrl);
+
+            return (
+                <Image.PreviewGroup items={fullImages}>
+                    <Space size={4}>
+                        {post.proofImages.slice(0, 3).map((img, index) => (
+                            <Image
+                                key={index}
+                                src={getFullImageUrl(img)}
+                                width={60}
+                                height={60}
+                                alt={`Minh chứng ${index + 1}`}
+                                loading="lazy"
+                                placeholder={
+                                    <div
+                                        style={{
+                                            width: 60,
+                                            height: 60,
+                                            background: "#f0f0f0",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        <Text type="secondary">Loading...</Text>
+                                    </div>
+                                }
+                                style={{
+                                    border: "1px solid #d1d5db",
+                                    objectFit: "cover",
+                                    borderRadius: "4px",
+                                }}
+                            />
+                        ))}
+                        {post.proofImages.length > 3 && (
+                            <div
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: "60px",
+                                    height: "60px",
+                                    border: "1px solid #d1d5db",
+                                    backgroundColor: "#f3f4f6",
+                                    borderRadius: "4px",
+                                    fontSize: "12px",
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                +{post.proofImages.length - 3}
+                            </div>
+                        )}
+                    </Space>
+                </Image.PreviewGroup>
+            );
+        }, [post.proofImages]);
+
+        // Hàm xử lý sao chép link bài viết
+        const handleCopyLink = useCallback(() => {
+            const link = `${window.location.origin}/scammer/${post.id}`;
+            navigator.clipboard.writeText(link);
+            message.success("Đã sao chép liên kết bài viết!");
+        }, [post.id]);
+
+        // Hàm xử lý chuyển đến trang chi tiết bài viết
+        const handleViewPost = useCallback(() => {
+            router.push(`/scammer/${post.id}`);
+        }, [post.id, router]);
 
         return (
-            <Image.PreviewGroup items={fullImages}>
-                <Space size={4}>
-                    {post.proofImages.slice(0, 3).map((img, index) => (
-                        <Image
-                            key={index}
-                            src={getFullImageUrl(img)}
-                            width={60}
-                            height={60}
-                            alt={`Minh chứng ${index + 1}`}
-                            loading="lazy"
-                            placeholder={
-                                <div
-                                    style={{
-                                        width: 60,
-                                        height: 60,
-                                        background: "#f0f0f0",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <Text type="secondary">Loading...</Text>
-                                </div>
-                            }
-                            style={{
-                                border: "1px solid #d1d5db",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                            }}
-                        />
-                    ))}
-                    {post.proofImages.length > 3 && (
-                        <div
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "60px",
-                                height: "60px",
-                                border: "1px solid #d1d5db",
-                                backgroundColor: "#f3f4f6",
-                                borderRadius: "4px",
-                                fontSize: "12px",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            +{post.proofImages.length - 3}
-                        </div>
-                    )}
-                </Space>
-            </Image.PreviewGroup>
-        );
-    }, [post.proofImages]);
-
-    // Hàm xử lý sao chép link bài viết
-    const handleCopyLink = useCallback(() => {
-        const link = `${window.location.origin}/scammer/${post.id}`;
-        navigator.clipboard.writeText(link);
-        message.success("Đã sao chép liên kết bài viết!");
-    }, [post.id]);
-
-    // Hàm xử lý chuyển đến trang chi tiết bài viết
-    const handleViewPost = useCallback(() => {
-        router.push(`/scammer/${post.id}`);
-    }, [post.id, router]);
-
-    return (
-        <Card
-            style={{ marginBottom: 16 }}
-            styles={{ body: { padding: "16px" } }}
-        >
-            {/* Phần header của card */}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: 12,
-                    gap: 8,
-                    flexWrap: "wrap",
-                }}
+            <Card
+                style={{ marginBottom: 16 }}
+                styles={{ body: { padding: "16px" } }}
             >
+                {/* Phần header của card */}
                 <div
                     style={{
                         display: "flex",
-                        alignItems: "baseline",
+                        alignItems: "center",
+                        marginBottom: 12,
                         gap: 8,
                         flexWrap: "wrap",
                     }}
                 >
-                    <Text strong style={{ fontSize: "16px", color: "#1890ff" }}>
-                        {post.id}
-                    </Text>
-                    <Divider
-                        type="vertical"
-                        style={{ margin: 0, height: "1em" }}
-                    />
-                    <Text style={{ fontSize: "15px" }}>{post.displayName}</Text>
-                    <Divider
-                        type="vertical"
-                        style={{ margin: 0, height: "1em" }}
-                    />
-                </div>
-
-                {/* Tag trạng thái bài viết */}
-                <Tag
-                    color={
-                        post.status === "approved"
-                            ? "green"
-                            : post.status === "rejected"
-                            ? "red"
-                            : "orange"
-                    }
-                    style={{
-                        marginLeft: "auto",
-                        borderRadius: "4px",
-                    }}
-                >
-                    {post.status.toUpperCase()}
-                </Tag>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    <Button
-                        icon={<CopyOutlined />}
-                        size="small"
-                        onClick={handleCopyLink}
-                    >
-                        Sao chép liên kết
-                    </Button>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                    <Button type="link" onClick={handleViewPost}>
-                        Xem ở tab đơn &rarr;
-                    </Button>
-                </div>
-            </div>
-
-            <Divider style={{ margin: "12px 0" }} />
-
-            {/* Phần thông tin chi tiết */}
-            <Row gutter={[16, 8]}>
-                <Col xs={24} sm={12}>
-                    <Space
-                        direction="vertical"
-                        size={4}
-                        style={{ width: "100%" }}
-                    >
-                        <div>
-                            <Text strong>
-                                Họ và tên (tài khoản ngân hàng):{" "}
-                            </Text>
-                            <Text>{post.bankAccountName}</Text>
-                        </div>
-                        <div>
-                            <Text strong>Số tài khoản (ngân hàng): </Text>
-                            <Text style={{ fontFamily: "monospace" }}>
-                                {post.bankAccount}
-                            </Text>
-                        </div>
-                        <div>
-                            <Text strong>Tên ngân hàng: </Text>
-                            <Text>{post.bankName}</Text>
-                        </div>
-                    </Space>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                    <Space
-                        direction="vertical"
-                        size={4}
-                        style={{ width: "100%" }}
-                    >
-                        <div>
-                            <Text strong>Trang facebook cá nhân: </Text>
-                            {post.facebookLink ? (
-                                <Link href={post.facebookLink} target="_blank">
-                                    {post.facebookLink}
-                                </Link>
-                            ) : (
-                                <Text type="secondary">Không có thông tin</Text>
-                            )}
-                        </div>
-                        <div>
-                            <Text strong>
-                                Số điện thoại (hoặc là ZaloPay, MoMo, v.v.):{" "}
-                            </Text>
-                            {post.phoneNumber ? (
-                                <Link href={`tel:${post.phoneNumber}`}>
-                                    {post.phoneNumber}
-                                </Link>
-                            ) : (
-                                <Text type="secondary">Không có thông tin</Text>
-                            )}
-                        </div>
-                        <div>
-                            <Text strong>Link báo cáo: </Text>
-                            {post.reportLink ? (
-                                <Link href={post.reportLink} target="_blank">
-                                    {post.reportLink}
-                                </Link>
-                            ) : (
-                                <Text type="secondary">Không có thông tin</Text>
-                            )}
-                        </div>
-                    </Space>
-                </Col>
-            </Row>
-
-            {/* Phần hình ảnh minh chứng */}
-            <div style={{ marginTop: 16 }}>
-                <Text strong>Hình ảnh minh chứng:</Text>
-                <div style={{ marginTop: 8 }}>{renderProofImages}</div>
-            </div>
-
-            {/* Phần bình luận */}
-            {post.comment ? (
-                <div style={{ marginTop: 16 }}>
-                    <Text strong>Bình luận:</Text>
                     <div
                         style={{
-                            marginTop: 4,
-                            padding: "8px 12px",
-                            backgroundColor: "#f5f5f5",
-                            borderRadius: "4px",
-                            maxHeight: "100px",
-                            overflowY: "auto",
+                            display: "flex",
+                            alignItems: "baseline",
+                            gap: 8,
+                            flexWrap: "wrap",
                         }}
                     >
-                        <Text>{post.comment}</Text>
+                        <Text
+                            strong
+                            style={{ fontSize: "16px", color: "#1890ff" }}
+                        >
+                            <HighlightText
+                                text={post.id}
+                                searchTerm={searchTerm}
+                            />
+                        </Text>
+                        <Divider
+                            type="vertical"
+                            style={{ margin: 0, height: "1em" }}
+                        />
+                        <Text style={{ fontSize: "15px" }}>
+                            <HighlightText
+                                text={post.displayName}
+                                searchTerm={searchTerm}
+                            />
+                        </Text>
+                        <Divider
+                            type="vertical"
+                            style={{ margin: 0, height: "1em" }}
+                        />
                     </div>
-                </div>
-            ) : (
-                <div style={{ marginTop: 16 }}>
-                    <Text strong>Bình luận:</Text>
-                    <div
+
+                    {/* Tag trạng thái bài viết */}
+                    <Tag
+                        color={
+                            post.status === "approved"
+                                ? "green"
+                                : post.status === "rejected"
+                                ? "red"
+                                : "orange"
+                        }
                         style={{
-                            marginTop: 4,
-                            padding: "8px 12px",
-                            backgroundColor: "#f5f5f5",
+                            marginLeft: "auto",
                             borderRadius: "4px",
                         }}
                     >
-                        <Text type="secondary">Không có bình luận</Text>
+                        {post.status.toUpperCase()}
+                    </Tag>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Button
+                            icon={<CopyOutlined />}
+                            size="small"
+                            onClick={handleCopyLink}
+                        >
+                            Sao chép liên kết
+                        </Button>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                        <Button type="link" onClick={handleViewPost}>
+                            Xem ở tab đơn &rarr;
+                        </Button>
                     </div>
                 </div>
-            )}
-        </Card>
-    );
-});
+
+                <Divider style={{ margin: "12px 0" }} />
+
+                {/* Phần thông tin chi tiết */}
+                <Row gutter={[16, 8]}>
+                    <Col xs={24} sm={12}>
+                        <Space
+                            direction="vertical"
+                            size={4}
+                            style={{ width: "100%" }}
+                        >
+                            <div>
+                                <Text strong>
+                                    Họ và tên (tài khoản ngân hàng):{" "}
+                                </Text>
+                                <HighlightText
+                                    text={post.bankAccountName}
+                                    searchTerm={searchTerm}
+                                />
+                            </div>
+                            <div>
+                                <Text strong>Số tài khoản (ngân hàng): </Text>
+                                <HighlightText
+                                    text={post.bankAccount}
+                                    searchTerm={searchTerm}
+                                    style={{ fontFamily: "monospace" }}
+                                />
+                            </div>
+                            <div>
+                                <Text strong>Tên ngân hàng: </Text>
+                                <HighlightText
+                                    text={post.bankName}
+                                    searchTerm={searchTerm}
+                                />
+                            </div>
+                        </Space>
+                    </Col>
+
+                    <Col xs={24} sm={12}>
+                        <Space
+                            direction="vertical"
+                            size={4}
+                            style={{ width: "100%" }}
+                        >
+                            <div>
+                                <Text strong>Trang facebook cá nhân: </Text>
+                                {post.facebookLink ? (
+                                    <Link
+                                        href={post.facebookLink}
+                                        target="_blank"
+                                    >
+                                        <HighlightText
+                                            text={post.facebookLink}
+                                            searchTerm={searchTerm}
+                                        />
+                                    </Link>
+                                ) : (
+                                    <Text type="secondary">
+                                        Không có thông tin
+                                    </Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text strong>
+                                    Số điện thoại (hoặc là ZaloPay, MoMo, v.v.):{" "}
+                                </Text>
+                                {post.phoneNumber ? (
+                                    <Link href={`tel:${post.phoneNumber}`}>
+                                        <HighlightText
+                                            text={post.phoneNumber}
+                                            searchTerm={searchTerm}
+                                        />
+                                    </Link>
+                                ) : (
+                                    <Text type="secondary">
+                                        Không có thông tin
+                                    </Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text strong>Link báo cáo: </Text>
+                                {post.reportLink ? (
+                                    <Link
+                                        href={post.reportLink}
+                                        target="_blank"
+                                    >
+                                        <HighlightText
+                                            text={post.reportLink}
+                                            searchTerm={searchTerm}
+                                        />
+                                    </Link>
+                                ) : (
+                                    <Text type="secondary">
+                                        Không có thông tin
+                                    </Text>
+                                )}
+                            </div>
+                        </Space>
+                    </Col>
+                </Row>
+
+                {/* Phần hình ảnh minh chứng */}
+                <div style={{ marginTop: 16 }}>
+                    <Text strong>Hình ảnh minh chứng:</Text>
+                    <div style={{ marginTop: 8 }}>{renderProofImages}</div>
+                </div>
+
+                {/* Phần bình luận */}
+                {post.comment ? (
+                    <div style={{ marginTop: 16 }}>
+                        <Text strong>Bình luận:</Text>
+                        <div
+                            style={{
+                                marginTop: 4,
+                                padding: "8px 12px",
+                                backgroundColor: "#f5f5f5",
+                                borderRadius: "4px",
+                                maxHeight: "100px",
+                                overflowY: "auto",
+                            }}
+                        >
+                            <HighlightText
+                                text={post.comment}
+                                searchTerm={searchTerm}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <div style={{ marginTop: 16 }}>
+                        <Text strong>Bình luận:</Text>
+                        <div
+                            style={{
+                                marginTop: 4,
+                                padding: "8px 12px",
+                                backgroundColor: "#f5f5f5",
+                                borderRadius: "4px",
+                            }}
+                        >
+                            <Text type="secondary">Không có bình luận</Text>
+                        </div>
+                    </div>
+                )}
+            </Card>
+        );
+    }
+);
 
 // Đặt displayName cho component PostCard để dễ debug
 PostCard.displayName = "PostCard";
@@ -536,8 +633,10 @@ const HomeUi = (props: IProps) => {
 
     // Tối ưu hiệu năng render bằng cách memoize danh sách PostCard
     const postCards = useMemo(() => {
-        return data.map((post) => <PostCard key={post.id} post={post} />);
-    }, [data]);
+        return data.map((post) => (
+            <PostCard key={post.id} post={post} searchTerm={searchTerm} />
+        ));
+    }, [data, searchTerm]);
 
     return (
         <div style={{ marginBottom: 32 }}>
