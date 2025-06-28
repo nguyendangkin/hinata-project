@@ -1,5 +1,11 @@
 import { Post } from 'src/module/post/entities/post.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -32,6 +38,9 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   codeExpired: Date | null;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
