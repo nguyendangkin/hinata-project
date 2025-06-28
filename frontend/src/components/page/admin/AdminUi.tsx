@@ -22,6 +22,7 @@ import {
 } from "@/util/actions";
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { handleApiCall } from "@/util/clientRequestHandler";
+import { usePRouter } from "@/hooks/usePRouter";
 
 const { Title, Text } = Typography;
 
@@ -72,7 +73,7 @@ const AdminUi = (props: IProps) => {
     // Các hook của Next.js để quản lý routing
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const router = useRouter();
+    const router = usePRouter();
 
     // Hàm xử lý khi nhấn nút duyệt
     const handleApprove = async (id: string) => {

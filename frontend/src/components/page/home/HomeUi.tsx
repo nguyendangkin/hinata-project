@@ -20,6 +20,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { CopyOutlined } from "@ant-design/icons";
 import { message } from "antd";
+import { usePRouter } from "@/hooks/usePRouter";
 
 // Destructure các component từ Typography và Input
 const { Title, Text, Link } = Typography;
@@ -114,7 +115,7 @@ const getFullImageUrl = (path: string) => {
 // Component PostCard hiển thị thông tin chi tiết của một bài viết
 const PostCard = memo(
     ({ post, searchTerm }: { post: PostData; searchTerm: string }) => {
-        const router = useRouter();
+        const router = usePRouter();
 
         // Sử dụng useMemo để tối ưu hiệu năng render ảnh
         const renderProofImages = useMemo(() => {
@@ -544,7 +545,7 @@ const HomeUi = (props: IProps) => {
     // Các hook của Next.js để làm việc với routing
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const router = useRouter();
+    const router = usePRouter();
 
     // Refs để lưu trữ timeout và giá trị tìm kiếm hiện tại
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);

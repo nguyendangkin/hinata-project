@@ -18,6 +18,7 @@ import { Modal } from "antd";
 import { requestApiLogoutUser } from "@/util/actions";
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { handleApiCall } from "@/util/clientRequestHandler";
+import { usePRouter } from "@/hooks/usePRouter";
 
 const { Title, Text } = Typography;
 
@@ -54,10 +55,9 @@ const ProfileUi = (props: IProps) => {
     const { data, meta, expiredToken } = props;
     useExpiredSession(!!expiredToken);
 
-    const [loading, setLoading] = useState(false);
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const router = useRouter();
+    const router = usePRouter();
 
     const renderProofImages = (images: string[]) => {
         const fullImages = images.map(getFullImageUrl);
@@ -254,7 +254,6 @@ const ProfileUi = (props: IProps) => {
             <Table
                 columns={columns}
                 dataSource={data}
-                loading={loading}
                 scroll={{ x: 1500 }}
                 bordered
                 size="middle"

@@ -8,6 +8,7 @@ import AntdProvider from "@/providers/AntdProvider";
 import HeaderLayout from "@/components/layout/header/HeaderLayout";
 import FooterLayout from "@/components/layout/footer/FooterLayout";
 import ContentLayout from "@/components/layout/content/ContentLayout";
+import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
                         <FooterLayout />
                     </AntdProvider>
                 </AntdRegistry>
+                <NextTopLoader />
             </body>
         </html>
     );
