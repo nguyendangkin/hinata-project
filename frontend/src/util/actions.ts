@@ -286,3 +286,24 @@ export const reqGetAPost = async (id: string): Promise<any> => {
         throw error;
     }
 };
+
+export const reqGetMyPost = async (
+    current: number = 1,
+    pageSize: number = 10
+): Promise<any> => {
+    try {
+        const result = await request.get<IResGetAllPost>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/get-my-posts`,
+            {
+                queryParams: {
+                    current: current,
+                    pageSize: pageSize,
+                },
+            }
+        );
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
