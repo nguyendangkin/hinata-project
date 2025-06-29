@@ -42,6 +42,14 @@ export default auth((req) => {
         return NextResponse.redirect(new URL("/", nextUrl));
     }
 
+    if (
+        isLoggedIn &&
+        nextUrl.pathname.startsWith("/admin-delete-post") &&
+        role !== "admin"
+    ) {
+        return NextResponse.redirect(new URL("/", nextUrl));
+    }
+
     // Nếu đã login và bị cấm (role === "ban") thì không được vào route /post
     if (isLoggedIn && role === "ban" && nextUrl.pathname.startsWith("/post")) {
         return NextResponse.redirect(new URL("/ban", nextUrl));
