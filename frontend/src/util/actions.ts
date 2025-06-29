@@ -318,3 +318,15 @@ export const reqGetAdminAnalytics = async (): Promise<any> => {
         throw error;
     }
 };
+
+export const reqDeletePostByAdmin = async (id: string) => {
+    try {
+        const result = await request.post<IResDeletePost>(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/post/delete-post`,
+            { id }
+        );
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};

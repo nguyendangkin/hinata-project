@@ -341,4 +341,37 @@ export class PostService {
       throw error;
     }
   }
+
+  async handleDeletePost(id: number) {
+    try {
+      // Tìm post theo ID
+      const post = await this.postRepository.findOne({
+        where: { id: id },
+      });
+
+      if (!post) {
+        throw new BadRequestException(`Không tìm thấy bài post với ID: ${id}`);
+      }
+
+      // Nếu có ảnh chứng minh, xóa file vật lý trên ổ đĩa
+      if (post.imagePaths && post.imagePaths.length > 0) {
+        for (const imagePath of post.imagePaths) {
+          const fullPath = path.join(process.cwd(), imagePath);
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+          }
+        }
+      }
+
+      // Xóa bài post khỏi database
+      await this.postRepository.delete({ id: id });
+
+      return {
+        id,
+        message: `Bài post với ID ${id} đã được xóa thành công.`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

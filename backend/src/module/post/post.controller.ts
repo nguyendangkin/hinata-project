@@ -14,6 +14,7 @@ import {
   ApprovePostDto,
   BanUserDto,
   CreatePostDto,
+  DeletePostDto,
   GetAPostDto,
   PaginationDto,
 } from './dto/create-post.dto';
@@ -25,6 +26,7 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post('create')
+  @Roles('user', 'admin')
   @UseInterceptors(AnyFilesInterceptor())
   async create(
     @UploadedFiles() files: Express.Multer.File[],
@@ -86,5 +88,11 @@ export class PostController {
       query.current,
       query.pageSize,
     );
+  }
+
+  @Post('delete-post')
+  @Roles('admin')
+  async deletePost(@Body() body: DeletePostDto) {
+    return this.postService.handleDeletePost(body.id);
   }
 }

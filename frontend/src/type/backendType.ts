@@ -104,3 +104,5 @@ interface IResGetAdminAnalytics {
         monthlyBreakdown: [];
     };
 }
+
+interface IResDeletePost extends IResponseMessage {}

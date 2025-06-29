@@ -85,3 +85,10 @@ export class BanUserDto {
   @IsEmail()
   email: string;
 }
+
+export class DeletePostDto {
+  @IsInt()
+  @IsPositive()
+  @Type(() => Number)
+  id: number;
+}
