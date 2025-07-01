@@ -297,11 +297,6 @@ const ProfileUi = (props: IProps) => {
                     showSizeChanger: false,
                     showQuickJumper: false,
                     showLessItems: false,
-                    showTotal: (total, range) => (
-                        <div>
-                            {range[0]}-{range[1]} trên {total} bản ghi
-                        </div>
-                    ),
                 }}
                 onChange={onChange}
             />

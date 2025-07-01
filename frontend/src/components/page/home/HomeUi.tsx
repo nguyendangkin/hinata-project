@@ -679,11 +679,6 @@ const HomeUi = (props: IProps) => {
                         showSizeChanger={false}
                         showQuickJumper={false}
                         onChange={handlePaginationChange}
-                        showTotal={(total, range) => (
-                            <Text type="secondary">
-                                {range[0]}-{range[1]} trên {total} bản ghi
-                            </Text>
-                        )}
                     />
                 </div>
             )}
