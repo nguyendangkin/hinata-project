@@ -117,11 +117,22 @@ const PostCard = memo(
     ({ post, searchTerm }: { post: PostData; searchTerm: string }) => {
         const router = usePRouter();
 
-        // Sử dụng useMemo để tối ưu hiệu năng render ảnh
+        // Hàm xử lý sao chép link bài viết
+        const handleCopyLink = useCallback(() => {
+            const link = `${window.location.origin}/scammer/${post.id}`;
+            navigator.clipboard.writeText(link);
+            message.success("Đã sao chép liên kết bài viết!");
+        }, [post.id]);
+
+        // Hàm xử lý chuyển đến trang chi tiết bài viết
+        const handleViewPost = useCallback(() => {
+            router.push(`/scammer/${post.id}`);
+        }, [post.id, router]);
+
+        // Only render images if they exist to avoid unnecessary style registrations
         const renderProofImages = useMemo(() => {
             if (!post.proofImages || post.proofImages.length === 0) return null;
 
-            // Chuyển đổi đường dẫn ảnh thành URL đầy đủ
             const fullImages = post.proofImages.map(getFullImageUrl);
 
             return (
@@ -179,24 +190,12 @@ const PostCard = memo(
             );
         }, [post.proofImages]);
 
-        // Hàm xử lý sao chép link bài viết
-        const handleCopyLink = useCallback(() => {
-            const link = `${window.location.origin}/scammer/${post.id}`;
-            navigator.clipboard.writeText(link);
-            message.success("Đã sao chép liên kết bài viết!");
-        }, [post.id]);
-
-        // Hàm xử lý chuyển đến trang chi tiết bài viết
-        const handleViewPost = useCallback(() => {
-            router.push(`/scammer/${post.id}`);
-        }, [post.id, router]);
-
         return (
             <Card
                 style={{ marginBottom: 16 }}
                 styles={{ body: { padding: "16px" } }}
             >
-                {/* Phần header của card */}
+                {/* Rest of the component remains the same */}
                 <div
                     style={{
                         display: "flex",
@@ -239,7 +238,6 @@ const PostCard = memo(
                         />
                     </div>
 
-                    {/* Tag trạng thái bài viết */}
                     <Tag
                         color={
                             post.status === "approved"
@@ -271,14 +269,13 @@ const PostCard = memo(
                     </div>
                     <div style={{ textAlign: "right" }}>
                         <Button type="link" onClick={handleViewPost}>
-                            Xem ở tab đơn &rarr;
+                            Xem ở tab đơn →
                         </Button>
                     </div>
                 </div>
 
                 <Divider style={{ margin: "12px 0" }} />
 
-                {/* Phần thông tin chi tiết */}
                 <Row gutter={[16, 8]}>
                     <Col xs={24} sm={12}>
                         <Space
@@ -376,13 +373,11 @@ const PostCard = memo(
                     </Col>
                 </Row>
 
-                {/* Phần hình ảnh minh chứng */}
                 <div style={{ marginTop: 16 }}>
                     <Text strong>Hình ảnh minh chứng:</Text>
                     <div style={{ marginTop: 8 }}>{renderProofImages}</div>
                 </div>
 
-                {/* Phần bình luận */}
                 {post.comment ? (
                     <div style={{ marginTop: 16 }}>
                         <Text strong>Bình luận:</Text>
@@ -422,6 +417,7 @@ const PostCard = memo(
     }
 );
 
+PostCard.displayName = "PostCard";
 // Đặt displayName cho component PostCard để dễ debug
 PostCard.displayName = "PostCard";
 
@@ -547,16 +543,13 @@ const HomeUi = (props: IProps) => {
     const [searchValue, setSearchValue] = useState(searchTerm);
     const [isSearching, setIsSearching] = useState(false);
 
-    // Các hook của Next.js để làm việc với routing
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = usePRouter();
 
-    // Refs để lưu trữ timeout và giá trị tìm kiếm hiện tại
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const currentSearchRef = useRef(searchTerm);
 
-    // Effect đồng bộ searchValue với searchTerm từ URL
     useEffect(() => {
         if (searchTerm !== currentSearchRef.current) {
             setSearchValue(searchTerm);
@@ -565,7 +558,6 @@ const HomeUi = (props: IProps) => {
         }
     }, [searchTerm]);
 
-    // Hàm xử lý tìm kiếm
     const handleSearch = useCallback(
         (value: string) => {
             const params = new URLSearchParams(searchParams);
@@ -581,17 +573,14 @@ const HomeUi = (props: IProps) => {
         [searchParams, pathname, router]
     );
 
-    // Hàm xử lý thay đổi giá trị tìm kiếm với debounce
     const handleSearchChange = useCallback(
         (value: string) => {
             setSearchValue(value);
 
-            // Clear timeout cũ nếu có
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current);
             }
 
-            // Nếu giá trị không thay đổi thì không làm gì
             if (value.trim() === currentSearchRef.current) {
                 setIsSearching(false);
                 return;
@@ -599,7 +588,6 @@ const HomeUi = (props: IProps) => {
 
             setIsSearching(true);
 
-            // Set timeout mới để debounce
             debounceTimeoutRef.current = setTimeout(() => {
                 handleSearch(value);
                 setIsSearching(false);
@@ -608,7 +596,6 @@ const HomeUi = (props: IProps) => {
         [handleSearch]
     );
 
-    // Hàm xử lý khi nhấn phím Enter
     const handlePressEnter = useCallback(() => {
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
@@ -617,7 +604,6 @@ const HomeUi = (props: IProps) => {
         setIsSearching(false);
     }, [handleSearch, searchValue]);
 
-    // Cleanup effect khi component unmount
     useEffect(() => {
         return () => {
             if (debounceTimeoutRef.current) {
@@ -626,7 +612,6 @@ const HomeUi = (props: IProps) => {
         };
     }, []);
 
-    // Hàm xử lý thay đổi trang phân trang
     const handlePaginationChange = useCallback(
         (page: number, pageSize: number) => {
             const params = new URLSearchParams(searchParams);
@@ -637,8 +622,9 @@ const HomeUi = (props: IProps) => {
         [searchParams, router, pathname]
     );
 
-    // Tối ưu hiệu năng render bằng cách memoize danh sách PostCard
+    // Memoize postCards with proper dependencies
     const postCards = useMemo(() => {
+        if (!data || data.length === 0) return null;
         return data.map((post) => (
             <PostCard key={post.id} post={post} searchTerm={searchTerm} />
         ));
@@ -646,7 +632,6 @@ const HomeUi = (props: IProps) => {
 
     return (
         <div style={{ marginBottom: 32 }}>
-            {/* Component SearchSection */}
             <SearchSection
                 searchValue={searchValue}
                 onSearchChange={handleSearchChange}
@@ -654,9 +639,8 @@ const HomeUi = (props: IProps) => {
                 isSearching={isSearching}
             />
 
-            {/* Danh sách bài viết */}
             <div style={{ marginBottom: 24 }}>
-                {data.length > 0 ? (
+                {postCards ? (
                     postCards
                 ) : (
                     <Card>
@@ -669,7 +653,6 @@ const HomeUi = (props: IProps) => {
                 )}
             </div>
 
-            {/* Phân trang */}
             {data.length > 0 && (
                 <div
                     style={{
