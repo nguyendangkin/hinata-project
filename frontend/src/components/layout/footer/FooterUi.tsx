@@ -156,7 +156,8 @@ export default function FooterUi() {
                 <Row justify="space-between" align="middle">
                     <Col>
                         <Text style={{ color: "#adb5bd" }}>
-                            © 2025 camCheckScam. Bảo lưu mọi quyền.
+                            © {new Date().getFullYear()} camCheckScam. Bảo lưu
+                            mọi quyền.
                         </Text>
                     </Col>
                 </Row>
