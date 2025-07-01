@@ -494,11 +494,16 @@ const SearchSection = memo(
                                 </li>
                                 <li>
                                     • <Text code>Link Facebook</Text> (là "Liên
-                                    kết đến trang cá nhân của NGUYEN A". Vào
+                                    kết đến trang cá nhân của NGUYEN VAN A". Vào
                                     trong trang cá nhân của họ, ở mục có ba dấu
                                     chấm)
                                 </li>
                             </ul>
+                            <div>
+                                ❗Nếu mọi thứ không có kết quả, thì bạn hãy cẩn
+                                thận suy xét, vì đó có thể đó là một Scammer
+                                mới.
+                            </div>
                         </Text>
                     </div>
                 </div>
