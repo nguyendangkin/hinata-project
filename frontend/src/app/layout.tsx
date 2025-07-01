@@ -39,8 +39,8 @@ export default function RootLayout({
                         <ContentLayout>{children}</ContentLayout>
                         <FooterLayout />
                     </AntdProvider>
+                    <NextTopLoader />
                 </AntdRegistry>
-                <NextTopLoader />
             </body>
         </html>
     );
