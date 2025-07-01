@@ -39,13 +39,6 @@ export default function FooterUi() {
                     <Col xs={24} sm={12} md={8}>
                         <Space direction="vertical" size="middle">
                             <div>
-                                <WarningOutlined
-                                    style={{
-                                        fontSize: "24px",
-                                        color: "#fa541c",
-                                        marginRight: "8px",
-                                    }}
-                                />
                                 <Title
                                     level={4}
                                     style={{

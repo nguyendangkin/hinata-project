@@ -18,6 +18,7 @@ import {
     DownOutlined,
     MenuOutlined,
     DropboxOutlined,
+    SearchOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import Link from "next/link";
@@ -33,7 +34,7 @@ const items: MenuProps["items"] = [
     {
         label: <Link href="/">Check scam</Link>,
         key: "/",
-        icon: <HomeOutlined />,
+        icon: <SearchOutlined />,
     },
     {
         label: <Link href="/post">Tố cáo</Link>,
@@ -120,16 +121,15 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
                 >
                     {/* Logo */}
                     <div style={{ marginRight: "24px" }}>
-                        <Space>
-                            <DropboxOutlined style={{ fontSize: "24px" }} />
-                            <span
-                                style={{ fontWeight: "bold", fontSize: "18px" }}
+                        <Link href="/">
+                            <Text
+                                strong
+                                style={{ fontSize: "18px", cursor: "pointer" }}
                             >
-                                BankGuard
-                            </span>
-                        </Space>
+                                camCheckScam
+                            </Text>
+                        </Link>
                     </div>
-
                     {/* Menu chính */}
                     <Menu
                         mode="horizontal"
