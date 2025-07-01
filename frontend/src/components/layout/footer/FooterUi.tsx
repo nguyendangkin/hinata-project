@@ -4,13 +4,8 @@ import { Layout, Row, Col, Typography, Space, Divider } from "antd";
 import {
     SafetyOutlined,
     MailOutlined,
-    EnvironmentOutlined,
     FacebookOutlined,
-    TwitterOutlined,
-    InstagramOutlined,
-    LinkedinOutlined,
     ExclamationCircleOutlined,
-    WarningOutlined,
 } from "@ant-design/icons";
 
 const { Footer } = Layout;
@@ -22,7 +17,7 @@ export default function FooterUi() {
             style={{
                 backgroundColor: "#f9fafb",
                 color: "#495057",
-                padding: "40px 0",
+                padding: "40px 16px",
                 borderTop: "1px solid #eaecef",
                 marginTop: "auto",
             }}
@@ -31,26 +26,26 @@ export default function FooterUi() {
                 style={{
                     maxWidth: "1200px",
                     margin: "0 auto",
-                    padding: "0 24px",
                 }}
             >
                 <Row gutter={[32, 32]}>
                     {/* Giới thiệu */}
                     <Col xs={24} sm={12} md={8}>
-                        <Space direction="vertical" size="middle">
-                            <div>
-                                <Title
-                                    level={4}
-                                    style={{
-                                        color: "#212529",
-                                        margin: 0,
-                                        display: "inline",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    camCheckScam
-                                </Title>
-                            </div>
+                        <Space
+                            direction="vertical"
+                            size="middle"
+                            style={{ display: "flex" }}
+                        >
+                            <Title
+                                level={4}
+                                style={{
+                                    color: "#212529",
+                                    margin: 0,
+                                    fontWeight: 600,
+                                }}
+                            >
+                                camCheckScam
+                            </Title>
                             <Text style={{ color: "#6c757d" }}>
                                 camCheckScam là nền tảng giúp bạn tra cứu, xác
                                 minh và báo cáo các hành vi lừa đảo liên quan
@@ -58,7 +53,7 @@ export default function FooterUi() {
                                 Cùng nhau bảo vệ cộng đồng khỏi những mối đe dọa
                                 ảo.
                             </Text>
-                            <Space>
+                            <Space wrap size="middle">
                                 <FacebookOutlined
                                     style={{
                                         fontSize: "20px",
@@ -70,24 +65,24 @@ export default function FooterUi() {
                         </Space>
                     </Col>
 
-                    {/* Hỗ trợ và Liên hệ */}
+                    {/* Hỗ trợ & Liên hệ */}
                     <Col xs={24} sm={12} md={8}>
-                        <Title
-                            level={5}
-                            style={{ color: "#212529", fontWeight: 500 }}
+                        <Space
+                            direction="vertical"
+                            size="middle"
+                            style={{ display: "flex" }}
                         >
-                            Hỗ trợ & Liên hệ
-                        </Title>
-                        <Space direction="vertical" size="small">
-                            <Space direction="vertical" size="small">
-                                <Space>
-                                    <MailOutlined
-                                        style={{ color: "#6c757d" }}
-                                    />
-                                    <Typography.Link href="mailto:kinnguyendang@gmail.com">
-                                        kinnguyendang@gmail.com
-                                    </Typography.Link>
-                                </Space>
+                            <Title
+                                level={5}
+                                style={{ color: "#212529", fontWeight: 500 }}
+                            >
+                                Hỗ trợ & Liên hệ
+                            </Title>
+                            <Space>
+                                <MailOutlined style={{ color: "#6c757d" }} />
+                                <Typography.Link href="mailto:kinnguyendang@gmail.com">
+                                    kinnguyendang@gmail.com
+                                </Typography.Link>
                             </Space>
                             <Text style={{ color: "#6c757d" }}>
                                 Nếu bạn gặp vấn đề hoặc phát hiện nội dung đáng
@@ -98,17 +93,24 @@ export default function FooterUi() {
                     </Col>
 
                     {/* Dịch vụ */}
-                    <Col xs={24} sm={12} md={8}>
-                        <Title
-                            level={5}
-                            style={{ color: "#212529", fontWeight: 500 }}
+                    <Col xs={24} sm={24} md={8}>
+                        <Space
+                            direction="vertical"
+                            size="middle"
+                            style={{ display: "flex" }}
                         >
-                            <SafetyOutlined
-                                style={{ marginRight: "8px", color: "#6c757d" }}
-                            />
-                            Dịch vụ
-                        </Title>
-                        <Space direction="vertical" size="small">
+                            <Title
+                                level={5}
+                                style={{ color: "#212529", fontWeight: 500 }}
+                            >
+                                <SafetyOutlined
+                                    style={{
+                                        marginRight: "8px",
+                                        color: "#6c757d",
+                                    }}
+                                />
+                                Dịch vụ
+                            </Title>
                             <Link style={{ color: "#6c757d" }} href="/">
                                 Tra cứu tài khoản
                             </Link>
@@ -133,7 +135,11 @@ export default function FooterUi() {
                         border: "1px solid #ffeeba",
                     }}
                 >
-                    <Space>
+                    <Space
+                        direction="horizontal"
+                        wrap
+                        style={{ display: "flex" }}
+                    >
                         <ExclamationCircleOutlined
                             style={{ fontSize: "16px", color: "#856404" }}
                         />
@@ -146,9 +152,9 @@ export default function FooterUi() {
                 </div>
 
                 {/* Copyright */}
-                <Row justify="space-between" align="middle">
+                <Row justify="center">
                     <Col>
-                        <Text style={{ color: "#adb5bd" }}>
+                        <Text style={{ color: "#adb5bd", textAlign: "center" }}>
                             © 2025 camCheckScam. Bảo lưu mọi quyền.
                         </Text>
                     </Col>
