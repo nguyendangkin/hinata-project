@@ -73,27 +73,6 @@ export default function FooterUi() {
                                         cursor: "pointer",
                                     }}
                                 />
-                                <TwitterOutlined
-                                    style={{
-                                        fontSize: "20px",
-                                        color: "#6c757d",
-                                        cursor: "pointer",
-                                    }}
-                                />
-                                <InstagramOutlined
-                                    style={{
-                                        fontSize: "20px",
-                                        color: "#6c757d",
-                                        cursor: "pointer",
-                                    }}
-                                />
-                                <LinkedinOutlined
-                                    style={{
-                                        fontSize: "20px",
-                                        color: "#6c757d",
-                                        cursor: "pointer",
-                                    }}
-                                />
                             </Space>
                         </Space>
                     </Col>
