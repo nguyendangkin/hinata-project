@@ -671,7 +671,13 @@ const HomeUi = (props: IProps) => {
 
             {/* Phân trang */}
             {data.length > 0 && (
-                <div style={{ textAlign: "center", marginTop: 24 }}>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginTop: 24,
+                    }}
+                >
                     <Pagination
                         current={meta.current}
                         total={meta.total}
