@@ -22,7 +22,8 @@ export default auth((req) => {
         !nextUrl.pathname.startsWith("/register") &&
         !nextUrl.pathname.startsWith("/forgot-password") &&
         !nextUrl.pathname.startsWith("/scammer") &&
-        !nextUrl.pathname.startsWith("/donate")
+        !nextUrl.pathname.startsWith("/donate") &&
+        !nextUrl.pathname.startsWith("/images")
     ) {
         return NextResponse.redirect(new URL("/login", nextUrl));
     }
