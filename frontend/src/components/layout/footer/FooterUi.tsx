@@ -159,18 +159,6 @@ export default function FooterUi() {
                             © 2024 camCheckScam. Bảo lưu mọi quyền.
                         </Text>
                     </Col>
-                    <Col>
-                        <Space
-                            split={<span style={{ color: "#e9ecef" }}>|</span>}
-                        >
-                            <Link style={{ color: "#adb5bd" }} href="#">
-                                Chính sách bảo mật
-                            </Link>
-                            <Link style={{ color: "#adb5bd" }} href="#">
-                                Điều khoản sử dụng
-                            </Link>
-                        </Space>
-                    </Col>
                 </Row>
             </div>
         </Footer>

@@ -8,7 +8,7 @@ export default function ContentLayout({
             style={{
                 maxWidth: "1200px",
                 margin: "0 auto",
-                padding: "0 24px",
+                padding: "64px 24px 0",
                 width: "100%",
             }}
         >

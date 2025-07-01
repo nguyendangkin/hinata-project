@@ -92,8 +92,14 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
     return (
         <div
             style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000,
                 background: "#fff",
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                width: "100%",
             }}
         >
             <div
