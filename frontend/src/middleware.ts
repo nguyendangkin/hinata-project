@@ -14,13 +14,15 @@ export default auth((req) => {
         return NextResponse.redirect(new URL("/", nextUrl));
     }
 
-    // nếu chưa login mà vào protected routes thì redirect về login
+    // nếu chưa login và không phải đang truy cập login, register, forgot-password, scammer, donate => redirect về trang login
+
     if (
         !isLoggedIn &&
         !nextUrl.pathname.startsWith("/login") &&
         !nextUrl.pathname.startsWith("/register") &&
         !nextUrl.pathname.startsWith("/forgot-password") &&
-        !nextUrl.pathname.startsWith("/scammer")
+        !nextUrl.pathname.startsWith("/scammer") &&
+        !nextUrl.pathname.startsWith("/donate")
     ) {
         return NextResponse.redirect(new URL("/login", nextUrl));
     }

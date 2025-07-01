@@ -19,6 +19,8 @@ import {
     SearchOutlined,
     LoginOutlined,
     UserAddOutlined,
+    WarningOutlined,
+    HeartFilled,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import Link from "next/link";
@@ -57,6 +59,7 @@ const items: MenuProps["items"] = [
     {
         label: <Link href="/post">Tố cáo</Link>,
         key: "/post",
+        icon: <WarningOutlined />,
     },
     {
         label: (
@@ -70,7 +73,7 @@ const items: MenuProps["items"] = [
                     fontWeight: 600,
                 }}
             >
-                DONATE
+                <HeartFilled /> DONATE
             </Link>
         ),
         key: "/donate",
@@ -78,10 +81,14 @@ const items: MenuProps["items"] = [
 ];
 
 // Menu cho người dùng đã đăng nhập
-const userMenuItems = (handleLogout: () => void): MenuProps["items"] => [
+const userMenuItems = (
+    handleLogout: () => void,
+    closeMobileMenu: () => void
+): MenuProps["items"] => [
     {
         label: <Link href="/profile">Hồ sơ cá nhân</Link>,
         key: "profile",
+        onClick: closeMobileMenu,
         icon: <UserOutlined />,
     },
     {
@@ -90,7 +97,10 @@ const userMenuItems = (handleLogout: () => void): MenuProps["items"] => [
     {
         label: "Đăng xuất",
         key: "logout",
-        onClick: handleLogout, // Gán hàm logout trực tiếp
+        onClick: () => {
+            handleLogout();
+            closeMobileMenu(); // Đóng drawer sau khi đăng xuất
+        },
     },
 ];
 
@@ -129,6 +139,7 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
                     <Link
                         href="/login"
                         style={{ width: isMobile ? "100%" : "auto" }}
+                        onClick={closeMobileMenu} // Thêm onClick vào đây
                     >
                         <Button
                             type="text"
@@ -141,6 +152,7 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
                     <Link
                         href="/register"
                         style={{ width: isMobile ? "100%" : "auto" }}
+                        onClick={closeMobileMenu} // Thêm onClick vào đây
                     >
                         <Button
                             type="primary"
@@ -155,7 +167,7 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
         }
         return (
             <Dropdown
-                menu={{ items: userMenuItems(handleLogout) }}
+                menu={{ items: userMenuItems(handleLogout, closeMobileMenu) }}
                 trigger={["click"]}
             >
                 <Button
