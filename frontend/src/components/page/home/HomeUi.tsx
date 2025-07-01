@@ -568,12 +568,15 @@ const HomeUi = (props: IProps) => {
 
             // **THÊM: Khôi phục vị trí scroll sau khi tìm kiếm xong**
             if (scrollPositionRef.current > 0) {
-                setTimeout(() => {
+                const timeoutId = setTimeout(() => {
                     window.scrollTo({
                         top: scrollPositionRef.current,
                         behavior: "smooth",
                     });
                 }, 100);
+
+                // Cleanup timeout nếu component unmount
+                return () => clearTimeout(timeoutId);
             }
         }
     }, [searchTerm]);
@@ -654,23 +657,31 @@ const HomeUi = (props: IProps) => {
             router.push(`${pathname}?${params.toString()}`, { scroll: false });
 
             // **THÊM: Scroll mượt về đầu danh sách kết quả (không phải đầu trang)**
-            const resultsSection = document.querySelector(
-                "[data-results-section]"
-            );
-            if (resultsSection) {
-                resultsSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                });
-            }
+            setTimeout(() => {
+                const resultsSection = document.querySelector(
+                    "[data-results-section]"
+                );
+                if (resultsSection) {
+                    resultsSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }
+            }, 100);
         },
         [searchParams, router, pathname]
     );
 
     // Tối ưu hiệu năng render bằng cách memoize danh sách PostCard
     const postCards = useMemo(() => {
+        if (!data || data.length === 0) return [];
+
         return data.map((post) => (
-            <PostCard key={post.id} post={post} searchTerm={searchTerm} />
+            <PostCard
+                key={`post-${post.id}`}
+                post={post}
+                searchTerm={searchTerm}
+            />
         ));
     }, [data, searchTerm]);
 
@@ -687,7 +698,7 @@ const HomeUi = (props: IProps) => {
             {/* Danh sách bài viết */}
             <div style={{ marginBottom: 24 }} data-results-section>
                 {data.length > 0 ? (
-                    postCards
+                    <div>{postCards}</div>
                 ) : (
                     <Card>
                         <div style={{ textAlign: "center", padding: "40px 0" }}>
