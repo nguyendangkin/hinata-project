@@ -40,8 +40,21 @@ const items: MenuProps["items"] = [
         key: "/post",
     },
     {
-        label: <Link href="/contact">Liên hệ</Link>,
-        key: "/contact",
+        label: (
+            <Link
+                href="/donate"
+                style={{
+                    color: "#fff",
+                    backgroundColor: "#52c41a",
+                    padding: "4px 12px",
+                    borderRadius: "4px",
+                    fontWeight: 600,
+                }}
+            >
+                DONATE
+            </Link>
+        ),
+        key: "/donate",
     },
 ];
 
