@@ -41,18 +41,18 @@ export default function DonateUi() {
                 >
                     <Title level={3}>
                         <HeartFilled style={{ color: "red", marginRight: 8 }} />
-                        Ủng hộ BankGuard
+                        Ủng hộ camCheckScam
                     </Title>
                     <Paragraph>
-                        Dự án <Text strong>BankGuard</Text> được xây dựng nhằm
-                        hỗ trợ cộng đồng cảnh báo và ngăn chặn các hành vi lừa
-                        đảo qua tài khoản ngân hàng. Việc duy trì hệ thống yêu
-                        cầu chi phí cho máy chủ, tên miền và vận hành.
+                        Dự án <Text strong>camCheckScam</Text> được xây dựng
+                        nhằm hỗ trợ cộng đồng cảnh báo và ngăn chặn các hành vi
+                        lừa đảo qua tài khoản ngân hàng v.v. Việc duy trì hệ
+                        thống yêu cầu chi phí cho máy chủ, tên miền và vận hành.
                     </Paragraph>
                     <Paragraph>
-                        Nếu bạn thấy dự án hữu ích, hãy ủng hộ chúng tôi một
-                        phần nhỏ để duy trì và phát triển thêm nhiều tính năng
-                        hơn nữa!
+                        Nếu bạn thấy dự án hữu ích, thì có thể tùy tâm ủng hộ
+                        chúng tôi để duy trì và phát triển thêm nhiều tính năng
+                        hơn nữa nhé!
                     </Paragraph>
 
                     <Divider />
