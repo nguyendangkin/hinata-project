@@ -29,6 +29,8 @@ interface DataType {
     phoneNumber: string;
     bankAccount: string;
     bankName: string;
+    facebookLink: string;
+    reportLink: string;
     proofImages: string[];
     comment: string;
     status: "pending" | "approved" | "rejected";
@@ -136,7 +138,7 @@ const ProfileUi = (props: IProps) => {
             title: "ID bài",
             dataIndex: "id",
             key: "id",
-            width: 50,
+            width: 80,
             fixed: "left",
             render: (id) => (
                 <span style={{ fontFamily: "monospace" }}>{id}</span>
@@ -194,11 +196,33 @@ const ProfileUi = (props: IProps) => {
             width: 150,
         },
         {
+            title: "Link facebook cá nhân",
+            dataIndex: "facebookLink",
+            key: "facebookLink",
+            width: 200,
+            render: (link) => (
+                <Typography.Link href={link} target="_blank">
+                    {link}
+                </Typography.Link>
+            ),
+        },
+        {
+            title: "Link bài tố cáo",
+            dataIndex: "reportLink",
+            key: "reportLink",
+            width: 200,
+            render: (link) => (
+                <Typography.Link href={link} target="_blank">
+                    {link}
+                </Typography.Link>
+            ),
+        },
+        {
             title: "Minh chứng",
             dataIndex: "proofImages",
             key: "proofImages",
             render: renderProofImages,
-            width: 250,
+            width: 260,
         },
         {
             title: "Bình luận",
@@ -228,7 +252,6 @@ const ProfileUi = (props: IProps) => {
                 <Typography.Link href={`tel:${phone}`}>{phone}</Typography.Link>
             ),
         },
-
         {
             title: "Ngày tạo",
             dataIndex: "createdAt",
@@ -254,7 +277,7 @@ const ProfileUi = (props: IProps) => {
             <Table
                 columns={columns}
                 dataSource={data}
-                scroll={{ x: 1500 }}
+                scroll={{ x: 1800 }} // Increased to accommodate new columns
                 bordered
                 size="middle"
                 rowKey="id"
