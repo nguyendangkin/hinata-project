@@ -556,18 +556,34 @@ const HomeUi = (props: IProps) => {
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const currentSearchRef = useRef(searchTerm);
 
+    // **THÊM: Ref để lưu vị trí scroll hiện tại**
+    const scrollPositionRef = useRef<number>(0);
+
     // Effect đồng bộ searchValue với searchTerm từ URL
     useEffect(() => {
         if (searchTerm !== currentSearchRef.current) {
             setSearchValue(searchTerm);
             currentSearchRef.current = searchTerm;
             setIsSearching(false);
+
+            // **THÊM: Khôi phục vị trí scroll sau khi tìm kiếm xong**
+            if (scrollPositionRef.current > 0) {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: scrollPositionRef.current,
+                        behavior: "smooth",
+                    });
+                }, 100);
+            }
         }
     }, [searchTerm]);
 
     // Hàm xử lý tìm kiếm
     const handleSearch = useCallback(
         (value: string) => {
+            // **THÊM: Lưu vị trí scroll hiện tại trước khi tìm kiếm**
+            scrollPositionRef.current = window.scrollY;
+
             const params = new URLSearchParams(searchParams);
             if (value.trim()) {
                 params.set("search", value.trim());
@@ -576,7 +592,9 @@ const HomeUi = (props: IProps) => {
                 params.delete("search");
             }
             currentSearchRef.current = value.trim();
-            router.push(`${pathname}?${params.toString()}`);
+
+            // **THÊM: Sử dụng shallow routing để tránh scroll về top**
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
         },
         [searchParams, pathname, router]
     );
@@ -632,7 +650,19 @@ const HomeUi = (props: IProps) => {
             const params = new URLSearchParams(searchParams);
             params.set("current", page.toString());
             params.set("pageSize", pageSize.toString());
-            router.push(`${pathname}?${params.toString()}`);
+            // **THÊM: Cũng sử dụng shallow routing cho pagination**
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
+
+            // **THÊM: Scroll mượt về đầu danh sách kết quả (không phải đầu trang)**
+            const resultsSection = document.querySelector(
+                "[data-results-section]"
+            );
+            if (resultsSection) {
+                resultsSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
         },
         [searchParams, router, pathname]
     );
@@ -655,7 +685,7 @@ const HomeUi = (props: IProps) => {
             />
 
             {/* Danh sách bài viết */}
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 24 }} data-results-section>
                 {data.length > 0 ? (
                     postCards
                 ) : (
@@ -671,7 +701,13 @@ const HomeUi = (props: IProps) => {
 
             {/* Phân trang */}
             {data.length > 0 && (
-                <div style={{ textAlign: "center", marginTop: 24 }}>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginTop: 24,
+                    }}
+                >
                     <Pagination
                         current={meta.current}
                         total={meta.total}
