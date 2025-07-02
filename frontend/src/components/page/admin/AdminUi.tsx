@@ -227,12 +227,58 @@ const AdminUi = (props: IProps) => {
         //     width: 50,
         //     fixed: "left",
         // },
+
+        {
+            title: "Hành động",
+            key: "action",
+            width: 220,
+            render: (_, record) => (
+                <Space size="small">
+                    {record.status === "pending" && (
+                        <>
+                            <Button
+                                type="primary"
+                                size="small"
+                                loading={loading}
+                                onClick={() => handleApprove(record.id)}
+                            >
+                                Duyệt
+                            </Button>
+                            <Button
+                                style={{
+                                    backgroundColor: "#faad14",
+                                    color: "white",
+                                    borderColor: "#faad14",
+                                }}
+                                size="small"
+                                loading={loading}
+                                onClick={() => handleReject(record.id)}
+                            >
+                                Từ chối
+                            </Button>
+                            <Button
+                                danger
+                                size="small"
+                                loading={loading}
+                                onClick={() => handleBanUser(record.email)}
+                            >
+                                Cấm
+                            </Button>
+                        </>
+                    )}
+                    {record.status !== "pending" && (
+                        <Typography.Text type="secondary">
+                            Đã xử lý
+                        </Typography.Text>
+                    )}
+                </Space>
+            ),
+        },
         {
             title: "ID bài",
             dataIndex: "id",
             key: "id",
             width: 60,
-            fixed: "left",
             render: (id) => (
                 <span style={{ fontFamily: "monospace" }}>{id}</span>
             ),
@@ -345,53 +391,6 @@ const AdminUi = (props: IProps) => {
             },
             width: 100,
         },
-        {
-            title: "Hành động",
-            key: "action",
-            fixed: "right",
-            width: 220,
-            render: (_, record) => (
-                <Space size="small">
-                    {record.status === "pending" && (
-                        <>
-                            <Button
-                                type="primary"
-                                size="small"
-                                loading={loading}
-                                onClick={() => handleApprove(record.id)}
-                            >
-                                Duyệt
-                            </Button>
-                            <Button
-                                style={{
-                                    backgroundColor: "#faad14",
-                                    color: "white",
-                                    borderColor: "#faad14",
-                                }}
-                                size="small"
-                                loading={loading}
-                                onClick={() => handleReject(record.id)}
-                            >
-                                Từ chối
-                            </Button>
-                            <Button
-                                danger
-                                size="small"
-                                loading={loading}
-                                onClick={() => handleBanUser(record.email)}
-                            >
-                                Cấm
-                            </Button>
-                        </>
-                    )}
-                    {record.status !== "pending" && (
-                        <Typography.Text type="secondary">
-                            Đã xử lý
-                        </Typography.Text>
-                    )}
-                </Space>
-            ),
-        },
     ];
 
     return (
@@ -434,11 +433,7 @@ const AdminUi = (props: IProps) => {
                     showSizeChanger: false, // Ẩn chọn số bản ghi/trang
                     showQuickJumper: false, // Ẩn nhảy nhanh đến trang
                     showLessItems: false, // Hiển thị đầy đủ các nút trang
-                    showTotal: (total, range) => (
-                        <div>
-                            {range[0]}-{range[1]} trên {total} bản ghi
-                        </div>
-                    ),
+                    position: ["bottomCenter"],
                 }}
                 onChange={onChange}
             />
