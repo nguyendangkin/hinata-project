@@ -10,6 +10,8 @@ import {
     Button,
     message,
     Modal,
+    Row, // Import Row
+    Col, // Import Col
 } from "antd";
 import {
     CopyOutlined,
@@ -95,50 +97,47 @@ const AdminDeletePostUi = ({ data, expiredToken }: IProps) => {
             },
         });
     };
+
     return (
         <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
             <Card>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: 8,
-                        flexWrap: "wrap",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        <Text strong style={{ fontSize: 16, color: "#1890ff" }}>
-                            {data.id}
-                        </Text>
-                        <Divider type="vertical" />
-                        <Text>{data.displayName}</Text>
-                    </div>
-                    <Tag
-                        color={
-                            data.status === "approved"
-                                ? "green"
-                                : data.status === "rejected"
-                                ? "red"
-                                : "orange"
-                        }
-                    >
-                        {data.status.toUpperCase()}
-                    </Tag>
-                </div>
+                {/* Header Section with Row and Col */}
+                <Row justify="space-between" align="middle" gutter={[8, 16]}>
+                    <Col xs={24} sm={16} md={18}>
+                        <Space wrap size={8}>
+                            <Text
+                                strong
+                                style={{ fontSize: 16, color: "#1890ff" }}
+                            >
+                                {data.id}
+                            </Text>
+                            <Divider type="vertical" />
+                            <Text>{data.displayName}</Text>
+                        </Space>
+                    </Col>
+                    <Col xs={24} sm={8} md={6} style={{ textAlign: "right" }}>
+                        <Tag
+                            color={
+                                data.status === "approved"
+                                    ? "green"
+                                    : data.status === "rejected"
+                                    ? "red"
+                                    : "orange"
+                            }
+                        >
+                            {data.status.toUpperCase()}
+                        </Tag>
+                    </Col>
+                </Row>
 
+                {/* Action Buttons Section */}
                 <div
                     style={{
                         display: "flex",
                         justifyContent: "flex-end",
                         gap: 8,
                         marginTop: 16,
+                        flexWrap: "wrap", // Ensure buttons wrap on small screens
                     }}
                 >
                     <Button
@@ -163,6 +162,7 @@ const AdminDeletePostUi = ({ data, expiredToken }: IProps) => {
 
                 <Divider />
 
+                {/* Information Section */}
                 <Space
                     direction="vertical"
                     size="middle"
@@ -212,30 +212,40 @@ const AdminDeletePostUi = ({ data, expiredToken }: IProps) => {
                     </div>
                 </Space>
 
+                {/* Proof Images Section */}
                 <div style={{ marginTop: 24 }}>
                     <Text strong>Hình ảnh minh chứng:</Text>
                     <div style={{ marginTop: 8 }}>
                         <Image.PreviewGroup>
-                            <Space wrap size={8}>
+                            {/* Using Row and Col for responsive image grid */}
+                            <Row gutter={[8, 8]}>
                                 {data.proofImages.map((img, index) => (
-                                    <Image
+                                    <Col
+                                        xs={12}
+                                        sm={8}
+                                        md={6}
+                                        lg={4}
                                         key={index}
-                                        width={100}
-                                        height={100}
-                                        src={getFullImageUrl(img)}
-                                        style={{
-                                            objectFit: "cover",
-                                            borderRadius: 4,
-                                            border: "1px solid #ddd",
-                                        }}
-                                        alt={`Minh chứng ${index + 1}`}
-                                    />
+                                    >
+                                        <Image
+                                            width="100%" // Make image fill the column
+                                            height={100}
+                                            src={getFullImageUrl(img)}
+                                            style={{
+                                                objectFit: "cover",
+                                                borderRadius: 4,
+                                                border: "1px solid #ddd",
+                                            }}
+                                            alt={`Minh chứng ${index + 1}`}
+                                        />
+                                    </Col>
                                 ))}
-                            </Space>
+                            </Row>
                         </Image.PreviewGroup>
                     </div>
                 </div>
 
+                {/* Comment Section */}
                 <div style={{ marginTop: 24 }}>
                     <Text strong>Bình luận:</Text>
                     <div
