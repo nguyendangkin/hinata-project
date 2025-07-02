@@ -568,7 +568,7 @@ const HomeUi = (props: IProps) => {
                 params.delete("search");
             }
             currentSearchRef.current = value.trim();
-            router.push(`${pathname}?${params.toString()}`);
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
         },
         [searchParams, pathname, router]
     );
