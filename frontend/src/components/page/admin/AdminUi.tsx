@@ -274,15 +274,7 @@ const AdminUi = (props: IProps) => {
                 </Space>
             ),
         },
-        {
-            title: "ID bài",
-            dataIndex: "id",
-            key: "id",
-            width: 60,
-            render: (id) => (
-                <span style={{ fontFamily: "monospace" }}>{id}</span>
-            ),
-        },
+
         {
             title: "Số tài khoản",
             dataIndex: "bankAccount",
@@ -373,6 +365,15 @@ const AdminUi = (props: IProps) => {
                 <Typography.Link href={link} target="_blank">
                     Xem bài viết
                 </Typography.Link>
+            ),
+        },
+        {
+            title: "ID bài",
+            dataIndex: "id",
+            key: "id",
+            width: 60,
+            render: (id) => (
+                <span style={{ fontFamily: "monospace" }}>{id}</span>
             ),
         },
         {
