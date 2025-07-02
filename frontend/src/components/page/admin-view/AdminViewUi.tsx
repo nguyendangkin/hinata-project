@@ -46,7 +46,8 @@ export default function AdminViewUi({ analytics, expiredToken }: Props) {
             <Typography.Title level={3}>Thống kê hệ thống</Typography.Title>
 
             <Row gutter={[16, 16]}>
-                <Col span={6}>
+                {/* User Statistics */}
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic
                             title="Tổng người dùng"
@@ -54,7 +55,7 @@ export default function AdminViewUi({ analytics, expiredToken }: Props) {
                         />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic
                             title="Người dùng mới tháng này"
@@ -63,7 +64,7 @@ export default function AdminViewUi({ analytics, expiredToken }: Props) {
                         />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic
                             title="Người dùng bị cấm"
@@ -75,12 +76,13 @@ export default function AdminViewUi({ analytics, expiredToken }: Props) {
             </Row>
 
             <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-                <Col span={6}>
+                {/* Post Statistics */}
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic title="Tổng bài viết" value={posts.total} />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic
                             title="Đã duyệt"
@@ -89,7 +91,7 @@ export default function AdminViewUi({ analytics, expiredToken }: Props) {
                         />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic
                             title="Bị từ chối"
@@ -98,7 +100,7 @@ export default function AdminViewUi({ analytics, expiredToken }: Props) {
                         />
                     </Card>
                 </Col>
-                <Col span={6}>
+                <Col xs={24} sm={12} md={8} lg={6}>
                     <Card>
                         <Statistic
                             title="Tăng trưởng bài viết"
