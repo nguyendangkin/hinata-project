@@ -138,7 +138,7 @@ const ProfileUi = (props: IProps) => {
             title: "ID bài",
             dataIndex: "id",
             key: "id",
-            width: 80,
+            width: 50,
             fixed: "left",
             render: (id) => (
                 <span style={{ fontFamily: "monospace" }}>{id}</span>
@@ -176,6 +176,25 @@ const ProfileUi = (props: IProps) => {
                 );
             },
             width: 100,
+        },
+        {
+            title: "Bình luận",
+            dataIndex: "comment",
+            key: "comment",
+            width: 200,
+            render: (text) => (
+                <div
+                    style={{
+                        maxHeight: "80px",
+                        overflowY: "auto",
+                        paddingRight: "4px",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                    }}
+                >
+                    {text || "Không có bình luận"}
+                </div>
+            ),
         },
         {
             title: "Số tài khoản",
@@ -224,25 +243,7 @@ const ProfileUi = (props: IProps) => {
             render: renderProofImages,
             width: 260,
         },
-        {
-            title: "Bình luận",
-            dataIndex: "comment",
-            key: "comment",
-            width: 200,
-            render: (text) => (
-                <div
-                    style={{
-                        maxHeight: "80px",
-                        overflowY: "auto",
-                        paddingRight: "4px",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word",
-                    }}
-                >
-                    {text || "Không có bình luận"}
-                </div>
-            ),
-        },
+
         {
             title: "Số điện thoại",
             dataIndex: "phoneNumber",
@@ -277,7 +278,7 @@ const ProfileUi = (props: IProps) => {
             <Table
                 columns={columns}
                 dataSource={data}
-                scroll={{ x: 1800 }} // Increased to accommodate new columns
+                scroll={{ x: 1800 }}
                 bordered
                 size="middle"
                 rowKey="id"
@@ -290,16 +291,32 @@ const ProfileUi = (props: IProps) => {
                         ),
                     },
                 }}
-                pagination={{
-                    current: meta.current,
-                    pageSize: meta.pageSize,
-                    total: meta.total,
-                    showSizeChanger: false,
-                    showQuickJumper: false,
-                    showLessItems: false,
-                }}
-                onChange={onChange}
+                pagination={false} // Tắt pagination mặc định của Table
             />
+
+            {data.length > 0 && (
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginTop: 24,
+                    }}
+                >
+                    <Pagination
+                        current={meta.current}
+                        total={meta.total}
+                        pageSize={meta.pageSize}
+                        showSizeChanger={false}
+                        showQuickJumper={false}
+                        onChange={(page, pageSize) => {
+                            const params = new URLSearchParams(searchParams);
+                            params.set("current", page.toString());
+                            params.set("pageSize", pageSize.toString());
+                            router.push(`${pathname}?${params.toString()}`);
+                        }}
+                    />
+                </div>
+            )}
         </div>
     );
 };
