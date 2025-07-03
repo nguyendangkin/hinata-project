@@ -46,13 +46,11 @@ export default function DonateUi() {
                     <Paragraph>
                         Dự án <Text strong>camCheckScam</Text> được xây dựng
                         nhằm hỗ trợ cộng đồng cảnh báo và ngăn chặn các hành vi
-                        lừa đảo qua tài khoản ngân hàng v.v. Việc duy trì hệ
-                        thống yêu cầu chi phí cho máy chủ, tên miền và vận hành.
-                    </Paragraph>
-                    <Paragraph>
-                        Nếu bạn thấy dự án hữu ích, thì có thể tùy tâm ủng hộ
-                        chúng tôi để duy trì và phát triển thêm nhiều tính năng
-                        hơn nữa nhé!
+                        lừa đảo qua tài khoản ngân hàng v.v. Tuy nhiên việc duy
+                        trì hệ thống yêu cầu chi phí cho máy chủ, tên miền và
+                        vận hành. Nếu thấy dự án hữu ích, bạn có thể tùy tâm ủng
+                        hộ chúng tôi để duy trì và phát triển thêm nhiều tính
+                        năng hơn nữa nhé!
                     </Paragraph>
 
                     <Divider />
