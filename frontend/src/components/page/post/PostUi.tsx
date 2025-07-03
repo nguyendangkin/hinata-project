@@ -370,7 +370,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "facebookProfileLink"]}
-                            label={`Link trang facebook cá nhân (là "Liên kết đến trang cá nhân của NGUYEN A". Vào trong trang cá nhân của họ, ở mục có ba dấu chấm)`}
+                            label={`Link trang facebook cá nhân (là "Liên kết đến trang cá nhân của NGUYEN VAN A". Vào trong trang cá nhân của họ, ở mục có ba dấu chấm)`}
                             rules={[
                                 {
                                     type: "string",
@@ -402,7 +402,7 @@ const PostUi: React.FC = () => {
 
                         <Form.Item
                             name={["items", index, "proofFiles"]}
-                            label="File - Hình ảnh minh chứng (QUAN TRỌNG - Dùng để xét duyệt)"
+                            label="Hình ảnh minh chứng liên quan - Cuộc trò chuyện v.v. (QUAN TRỌNG - Dùng để xét duyệt)"
                             valuePropName="fileList"
                             getValueFromEvent={(e) => e.fileList}
                             rules={[
