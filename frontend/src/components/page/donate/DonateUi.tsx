@@ -49,8 +49,8 @@ export default function DonateUi() {
                         lừa đảo qua tài khoản ngân hàng v.v. Tuy nhiên việc duy
                         trì hệ thống yêu cầu chi phí cho máy chủ, tên miền và
                         vận hành. Nếu thấy dự án hữu ích, bạn có thể tùy tâm ủng
-                        hộ chúng tôi để duy trì và phát triển thêm nhiều tính
-                        năng hơn nữa nhé!
+                        hộ chúng tôi để duy trì và phát triển thêm những tính
+                        năng nữa nhé!
                     </Paragraph>
 
                     <Divider />
