@@ -53,6 +53,11 @@ export default function DonateUi() {
                         năng mới nữa nhé!
                     </Paragraph>
 
+                    <Text italic type="secondary">
+                        Xin chân thành cảm ơn những tấm lòng đã ủng hộ và đồng
+                        hành cùng dự án!
+                    </Text>
+
                     <Divider />
 
                     <div
@@ -99,13 +104,6 @@ export default function DonateUi() {
                             </Space>
                         </div>
                     ))}
-
-                    <Divider />
-
-                    <Text italic type="secondary">
-                        Xin chân thành cảm ơn những tấm lòng đã ủng hộ và đồng
-                        hành cùng dự án!
-                    </Text>
                 </Space>
             </Card>
         </div>
