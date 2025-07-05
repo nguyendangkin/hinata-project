@@ -1,5 +1,12 @@
 import AdminViewUi from "@/components/page/admin-view/AdminViewUi";
 import { reqGetAdminAnalytics } from "@/util/actions";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Bảng điều khiển quản trị - camCheckScam",
+    description:
+        "Xem thống kê hệ thống, hoạt động người dùng và tổng quan dữ liệu tố cáo. Trang dành riêng cho quản trị viên để quản lý và giám sát nền tảng camCheckScam.",
+};
 
 export default async function AdminViewPage() {
     try {

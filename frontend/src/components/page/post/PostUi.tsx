@@ -6,6 +6,7 @@ import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
 import { handleApiCall } from "@/util/clientRequestHandler";
 import { reqCreatePost } from "@/util/actions";
+import { removeVietnameseTones } from "@/helper/removeVietnameseTones";
 
 const { TextArea } = Input;
 
@@ -128,9 +129,14 @@ const PostUi: React.FC = () => {
                 const trimmedItem: any = {};
                 for (const key in item) {
                     if (key === "proofFiles") {
-                        trimmedItem[key] = item[key]; // bỏ qua cho các file
+                        trimmedItem[key] = item[key];
                     } else if (typeof item[key] === "string") {
-                        trimmedItem[key] = item[key].trim();
+                        let value = item[key].trim();
+                        // Chỉ bỏ dấu cho 2 trường bắt buộc
+                        if (key === "bankAccountName" || key === "bankName") {
+                            value = removeVietnameseTones(value);
+                        }
+                        trimmedItem[key] = value;
                     } else {
                         trimmedItem[key] = item[key];
                     }
@@ -211,6 +217,7 @@ const PostUi: React.FC = () => {
                 message.error(result.message);
             }
         } catch (error) {
+            console.log(error);
             message.error("Có lỗi xảy ra khi gửi dữ liệu");
         } finally {
             setIsLoading(false);

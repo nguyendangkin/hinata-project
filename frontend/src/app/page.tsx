@@ -1,10 +1,17 @@
 import HomeUi from "@/components/page/home/HomeUi";
 import { reqGetAllPost, reqGetAllPostForClient } from "@/util/actions";
+import { Metadata } from "next";
 
 interface IProps {
     params: Promise<{ id: string }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
+
+export const metadata: Metadata = {
+    title: "Danh sách tố cáo lừa đảo - camCheckScam",
+    description:
+        "Tra cứu các bài tố cáo hành vi lừa đảo liên quan đến tài khoản ngân hàng, số điện thoại, ví điện tử và trang Facebook. Bảo vệ cộng đồng khỏi các scammer.",
+};
 
 const HomePage = async (props: IProps) => {
     const searchParams = await props.searchParams;

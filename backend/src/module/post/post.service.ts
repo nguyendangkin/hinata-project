@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { User } from 'src/module/user/entities/user.entity';
 import { UserService } from 'src/module/user/user.service';
+import { removeVietnameseTones } from 'src/helper/removeVietnameseTones';
 
 const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -65,11 +66,17 @@ export class PostService {
         imagePaths.push(`/uploads/${fileName}`);
       }
 
+      // Loại bỏ dấu tiếng Việt ở các trường chính
+      const cleanBankAccountName = removeVietnameseTones(
+        item.bankAccountName?.trim(),
+      );
+      const cleanBankName = removeVietnameseTones(item.bankName?.trim());
+
       // Tạo entity post mới từ dữ liệu và đường dẫn ảnh
       const post = this.postRepository.create({
-        bankAccountName: item.bankAccountName,
+        bankAccountName: cleanBankAccountName,
         bankAccountNumber: item.bankAccountNumber,
-        bankName: item.bankName,
+        bankName: cleanBankName,
         phoneNumber: item.phoneNumber,
         facebookProfileLink: item.facebookProfileLink,
         complaintLink: item.complaintLink,

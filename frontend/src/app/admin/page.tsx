@@ -1,10 +1,17 @@
 import AdminUi from "@/components/page/admin/AdminUi";
 import { reqGetAllPost } from "@/util/actions";
+import { Metadata } from "next";
 
 interface IProps {
     params: Promise<{ id: string }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
+
+export const metadata: Metadata = {
+    title: "Quản lý bài tố cáo - camCheckScam",
+    description:
+        "Trang quản trị các bài tố cáo hành vi lừa đảo do người dùng đăng tải. Quản trị viên có thể xem, duyệt và xử lý các báo cáo để bảo vệ cộng đồng.",
+};
 
 const AdminPage = async (props: IProps) => {
     const searchParams = await props.searchParams;

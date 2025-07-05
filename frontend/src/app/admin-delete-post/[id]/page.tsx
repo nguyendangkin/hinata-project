@@ -1,8 +1,40 @@
 import AdminDeletePostUi from "@/components/page/admin-delete-post/AdminDeletePostUi";
 import { reqGetAPost } from "@/util/actions";
+import type { Metadata, ResolvingMetadata } from "next";
 
 interface IProps {
     params: Promise<{ id: string }>;
+}
+
+type Props = {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export async function generateMetadata(
+    { params }: Props,
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    const { id } = await params;
+    const res = await reqGetAPost(id);
+
+    const data = res?.data;
+
+    if (!data) {
+        return {
+            title: "Không tìm thấy bài tố cáo | camCheckScam",
+            description:
+                "Bài tố cáo không tồn tại hoặc đã bị xóa. Vui lòng kiểm tra lại ID.",
+        };
+    }
+
+    const title = `Xóa bài: ${data?.bankAccountName} - STK ${data?.bankAccount}`;
+    const description = `Quản trị viên đang xem và thực hiện thao tác xóa bài tố cáo liên quan đến STK ${data?.bankAccount} (${data?.bankAccountName} - ${data?.bankName}).`;
+
+    return {
+        title,
+        description,
+    };
 }
 
 const AdminDeletePostPage = async ({ params }: IProps) => {

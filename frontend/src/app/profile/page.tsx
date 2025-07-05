@@ -1,11 +1,18 @@
 // app/profile/page.tsx
 import ProfileUi from "@/components/page/profile/ProfileUi";
 import { reqGetMyPost } from "@/util/actions";
+import { Metadata } from "next";
 
 interface IProps {
     params: Promise<{ id: string }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
+
+export const metadata: Metadata = {
+    title: "Hồ sơ cá nhân - camCheckScam",
+    description:
+        "Xem và quản lý các bài tố cáo bạn đã đăng. Theo dõi lịch sử hoạt động và cập nhật thông tin liên quan đến các vụ lừa đảo bạn đã báo cáo.",
+};
 
 const ProfilePage = async (props: IProps) => {
     const searchParams = await props.searchParams;

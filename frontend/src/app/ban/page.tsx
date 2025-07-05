@@ -1,3 +1,11 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Tài khoản bị khóa - camCheckScam",
+    description:
+        "Tài khoản của bạn đã bị khóa do vi phạm điều khoản sử dụng. Nếu bạn cho rằng đây là nhầm lẫn, hãy liên hệ đội ngũ hỗ trợ camCheckScam.",
+};
+
 export default function BanPage() {
     return (
         <div
