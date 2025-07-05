@@ -133,7 +133,7 @@ const ScammerUi = ({ data }: IProps) => {
                         <Text strong>Facebook cá nhân: </Text>
                         {data.facebookLink ? (
                             <Link href={data.facebookLink} target="_blank">
-                                Xem trang cá nhân
+                                {data.facebookLink}
                             </Link>
                         ) : (
                             <Text type="secondary">Không có thông tin</Text>
@@ -143,7 +143,7 @@ const ScammerUi = ({ data }: IProps) => {
                         <Text strong>Link báo cáo: </Text>
                         {data.reportLink ? (
                             <Link href={data.reportLink} target="_blank">
-                                Xem bài viết
+                                {data.reportLink}
                             </Link>
                         ) : (
                             <Text type="secondary">Không có thông tin</Text>

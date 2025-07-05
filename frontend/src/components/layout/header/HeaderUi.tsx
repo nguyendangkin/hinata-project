@@ -83,26 +83,51 @@ const items: MenuProps["items"] = [
 // Menu cho người dùng đã đăng nhập
 const userMenuItems = (
     handleLogout: () => void,
-    closeMobileMenu: () => void
-): MenuProps["items"] => [
-    {
-        label: <Link href="/profile">Hồ sơ cá nhân</Link>,
-        key: "profile",
-        onClick: closeMobileMenu,
-        icon: <UserOutlined />,
-    },
-    {
-        type: "divider",
-    },
-    {
-        label: "Đăng xuất",
-        key: "logout",
-        onClick: () => {
-            handleLogout();
-            closeMobileMenu(); // Đóng drawer sau khi đăng xuất
+    closeMobileMenu: () => void,
+    role?: string
+): MenuProps["items"] => {
+    const items: MenuProps["items"] = [];
+
+    if (role === "admin") {
+        items.push(
+            {
+                label: <Link href="/admin">Quản trị</Link>,
+                key: "admin",
+                onClick: closeMobileMenu,
+            },
+            {
+                label: <Link href="/admin-view">Xem thống kê</Link>,
+                key: "admin-view",
+                onClick: closeMobileMenu,
+            },
+            {
+                type: "divider",
+            }
+        );
+    }
+
+    items.push(
+        {
+            label: <Link href="/profile">Hồ sơ cá nhân</Link>,
+            key: "profile",
+            onClick: closeMobileMenu,
+            icon: <UserOutlined />,
         },
-    },
-];
+        {
+            type: "divider",
+        },
+        {
+            label: "Đăng xuất",
+            key: "logout",
+            onClick: () => {
+                handleLogout();
+                closeMobileMenu();
+            },
+        }
+    );
+
+    return items;
+};
 
 const HeaderUi = ({ session }: { session: Session | null }) => {
     const router = useRouter();
@@ -167,7 +192,13 @@ const HeaderUi = ({ session }: { session: Session | null }) => {
         }
         return (
             <Dropdown
-                menu={{ items: userMenuItems(handleLogout, closeMobileMenu) }}
+                menu={{
+                    items: userMenuItems(
+                        handleLogout,
+                        closeMobileMenu,
+                        session.user.role
+                    ),
+                }}
                 trigger={["click"]}
             >
                 <Button
