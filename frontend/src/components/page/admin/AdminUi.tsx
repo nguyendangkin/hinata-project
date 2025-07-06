@@ -23,6 +23,7 @@ import {
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { handleApiCall } from "@/util/clientRequestHandler";
 import { usePRouter } from "@/hooks/usePRouter";
+import SearchById from "@/components/page/admin/SearchById";
 
 const { Title, Text } = Typography;
 
@@ -406,6 +407,8 @@ const AdminUi = (props: IProps) => {
             >
                 <span>Quản lý báo cáo</span>
             </div>
+
+            <SearchById />
 
             {/* Bảng dữ liệu chính */}
             <Table

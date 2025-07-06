@@ -21,6 +21,9 @@ import {
     UserAddOutlined,
     WarningOutlined,
     HeartFilled,
+    SettingOutlined,
+    BarChartOutlined,
+    LogoutOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import Link from "next/link";
@@ -94,11 +97,13 @@ const userMenuItems = (
                 label: <Link href="/admin">Quản trị</Link>,
                 key: "admin",
                 onClick: closeMobileMenu,
+                icon: <SettingOutlined />,
             },
             {
                 label: <Link href="/admin-view">Xem thống kê</Link>,
                 key: "admin-view",
                 onClick: closeMobileMenu,
+                icon: <BarChartOutlined />,
             },
             {
                 type: "divider",
@@ -123,6 +128,7 @@ const userMenuItems = (
                 handleLogout();
                 closeMobileMenu();
             },
+            icon: <LogoutOutlined />,
         }
     );
 
