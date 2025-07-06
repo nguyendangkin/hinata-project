@@ -1,6 +1,8 @@
 import ScammerUi from "@/components/page/scammer/ScammerUi";
+import { extractIdFromSlug } from "@/helper/extractIdFromSlug";
 import { reqGetAPost } from "@/util/actions";
 import type { Metadata, ResolvingMetadata } from "next";
+import slugify from "slugify";
 
 interface IProps {
     params: Promise<{ id: string }>;
@@ -16,7 +18,8 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
-    const res = await reqGetAPost(id);
+    const postId = extractIdFromSlug(id);
+    const res = await reqGetAPost(postId);
 
     const data = res?.data;
 
@@ -30,7 +33,10 @@ export async function generateMetadata(
                 description:
                     "Không tìm thấy thông tin bài tố cáo. Vui lòng kiểm tra lại đường dẫn.",
                 type: "website",
-                images: ["/images/qr-donate.jpg"],
+                // images: ["/images/qr-donate.jpg"], // cần 1 biến env domain thật và sau này là ảnh thật của wed
+                images: [
+                    "https://raw.githubusercontent.com/hoidanit/images-hosting/master/eric.png",
+                ],
             },
         };
     }
@@ -55,8 +61,7 @@ export async function generateMetadata(
 
 const ScammerPage = async (props: IProps) => {
     const params = await props.params;
-    const postId = params.id;
-
+    const postId = extractIdFromSlug(params.id);
     try {
         const res = await reqGetAPost(postId);
 

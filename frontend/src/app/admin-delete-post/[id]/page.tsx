@@ -1,4 +1,5 @@
 import AdminDeletePostUi from "@/components/page/admin-delete-post/AdminDeletePostUi";
+import { extractIdFromSlug } from "@/helper/extractIdFromSlug";
 import { reqGetAPost } from "@/util/actions";
 import type { Metadata, ResolvingMetadata } from "next";
 
@@ -16,7 +17,8 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
-    const res = await reqGetAPost(id);
+    const postId = extractIdFromSlug(id);
+    const res = await reqGetAPost(postId);
 
     const data = res?.data;
 
@@ -25,6 +27,16 @@ export async function generateMetadata(
             title: "Không tìm thấy bài tố cáo | camCheckScam",
             description:
                 "Bài tố cáo không tồn tại hoặc đã bị xóa. Vui lòng kiểm tra lại ID.",
+            openGraph: {
+                title: "Không tìm thấy bài tố cáo | camCheckScam",
+                description:
+                    "Bài tố cáo không tồn tại hoặc đã bị xóa. Vui lòng kiểm tra lại ID.",
+                type: "website",
+                // ảnh sau này chỉnh lại hàng thật
+                images: [
+                    "https://raw.githubusercontent.com/hoidanit/images-hosting/master/eric.png",
+                ],
+            },
         };
     }
 
@@ -34,14 +46,23 @@ export async function generateMetadata(
     return {
         title,
         description,
+        openGraph: {
+            title,
+            description,
+            type: "website",
+            images: [
+                "https://raw.githubusercontent.com/hoidanit/images-hosting/master/eric.png", // bạn có thể thay ảnh thật về bài tố cáo
+            ],
+        },
     };
 }
 
 const AdminDeletePostPage = async ({ params }: IProps) => {
     const { id } = await params;
+    const postId = extractIdFromSlug(id);
 
     try {
-        const res = await reqGetAPost(id);
+        const res = await reqGetAPost(postId);
         const expiredToken = res?.statusCode === 403;
 
         return (

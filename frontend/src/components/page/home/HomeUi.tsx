@@ -21,6 +21,7 @@ import { useExpiredSession } from "@/util/serverRequestHandler";
 import { CopyOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import { usePRouter } from "@/hooks/usePRouter";
+import { convertSlugUrl } from "@/helper/stringify";
 
 // Destructure các component từ Typography và Input
 const { Title, Text, Link } = Typography;
@@ -119,14 +120,22 @@ const PostCard = memo(
 
         // Hàm xử lý sao chép link bài viết
         const handleCopyLink = useCallback(() => {
-            const link = `${window.location.origin}/scammer/${post.id}`;
+            const link = `${window.location.origin}/scammer/${convertSlugUrl(
+                post.bankAccount
+            )}-${convertSlugUrl(post.bankAccountName)}-${convertSlugUrl(
+                post.bankName
+            )}-${post.id}.html`;
             navigator.clipboard.writeText(link);
             message.success("Đã sao chép liên kết bài viết!");
-        }, [post.id]);
+        }, [post.id, post.bankAccount, post.bankAccountName, post.bankName]);
 
         // Hàm xử lý chuyển đến trang chi tiết bài viết
         const handleViewPost = useCallback(() => {
-            router.push(`/scammer/${post.id}`);
+            router.push(
+                `/scammer/${convertSlugUrl(post.bankAccount)}-${convertSlugUrl(
+                    post.bankAccountName
+                )}-${convertSlugUrl(post.bankName)}-${post.id}.html`
+            );
         }, [post.id, router]);
 
         // Only render images if they exist to avoid unnecessary style registrations
