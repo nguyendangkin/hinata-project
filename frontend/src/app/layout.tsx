@@ -9,6 +9,7 @@ import HeaderLayout from "@/components/layout/header/HeaderLayout";
 import FooterLayout from "@/components/layout/footer/FooterLayout";
 import ContentLayout from "@/components/layout/content/ContentLayout";
 import NextTopLoader from "nextjs-toploader";
+import Script from "next/script";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -19,6 +20,28 @@ const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
 });
+
+const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "camCheckScam - Tra cứu & Báo cáo Lừa Đảo",
+    url: "https://camcheckscam.vn",
+    description:
+        "Nền tảng giúp xác minh và tố cáo các hành vi lừa đảo liên quan đến tài khoản ngân hàng, số điện thoại và giao dịch trực tuyến.",
+    publisher: {
+        "@type": "Organization",
+        name: "camCheckScam",
+        logo: {
+            "@type": "ImageObject",
+            url: "https://camcheckscam.vn/logo.png",
+        },
+    },
+    potentialAction: {
+        "@type": "SearchAction",
+        target: "https://camcheckscam.vn/search?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+    },
+};
 
 export const metadata: Metadata = {
     title: "camCheckScam - Tra cứu & Báo cáo Lừa Đảo",
@@ -42,6 +65,12 @@ export default function RootLayout({
                     </AntdProvider>
                     <NextTopLoader />
                 </AntdRegistry>
+                <Script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(structuredData),
+                    }}
+                />
             </body>
         </html>
     );
