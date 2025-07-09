@@ -1,8 +1,10 @@
 "use client";
 
-import { Card, Typography, Space, Button, message, Divider, Image } from "antd";
+import { Card, Typography, Space, Button, message, Divider } from "antd";
 import { CopyOutlined, HeartFilled } from "@ant-design/icons";
 import React from "react";
+import Image from "next/image";
+import qrDonateCode from "../../../../public/images/qr-donate.jpg";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -67,11 +69,13 @@ export default function DonateUi() {
                         }}
                     >
                         <Image
-                            width={240}
-                            src="/images/qr-donate.jpg"
                             alt="QR Donate"
-                            preview={false}
-                            style={{ borderRadius: 8 }}
+                            src={qrDonateCode}
+                            sizes="100vw"
+                            style={{
+                                width: "100%",
+                                height: "auto",
+                            }}
                         />
                     </div>
                     <div style={{ textAlign: "center" }}>
