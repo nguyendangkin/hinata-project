@@ -296,6 +296,7 @@ const ProfileUi = (props: IProps) => {
                     current: meta.current,
                     total: meta.total,
                     pageSize: meta.pageSize,
+                    size: "default",
                     showSizeChanger: false,
                     showQuickJumper: false,
                     position: ["bottomCenter"],
@@ -314,30 +315,6 @@ const ProfileUi = (props: IProps) => {
                 }}
                 onChange={onChange}
             />
-
-            {/* {data.length > 0 && (
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginTop: 24,
-                    }}
-                >
-                    <Pagination
-                        current={meta.current}
-                        total={meta.total}
-                        pageSize={meta.pageSize}
-                        showSizeChanger={false}
-                        showQuickJumper={false}
-                        onChange={(page, pageSize) => {
-                            const params = new URLSearchParams(searchParams);
-                            params.set("current", page.toString());
-                            params.set("pageSize", pageSize.toString());
-                            router.push(`${pathname}?${params.toString()}`);
-                        }}
-                    />
-                </div>
-            )} */}
         </div>
     );
 };

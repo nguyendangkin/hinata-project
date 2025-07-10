@@ -435,6 +435,7 @@ const AdminUi = (props: IProps) => {
                     current: meta.current,
                     pageSize: meta.pageSize,
                     total: meta.total,
+                    size: "default",
                     showSizeChanger: false,
                     showQuickJumper: false,
                     showLessItems: false,
