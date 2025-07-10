@@ -22,6 +22,7 @@ import { CopyOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import { usePRouter } from "@/hooks/usePRouter";
 import { convertSlugUrl } from "@/helper/stringify";
+import NextLink from "next/link";
 
 // Destructure các component từ Typography và Input
 const { Title, Text, Link } = Typography;
@@ -138,7 +139,43 @@ const PostCard = memo(
             );
         }, [post.id, router]);
 
-        // Only render images if they exist to avoid unnecessary style registrations
+        // Render images with consistent styling - tạo styles một lần
+        const imageStyles = useMemo(
+            () => ({
+                imageContainer: {
+                    width: 60,
+                    height: 60,
+                    border: "1px solid #d1d5db",
+                    borderRadius: "4px",
+                    objectFit: "cover" as const,
+                },
+                placeholder: {
+                    width: 60,
+                    height: 60,
+                    background: "#f0f0f0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "4px",
+                },
+                moreIndicator: {
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "60px",
+                    height: "60px",
+                    border: "1px solid #d1d5db",
+                    backgroundColor: "#f3f4f6",
+                    borderRadius: "4px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                },
+            }),
+            []
+        );
+
+        // Render proof images
         const renderProofImages = useMemo(() => {
             if (!post.proofImages || post.proofImages.length === 0) return null;
 
@@ -156,55 +193,28 @@ const PostCard = memo(
                                 alt={`Minh chứng ${index + 1}`}
                                 loading="lazy"
                                 placeholder={
-                                    <div
-                                        style={{
-                                            width: 60,
-                                            height: 60,
-                                            background: "#f0f0f0",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
+                                    <div style={imageStyles.placeholder}>
                                         <Text type="secondary">Loading...</Text>
                                     </div>
                                 }
-                                style={{
-                                    border: "1px solid #d1d5db",
-                                    objectFit: "cover",
-                                    borderRadius: "4px",
-                                }}
+                                style={imageStyles.imageContainer}
                             />
                         ))}
                         {post.proofImages.length > 3 && (
-                            <div
-                                style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    width: "60px",
-                                    height: "60px",
-                                    border: "1px solid #d1d5db",
-                                    backgroundColor: "#f3f4f6",
-                                    borderRadius: "4px",
-                                    fontSize: "12px",
-                                    fontWeight: "bold",
-                                }}
-                            >
+                            <div style={imageStyles.moreIndicator}>
                                 +{post.proofImages.length - 3}
                             </div>
                         )}
                     </Space>
                 </Image.PreviewGroup>
             );
-        }, [post.proofImages]);
+        }, [post.proofImages, imageStyles]);
 
         return (
             <Card
                 style={{ marginBottom: 16 }}
                 styles={{ body: { padding: "16px" } }}
             >
-                {/* Rest of the component remains the same */}
                 <div
                     style={{
                         display: "flex",
@@ -427,8 +437,6 @@ const PostCard = memo(
 );
 
 PostCard.displayName = "PostCard";
-// Đặt displayName cho component PostCard để dễ debug
-PostCard.displayName = "PostCard";
 
 // Component SearchSection xử lý phần tìm kiếm
 const SearchSection = memo(
@@ -543,7 +551,6 @@ const SearchSection = memo(
     }
 );
 
-// Đặt displayName cho component SearchSection để dễ debug
 SearchSection.displayName = "SearchSection";
 
 // Component chính HomeUi
@@ -631,11 +638,16 @@ const HomeUi = (props: IProps) => {
         [searchParams, router, pathname]
     );
 
-    // Memoize postCards with proper dependencies
+    // Memoize postCards with stable key
     const postCards = useMemo(() => {
         if (!data || data.length === 0) return null;
+
         return data.map((post) => (
-            <PostCard key={post.id} post={post} searchTerm={searchTerm} />
+            <PostCard
+                key={`${post.id}-${post.key}`}
+                post={post}
+                searchTerm={searchTerm}
+            />
         ));
     }, [data, searchTerm]);
 
@@ -676,7 +688,29 @@ const HomeUi = (props: IProps) => {
                         pageSize={meta.pageSize}
                         showSizeChanger={false}
                         showQuickJumper={false}
+                        size="default"
                         onChange={handlePaginationChange}
+                        itemRender={(page, type, originalElement) => {
+                            if (type === "page") {
+                                const params = new URLSearchParams(
+                                    searchParams
+                                );
+                                params.set("current", page.toString());
+                                params.set(
+                                    "pageSize",
+                                    meta.pageSize.toString()
+                                );
+
+                                return (
+                                    <NextLink
+                                        href={`${pathname}?${params.toString()}`}
+                                    >
+                                        {page}
+                                    </NextLink>
+                                );
+                            }
+                            return originalElement;
+                        }}
                     />
                 </div>
             )}
