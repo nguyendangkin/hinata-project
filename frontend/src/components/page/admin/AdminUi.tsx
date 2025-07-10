@@ -24,6 +24,7 @@ import { useExpiredSession } from "@/util/serverRequestHandler";
 import { handleApiCall } from "@/util/clientRequestHandler";
 import { usePRouter } from "@/hooks/usePRouter";
 import SearchById from "@/components/page/admin/SearchById";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
@@ -434,12 +435,24 @@ const AdminUi = (props: IProps) => {
                     current: meta.current,
                     pageSize: meta.pageSize,
                     total: meta.total,
-                    showSizeChanger: false, // Ẩn chọn số bản ghi/trang
-                    showQuickJumper: false, // Ẩn nhảy nhanh đến trang
-                    showLessItems: false, // Hiển thị đầy đủ các nút trang
+                    showSizeChanger: false,
+                    showQuickJumper: false,
+                    showLessItems: false,
                     position: ["bottomCenter"],
+                    itemRender: (page, type, originalElement) => {
+                        if (type === "page") {
+                            return (
+                                <Link
+                                    href={`${pathname}?current=${page}&pageSize=${meta.pageSize}`}
+                                >
+                                    {page}
+                                </Link>
+                            );
+                        }
+                        return originalElement;
+                    },
                 }}
-                onChange={onChange}
+                // onChange={onChange}
             />
         </div>
     );
