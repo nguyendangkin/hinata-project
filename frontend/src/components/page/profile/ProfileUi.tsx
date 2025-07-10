@@ -19,6 +19,7 @@ import { requestApiLogoutUser } from "@/util/actions";
 import { useExpiredSession } from "@/util/serverRequestHandler";
 import { handleApiCall } from "@/util/clientRequestHandler";
 import { usePRouter } from "@/hooks/usePRouter";
+import Link from "next/link";
 
 const { Title, Text } = Typography;
 
@@ -291,10 +292,30 @@ const ProfileUi = (props: IProps) => {
                         ),
                     },
                 }}
-                pagination={false} // Tắt pagination mặc định của Table
+                pagination={{
+                    current: meta.current,
+                    total: meta.total,
+                    pageSize: meta.pageSize,
+                    showSizeChanger: false,
+                    showQuickJumper: false,
+                    position: ["bottomCenter"],
+                    itemRender: (page, type, originalElement) => {
+                        if (type === "page") {
+                            return (
+                                <Link
+                                    href={`${pathname}?current=${page}&pageSize=${meta.pageSize}`}
+                                >
+                                    {page}
+                                </Link>
+                            );
+                        }
+                        return originalElement;
+                    },
+                }}
+                onChange={onChange}
             />
 
-            {data.length > 0 && (
+            {/* {data.length > 0 && (
                 <div
                     style={{
                         display: "flex",
@@ -316,7 +337,7 @@ const ProfileUi = (props: IProps) => {
                         }}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

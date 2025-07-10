@@ -452,7 +452,7 @@ const AdminUi = (props: IProps) => {
                         return originalElement;
                     },
                 }}
-                // onChange={onChange}
+                onChange={onChange}
             />
         </div>
     );
