@@ -13,6 +13,7 @@ import {
     Row, // Import Row
     Col, // Import Col
 } from "antd";
+import NextImage from "next/image";
 import {
     CopyOutlined,
     DeleteOutlined,
@@ -216,35 +217,31 @@ const AdminDeletePostUi = ({ data, expiredToken }: IProps) => {
                 <div style={{ marginTop: 24 }}>
                     <Text strong>Hình ảnh minh chứng:</Text>
                     <div style={{ marginTop: 8 }}>
-                        <Image.PreviewGroup>
-                            {/* Using Row and Col for responsive image grid */}
-                            <Row gutter={[8, 8]}>
-                                {data.proofImages.map((img, index) => (
-                                    <Col
-                                        xs={12}
-                                        sm={8}
-                                        md={6}
-                                        lg={4}
-                                        key={index}
+                        <Row gutter={[8, 8]}>
+                            {data.proofImages.map((img, index) => (
+                                <Col xs={12} sm={8} md={6} lg={4} key={index}>
+                                    <div
+                                        style={{
+                                            position: "relative",
+                                            width: "100%",
+                                            height: 100,
+                                            borderRadius: 4,
+                                            overflow: "hidden",
+                                            border: "1px solid #ddd",
+                                        }}
                                     >
-                                        <Image
-                                            width="100%" // Make image fill the column
-                                            height={100}
+                                        <NextImage
                                             src={getFullImageUrl(img)}
-                                            style={{
-                                                objectFit: "cover",
-                                                borderRadius: 4,
-                                                border: "1px solid #ddd",
-                                            }}
                                             alt={`Minh chứng ${index + 1}`}
+                                            fill
+                                            style={{ objectFit: "cover" }}
                                         />
-                                    </Col>
-                                ))}
-                            </Row>
-                        </Image.PreviewGroup>
+                                    </div>
+                                </Col>
+                            ))}
+                        </Row>
                     </div>
                 </div>
-
                 {/* Comment Section */}
                 <div style={{ marginTop: 24 }}>
                     <Text strong>Bình luận:</Text>
