@@ -75,6 +75,7 @@ export default function DonateUi() {
                             style={{
                                 width: "100%",
                                 height: "auto",
+                                maxWidth: 300, // <-- Giới hạn kích thước tối đa
                             }}
                         />
                     </div>
