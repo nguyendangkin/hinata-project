@@ -709,6 +709,50 @@ const HomeUi = (props: IProps) => {
                                     </NextLink>
                                 );
                             }
+                            // Xử lý jump-next
+                            if (type === "jump-next") {
+                                const jumpPage = Math.min(
+                                    meta.current + 5,
+                                    Math.ceil(meta.total / meta.pageSize)
+                                );
+                                const params = new URLSearchParams(
+                                    searchParams
+                                );
+                                params.set("current", jumpPage.toString());
+                                params.set(
+                                    "pageSize",
+                                    meta.pageSize.toString()
+                                );
+
+                                return (
+                                    <NextLink
+                                        href={`${pathname}?${params.toString()}`}
+                                    >
+                                        »
+                                    </NextLink>
+                                );
+                            }
+
+                            // Xử lý jump-prev
+                            if (type === "jump-prev") {
+                                const jumpPage = Math.max(meta.current - 5, 1);
+                                const params = new URLSearchParams(
+                                    searchParams
+                                );
+                                params.set("current", jumpPage.toString());
+                                params.set(
+                                    "pageSize",
+                                    meta.pageSize.toString()
+                                );
+
+                                return (
+                                    <NextLink
+                                        href={`${pathname}?${params.toString()}`}
+                                    >
+                                        «
+                                    </NextLink>
+                                );
+                            }
                             return originalElement;
                         }}
                     />

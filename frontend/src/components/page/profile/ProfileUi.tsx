@@ -310,6 +310,34 @@ const ProfileUi = (props: IProps) => {
                                 </Link>
                             );
                         }
+
+                        // Xử lý jump-next
+                        if (type === "jump-next") {
+                            const jumpPage = Math.min(
+                                meta.current + 5,
+                                meta.pages
+                            );
+                            return (
+                                <Link
+                                    href={`${pathname}?current=${jumpPage}&pageSize=${meta.pageSize}`}
+                                >
+                                    »
+                                </Link>
+                            );
+                        }
+
+                        // Xử lý jump-prev
+                        if (type === "jump-prev") {
+                            const jumpPage = Math.max(meta.current - 5, 1);
+                            return (
+                                <Link
+                                    href={`${pathname}?current=${jumpPage}&pageSize=${meta.pageSize}`}
+                                >
+                                    «
+                                </Link>
+                            );
+                        }
+
                         return originalElement;
                     },
                 }}
